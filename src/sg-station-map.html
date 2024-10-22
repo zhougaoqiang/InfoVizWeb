@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+    <title>MRT Station Exits Map</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
+    <script src="https://d3js.org/d3-geo.v1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div id="tooltip" class="hidden">
+        <p><span id="value"></span></p>
+    </div>
+    <script>
+        var margin = {top: 10, right: 10, bottom: 10, left: 10},
+            vizWidth = 1260,
+            vizHeight = 500,
+            plotWidth = vizWidth - margin.left - margin.right,
+            plotHeight = vizHeight - margin.top - margin.bottom;
+
+        var viz = d3.select("body").append("svg")
+                    .attr("width", vizWidth)
+                    .attr("height", vizHeight);
+
+        var plot = viz.append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var projection = d3.geoMercator()
+                           .center([103.8198, 1.3521]) // Coordinates for Singapore
+                           .scale(40000)
+                           .translate([plotWidth / 2, plotHeight / 2]);
+
+        var path = d3.geoPath().projection(projection);
+
+        var tooltip = d3.select("#tooltip");
+
+        // First, load and display the map (Singapore planning areas)
+        d3.json("data/sg plan area 20170903.json", function(error, sg) {
+            if (error) throw error;
+
+            plot.selectAll("path")
+                .data(sg.features)
+                .enter()
+                .append("path")
+                .attr("d", path)
+                .attr("fill", "#ccc")
+                .attr("stroke", "#333");
+
+            // Now, load and plot the MRT station exits on top of the map
+            d3.json("data/LTAMRTStationExitGEOJSON.json", function(error, data) {
+                if (error) throw error;
+
+                plot.selectAll("circle")
+                    .data(data.features)
+                    .enter()
+                    .append("circle")
+                    .attr("cx", function(d) {
+                        return projection(d.geometry.coordinates)[0];
+                    })
+                    .attr("cy", function(d) {
+                        return projection(d.geometry.coordinates)[1];
+                    })
+                    .attr("r", 1)
+                    .attr("fill", "#ff0000")
+                    .on("mouseover", function(d) {
+                        d3.select(this).attr("fill", "#0000ff");
+                        tooltip.style("display", "block")
+                               .style("left", d3.event.pageX + "px")
+                               .style("top", d3.event.pageY + "px")
+                               .html("<strong>Station:</strong> " + d.properties.STATION_NA + "<br><strong>Exit:</strong> " + d.properties.EXIT_CODE);
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this).attr("fill", "#ff0000");
+                        tooltip.style("display", "none");
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

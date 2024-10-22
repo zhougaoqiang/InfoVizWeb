@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<head>
+   <meta charset="utf-8">
+   <script src="https://d3js.org/d3.v7.min.js"></script>
+   <link rel="stylesheet" href="css/common.css">
+   <link rel="stylesheet" href="css/pubTransRidership.css">
+</head>
+
+<body>
+<script>
+   var svg = d3.select("body").append("svg") // 在网页上添加一个SVG元素，用于绘制图表
+   .attr("width", 960) // 设置SVG的宽度
+   .attr("height", 600); // 设置SVG的高度
+
+var tickDuration = 1000; // 动画时长（以毫秒为单位）
+var top_n = 4; // 只显示前4
+var height = 600;
+var width = 960;
+
+var g_labelOffset= 40;
+var g_valueOffset= 45;
+var g_rightMargin= 80;
+
+const margin = {
+   top: 80, // 图表顶部的空白区域
+   right: g_rightMargin,
+   bottom: 5,
+   left: 0
+};
+
+let barPadding = (height - (margin.bottom + margin.top)) / (top_n * 5); // 柱状图的间距
+
+// 设置图表标题
+let title = svg.append('text')
+   .attr('class', 'title') // 给标题添加类
+   .attr('y', 24) // 设置Y轴的位置
+   .text('Public Transport Ridership'); // 标题内容
+
+// 设置副标题
+let subTitle = svg.append("text")
+   .attr("class", "subTitle") // 给副标题添加类
+   .attr("y", 55) // 设置Y轴的位置
+   .html("Type, Population"); // 副标题内容
+
+// 设置图表右下角的注释
+let caption = svg.append('text')
+   .attr('class', 'caption') // 给注释添加类
+   .attr('x', width - g_rightMargin) // 设置X轴的位置
+   .attr('y', height - 5) // 设置Y轴的位置
+   .style('text-anchor', 'end') // 文本对齐方式为右对齐
+   .html('Source: Interbrand'); // 注释内容
+
+let Year = 1995; // 起始年份
+
+// 读取CSV数据
+d3.csv('data/public-transport-ridership.csv').then(function(data) {
+   data.forEach(d => {// 转换数据类型
+ 
+      d.Ridership = +d.Ridership; // 品牌价值
+      d.Last_Ridership = +d.Last_Ridership; // 上一年的品牌价值
+      d.Ridership = isNaN(d.Ridership) ? 0 : d.Ridership; // 检查是否为数值
+      d.Year = +d.Year; // 年份
+      d.colour = d3.hsl(Math.random() * 360, 0.75, 0.75); // 随机颜色分配
+
+      console.log("get ridership " + d.Ridership);
+      console.log("get Last_Ridership " + d.Last_Ridership);
+      console.log("get Year " + d.Year);
+   });
+
+   // 过滤数据，选择对应年份的前n个品牌，并按价值排序
+   let yearSlice = data.filter(d => d.Year == Year && !isNaN(d.Ridership))
+      .sort((a, b) => b.Ridership - a.Ridership)
+      .slice(0, top_n);
+
+   // 给每个品牌添加排名
+   yearSlice.forEach((d, i) => d.Rank = i);
+
+   // 定义X轴的比例尺（从0到最大品牌价值）
+   let x = d3.scaleLinear()
+      .domain([0, d3.max(yearSlice, d => d.Ridership)]) // X轴的数据范围
+      .range([margin.left, width - margin.right - 65]); // X轴的像素范围
+
+   // 定义Y轴的比例尺（用于控制品牌的显示顺序）
+   let y = d3.scaleLinear()
+      .domain([top_n, 0]) // Y轴的范围（从最高排名到最低排名）
+      .range([height - margin.bottom, margin.top]); // Y轴的像素范围
+
+   // 设置X轴
+   let xAxis = d3.axisTop()
+      .scale(x) // 绑定X轴的比例尺
+      .ticks(width > 500 ? 5 : 2) // 设置X轴的刻度数量
+      .tickSize(-(height - margin.top - margin.bottom)) // X轴刻度线长度
+      .tickFormat(d => d3.format(',')(d)); // X轴刻度的格式化
+
+   // 在图表上添加X轴
+   svg.append('g')
+      .attr('class', 'axis xAxis') // 给X轴添加类
+      .attr('transform', `translate(0, ${margin.top})`) // 移动X轴到正确位置
+      .call(xAxis) // 渲染X轴
+      .selectAll('.tick line')
+      .classed('origin', d => d == 0); // 给刻度线添加样式
+
+   // 绘制柱状图
+   svg.selectAll('rect.bar')
+      .data(yearSlice, d => d.Type) // 绑定数据
+      .enter()
+      .append('rect') // 创建矩形元素
+      .attr('class', 'bar') // 添加类名
+      .attr('x', x(0) + 1) // 设置矩形X轴的位置
+      .attr('width', d => x(d.Ridership) - x(0) - 1) // 设置矩形的宽度，基于品牌价值
+      .attr('y', d => y(d.Rank) + 5) // 设置矩形Y轴的位置，基于排名
+      .attr('height', y(1) - y(0) - barPadding) // 设置矩形的高度
+      .style('fill', d => d.colour); // 设置矩形的颜色
+
+   svg.selectAll('text.label')
+      .data(yearSlice, d => d.Type) // 绑定数据
+      .enter()
+      .append('text') // 添加文本元素
+      .attr('class', 'label') // 添加类名
+    //   .attr('x', d => x(d.Ridership) - 8) // orignal: 设置文本X轴的位置
+      .attr('x', d => x(d.Ridership) + g_labelOffset)
+      .attr('y', d => y(d.Rank) + 5 + ((y(1) - y(0)) / 2) + 1) // 设置文本Y轴的位置
+      .style('text-anchor', 'end') // 文本右对齐
+      .html(d => d.Type); // 文本内容是品牌名称
+
+   svg.selectAll('text.valueLabel')
+      .data(yearSlice, d => d.Type) // 绑定数据
+      .enter()
+      .append('text') // 添加文本元素
+      .attr('class', 'valueLabel') // 添加类名
+      .attr('x', d => x(d.Ridership) + g_valueOffset) // 设置文本X轴的位置
+      .attr('y', d => y(d.Rank) + 5 + ((y(1) - y(0)) / 2) + 1) // 设置文本Y轴的位置
+      .text(d => d3.format(',.0f')(d.Last_Ridership)); // 显示品牌的上一年的价值
+
+   // 在右下角添加年份文本
+   let yearText = svg.append('text')
+      .attr('class', 'yearText') // 添加类名
+      .attr('x', width - margin.right) // 设置X轴的位置
+      .attr('y', height - 25) // 设置Y轴的位置
+      .style('text-anchor', 'end') // 文本右对齐
+      .html(~~Year) // 显示年份
+      .call(halo, 10); // 调用halo函数给年份添加高亮效果
+
+   // 创建ticker用于动画更新
+   let ticker = d3.interval(e => {
+
+      // 更新数据，重新选择前n名品牌
+      yearSlice = data.filter(d => d.Year == Year && !isNaN(d.Ridership))
+         .sort((a, b) => b.Ridership - a.Ridership)
+         .slice(0, top_n);
+
+      yearSlice.forEach((d, i) => d.Rank = i); // 更新排名
+
+      // 更新X轴比例尺
+      x.domain([0, d3.max(yearSlice, d => d.Ridership)]);
+
+      // 更新X轴
+      svg.select('.xAxis')
+         .transition()
+         .duration(tickDuration)
+         .ease(d3.easeLinear)
+         .call(xAxis);
+
+      // 更新柱状图
+      let bars = svg.selectAll('.bar').data(yearSlice, d => d.Type);
+      bars
+         .enter()
+         .append('rect')
+         .attr('class', d => `bar ${d.name.replace(/\s/g, '_')}`) // 更新bar的样式
+         .attr('x', x(0) + 1)
+         .attr('width', d => x(d.Ridership) - x(0) - 1)
+         .attr('y', d => y(top_n + 1) + 5)
+         .attr('height', y(1) - y(0) - barPadding)
+         .style('fill', d => d.colour)
+         .transition()
+         .duration(tickDuration)
+         .ease(d3.easeLinear) //用于控制动画速度的函数。
+         .attr('y', d => y(d.Rank) + 5);
+
+      bars.transition()
+         .duration(tickDuration)
+         .ease(d3.easeLinear) //用于控制动画速度的函数。
+         .attr('width', d => x(d.Ridership) - x(0) - 1)
+         .attr('y', d => y(d.Rank) + 5);
+
+      bars.exit()
+         .transition()
+         .duration(tickDuration)
+         .ease(d3.easeLinear)
+         .attr('width', d => x(d.Ridership) - x(0) - 1)
+         .attr('y', d => y(top_n + 1) + 5)
+         .remove();
+
+      // 更新标签文本
+      let labels = svg.selectAll('.label').data(yearSlice, d => d.Type);
+      labels
+         .enter()
+         .append('text')
+         .attr('class', 'label')
+         .attr('x', d => x(d.Ridership) + g_labelOffset)
+         .attr('y', d => y(top_n + 1) + 5 + ((y(1) - y(0)) / 2))
+         .style('text-anchor', 'end')
+         .html(d => d.Type)
+         .transition()
+         .duration(tickDuration)
+         .ease(d3.easeLinear)
+         .attr('y', d => y(d.Rank) + 5 + ((y(1) - y(0)) / 2) + 1);
+
+      labels.transition()
+         .duration(tickDuration)
+         .ease(d3.easeLinear)
+         .attr('x', d => x(d.Ridership) + g_labelOffset)
+         .attr('y', d => y(d.Rank) + 5 + ((y(1) - y(0)) / 2) + 1);
+
+      labels.exit()
+         .transition()
+         .duration(tickDuration)
+         .ease(d3.easeLinear)
+         .attr('x', d => x(d.Ridership) + g_labelOffset)
+         .attr('y', d => y(top_n + 1) + 5)
+         .remove();
+
+      // 更新数值标签
+      let valueLabels = svg.selectAll('.valueLabel').data(yearSlice, d => d.Type);
+      valueLabels
+         .enter()
+         .append('text')
+         .attr('class', 'valueLabel')
+         .attr('x', d => x(d.Ridership) + g_valueOffset)
+         .attr('y', d => y(top_n + 1) + 5)
+         .text(d => d3.format(',.0f')(d.Last_Ridership))
+         .transition()
+         .duration(tickDuration)
+         .ease(d3.easeLinear)
+         .attr('y', d => y(d.Rank) + 5 + ((y(1) - y(0)) / 2) + 1);
+
+      valueLabels.transition()
+         .duration(tickDuration)
+         .ease(d3.easeLinear)
+         .attr('x', d => x(d.Ridership) + g_valueOffset)
+         .attr('y', d => y(d.Rank) + 5 + ((y(1) - y(0)) / 2) + 1)
+         .tween("text", function(d) {
+            let i = d3.interpolateRound(d.Last_Ridership, d.Ridership);
+            return function(t) {
+               this.textContent = d3.format(',')(i(t));
+            };
+         });
+
+      valueLabels.exit()
+         .transition()
+         .duration(tickDuration)
+         .ease(d3.easeLinear)
+         .attr('x', d => x(d.Ridership) + 5)
+         .attr('y', d => y(top_n + 1) + 5)
+         .remove();
+
+      // 更新年份
+      yearText.html(~~Year); // 使用双重波浪号来去除小数部分
+
+      // 逐年更新
+      if (Year == 2023) 
+        ticker.stop(); // 当年份到2018年时停止动画
+    //   Year = d3.format('.1f')((+Year) + 0.1); // 将年份每次加0.1，以实现动画效果
+       Year = (+Year) + 1;
+   }, tickDuration); // 设定动画间隔时间
+});
+
+// halo函数，用于在年份周围添加白色边框效果
+const halo = function(text, strokeWidth) {
+   text.select(function() { return this.parentNode.insertBefore(this.cloneNode(true), this); })
+      .style('fill', '#ffffff')
+      .style('stroke', '#ffffff')
+      .style('stroke-width', strokeWidth)
+      .style('stroke-linejoin', 'round')
+      .style('opacity', 1);
+}
+
+</script>
+</body>
+

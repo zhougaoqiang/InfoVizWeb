@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<link rel="stylesheet" href="css/common.css">
+<body>
+  <div><h1>Rail Operated</h1></div>
+  <div id="my_dataviz"></div>
+  <script>
+
+    // Set the dimensions and margins of the graph
+    var margin = {top: 30, right: 30, bottom: 30, left: 60},
+        width = 800 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    // Append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz")
+      .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Create a tooltip
+    var tooltip = d3.select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+    // Read the data from the CSV file
+    d3.csv("data/Rail-Operated.csv").then(function(data) {
+
+      // Format the data
+      data.forEach(function(d) {
+        d.Year = +d.Year;  // Convert year to number
+        d.MRT_Km_Operated = +d.MRT_Km_Operated;  // Convert to number
+        d.LRT_Km_Operated = +d.LRT_Km_Operated;  // Convert to number
+      });
+
+      // Add X axis --> it is a time format
+      var x = d3.scaleLinear()
+        .domain(d3.extent(data, function(d) { return d.Year; }))
+        .range([ 0, width ]);
+
+      svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+      // Add Y axis
+      var y = d3.scaleLinear()
+        .domain([0, d3.max(data, function(d) { return Math.max(d.MRT_Km_Operated, d.LRT_Km_Operated); })])
+        .range([ height, 0 ]);
+        
+      svg.append("g")
+        .call(d3.axisLeft(y));
+
+      // Add the MRT line
+      svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 1.5)
+        .attr("d", d3.line()
+          .x(function(d) { return x(d.Year); })
+          .y(function(d) { return y(d.MRT_Km_Operated); })
+        );
+
+      // Add the LRT line
+      svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "orange")
+        .attr("stroke-width", 1.5)
+        .attr("d", d3.line()
+          .x(function(d) { return x(d.Year); })
+          .y(function(d) { return y(d.LRT_Km_Operated); })
+        );
+
+      // Add points for MRT with interaction
+      svg.selectAll("circle.mrt")
+        .data(data)
+        .enter()
+        .append("circle")
+          .attr("class", "mrt")
+          .attr("cx", function(d) { return x(d.Year); })
+          .attr("cy", function(d) { return y(d.MRT_Km_Operated); })
+          .attr("r", 5)
+          .attr("fill", "steelblue")
+          .on("mouseover", function(event, d) {
+            d3.select(this).attr("r", 7);  // Highlight point
+            tooltip.transition().duration(200).style("opacity", .9);
+            tooltip.html("Year: " + d.Year + "<br/>MRT: " + d.MRT_Km_Operated)
+              .style("left", (event.pageX + 5) + "px")
+              .style("top", (event.pageY - 28) + "px");
+          })
+          .on("mouseout", function(d) {
+            d3.select(this).attr("r", 5);  // Reset point size
+            tooltip.transition().duration(500).style("opacity", 0);
+          });
+
+      // Add points for LRT with interaction
+      svg.selectAll("circle.lrt")
+        .data(data)
+        .enter()
+        .append("circle")
+          .attr("class", "lrt")
+          .attr("cx", function(d) { return x(d.Year); })
+          .attr("cy", function(d) { return y(d.LRT_Km_Operated); })
+          .attr("r", 5)
+          .attr("fill", "orange")
+          .on("mouseover", function(event, d) {
+            d3.select(this).attr("r", 7);  // Highlight point
+            tooltip.transition().duration(200).style("opacity", .9);
+            tooltip.html("Year: " + d.Year + "<br/>LRT: " + d.LRT_Km_Operated)
+              .style("left", (event.pageX + 5) + "px")
+              .style("top", (event.pageY - 28) + "px");
+          })
+          .on("mouseout", function(d) {
+            d3.select(this).attr("r", 5);  // Reset point size
+            tooltip.transition().duration(500).style("opacity", 0);
+          });
+    });
+
+  </script>
+</body>

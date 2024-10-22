@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3 Line Chart with Dynamic Transition - Singapore Rail Data</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/railLength.css">
+</head>
+<body>
+    <h2>Singapore Rail System Evolution (1990-2023)</h2>
+
+    <!-- Single-selection button for toggling the lines -->
+    <div>
+        <label for="lineSelect">Select Line to Display:</label>
+        <select id="lineSelect">
+            <option value="Total_KM">Total Rail Length</option>
+            <option value="MRT_KM">MRT Length</option>
+            <option value="LRT_KM">LRT Length</option>
+        </select>
+    </div>
+
+    <svg id="Rail_Length_Chart" width="800" height="500"></svg>
+
+    <script>
+        // 设置图表的宽度和高度
+        const svg = d3.select("#Rail_Length_Chart");
+        const margin = { top: 50, right: 50, bottom: 50, left: 70 };
+        const width = svg.attr("width") - margin.left - margin.right;
+        const height = svg.attr("height") - margin.top - margin.bottom;
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // 加载 CSV 文件
+        d3.csv("data/Rail-length.csv").then(data => {
+            // 将数据中的 year 字段转换为数字
+            data.forEach(d => {
+                d.year = +d.year;
+                d.Total_KM = +d.Total_KM;
+                d.MRT_KM = +d.MRT_KM;
+                d.LRT_KM = +d.LRT_KM;
+            });
+
+            // 定义比例尺
+            const x = d3.scaleLinear()
+                .domain(d3.extent(data, d => d.year))
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.Total_KM)]).nice()
+                .range([height, 0]);
+
+            // 定义坐标轴
+            g.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x).tickFormat(d3.format("d"))); // 按年份格式化为整数
+
+            g.append("g")
+                .call(d3.axisLeft(y));
+
+            // 定义折线生成器函数
+            const lineGenerator = d3.line()
+                .x(d => x(d.year))
+                .y(d => y(d.Total_KM)); // 默认显示总铁路长度
+
+            // 初始化线条
+            let line = g.append("path")
+                .datum(data)
+                .attr("class", "line rail")
+                .attr("d", lineGenerator)
+                .attr("stroke", "steelblue")
+                .style("stroke-width", 2)
+                .style("fill", "none");
+
+            // 添加标签
+            svg.append("text")
+                .attr("x", width / 2 + margin.left)
+                .attr("y", height + margin.top + 40)
+                .attr("class", "axis-label")
+                .style("text-anchor", "middle")
+                .text("Year");
+
+            svg.append("text")
+                .attr("x", -height / 2)
+                .attr("y", margin.left / 3)
+                .attr("class", "axis-label")
+                .attr("transform", "rotate(-90)")
+                .style("text-anchor", "middle")
+                .text("Length (Kilometres)");
+
+            // 动态更新函数，用于更新选择的线条
+            function update(selectedLine) {
+                // 更新 y 轴比例
+                y.domain([0, d3.max(data, d => d[selectedLine])]);
+
+                // 重新生成线条
+                lineGenerator.y(d => y(d[selectedLine]));
+
+                // 应用过渡效果更新线条
+                line
+                    .datum(data)
+                    .transition()  // 添加过渡
+                    .duration(1000) // 设置过渡持续时间
+                    .attr("d", lineGenerator);
+
+                // 更新 y 轴
+                g.select(".y-axis")
+                    .transition()
+                    .duration(1000)
+                    .call(d3.axisLeft(y));
+            }
+
+            // 绑定选择事件，控制线条的显示
+            d3.select("#lineSelect").on("change", function() {
+                const selectedLine = d3.select(this).property("value");
+
+                // 更新线条数据和过渡效果
+                update(selectedLine);
+            });
+        });
+    </script>
+</body>
+</html>

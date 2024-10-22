@@ -1,0 +1,13 @@
+Number of Service Delays (over 30mins).csv
+MRT_TOTAL: Overall MRT Network
+LRT_TOTAL: Overall LRT Network
+
+public-transport-ridership.csv
+AVG_MRT_Ridership: Average Daily Ridership - MRT (Thousand)
+AVG_LRT_Ridership: Average Daily Ridership - LRT (Thousand)
+AVG_Bus_Ridership: Average Daily Ridership - Public Bus (Thousand)
+AVG_P2P_Ridership: Average Daily Trip - Point-To-Point (P2P) Transport (Taxis And Private Hire Cars) (Thousand Daily-Trips)
+
+
+MRT KmOp (T-TKm): MRT km Operated (Thousand Train-Kilometres)
+LRT KmOp (T-CKm): LRT km Operated (Thousand Car-Kilometres)

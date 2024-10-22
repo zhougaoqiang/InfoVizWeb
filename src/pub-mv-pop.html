@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3 Stacked Area Chart - Motor Vehicle Population</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+    <h2>Public Motor Vehicle Population (1990 - 2024)</h2>
+
+    <div id="mv_population"></div>
+
+    <script>
+        // 设置图表的宽度和高度
+        const margin = {top: 60, right: 230, bottom: 50, left: 50},
+              width = 800 - margin.left - margin.right,
+              height = 400 - margin.top - margin.bottom;
+
+        const svg = d3.select("#mv_population")
+          .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform",`translate(${margin.left},${margin.top})`);
+
+        // 设置工具提示
+        const tooltip = d3.select("#mv_population")
+            .append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        // 读取 CSV 数据
+        d3.csv("data/public_motor_vehicle_population.csv").then( function(data) {
+
+          // 数据预处理：将年份转换为Date对象，并过滤掉1990年之前的数据
+          data = data.filter(d => {
+            d.year = d3.timeParse("%Y %b")(d.year);
+            return d.year >= new Date(1990, 0, 1); // 过滤1990年后的数据
+          });
+
+          data.forEach(d => {
+            d.Private_Hire_Cars = +d.Private_Hire_Cars;
+            d.Taxis = +d.Taxis;
+            d.Buses = +d.Buses;
+          });
+
+          // 列名作为子组，调整顺序以确保 Buses 在最底层
+          const keys = ["Buses", "Taxis", "Private_Hire_Cars"];
+
+          // 颜色比例尺
+          const color = d3.scaleOrdinal()
+            .domain(keys)
+            .range(d3.schemeSet2);
+
+          // 堆叠数据
+          const stackedData = d3.stack()
+            .keys(keys)
+            (data);
+
+          // X轴：年份
+          const x = d3.scaleTime()
+            .domain(d3.extent(data, function(d) { return d.year; }))
+            .range([ 0, width ]);
+          
+          const xAxis = svg.append("g")
+            .attr("transform", `translate(0, ${height})`)
+            .call(d3.axisBottom(x).ticks(10));
+
+          // Y轴：车辆数量
+          const y = d3.scaleLinear()
+            .domain([0, d3.max(data, d => d.Private_Hire_Cars + d.Taxis + d.Buses)])
+            .range([ height, 0 ]);
+          
+          svg.append("g")
+            .call(d3.axisLeft(y));
+
+          // 定义面积生成器
+          const area = d3.area()
+            .x(function(d) { return x(d.data.year); })
+            .y0(function(d) { return y(d[0]); })
+            .y1(function(d) { return y(d[1]); });
+
+          // 显示堆叠区域
+          svg.selectAll("mylayers")
+            .data(stackedData)
+            .enter()
+            .append("path")
+              .attr("class", function(d) { return "myArea " + d.key })
+              .style("fill", function(d) { return color(d.key); })
+              .attr("d", area)
+              // 添加鼠标事件，用于显示工具提示
+              .on("mouseover", function(event, d) {
+                tooltip.transition().duration(200).style("opacity", .9);
+              })
+              .on("mousemove", function(event, d) {
+                const year = x.invert(d3.pointer(event, this)[0]);  // 获取年份
+                const index = data.findIndex(dt => dt.year.getFullYear() === Math.round(year.getFullYear()));
+                const tooltipData = data[index];
+                
+                // 显示工具提示的内容
+                tooltip.html(
+                    `Year: ${tooltipData.year.getFullYear()}<br>` +
+                    `Buses: ${tooltipData.Buses}<br>` +
+                    `Taxis: ${tooltipData.Taxis}<br>` +
+                    `Private Hire Cars: ${tooltipData.Private_Hire_Cars}`
+                )
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 28) + "px");
+              })
+              .on("mouseout", function() {
+                tooltip.transition().duration(500).style("opacity", 0);
+              });
+
+          // 添加 X 轴标签
+          svg.append("text")
+            .attr("text-anchor", "end")
+            .attr("x", width)
+            .attr("y", height + 40)
+            .text("Year");
+
+          // 添加 Y 轴标签
+          svg.append("text")
+            .attr("text-anchor", "end")
+            .attr("x", 0)
+            .attr("y", -20)
+            .text("Number of Vehicles")
+            .attr("text-anchor", "start");
+
+          // 调整图例的位置，使其靠近图表左侧
+          const size = 20;
+          svg.selectAll("myrect")
+            .data(keys)
+            .enter()
+            .append("rect")
+              .attr("x", 50)  // 调整 x 坐标，使图例靠左显示
+              .attr("y", function(d,i){ return 10 + i*(size+5)})
+              .attr("width", size)
+              .attr("height", size)
+              .style("fill", function(d){ return color(d)});
+
+          svg.selectAll("mylabels")
+            .data(keys)
+            .enter()
+            .append("text")
+              .attr("x", 50 + size*1.2)  // 调整 x 坐标，使图例文字靠左显示
+              .attr("y", function(d,i){ return 10 + i*(size+5) + (size/2)})
+              .attr("class", "legend-text")  // 确保没有下划线
+              .style("fill", function(d){ return color(d)})
+              .text(function(d){ return d.replace(/_/g, ' ') })  // 移除下划线
+              .attr("text-anchor", "left")
+              .style("alignment-baseline", "middle");
+
+        });
+
+    </script>
+</body>
+</html>
+

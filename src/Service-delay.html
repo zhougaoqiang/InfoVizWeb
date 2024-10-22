@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3 Stacked Barchart - MRT & LRT Delays</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+    <h2>Service Delays (>30 mins) - MRT and LRT (2020-2023)</h2>
+
+    <!-- Single-selection button for toggling the barcharts -->
+    <div>
+        <label for="LrtMrtSelect">Select Chart to Display:</label>
+        <select id="LrtMrtSelect">
+            <option value="MRT">MRT Delays</option>
+            <option value="LRT">LRT Delays</option>
+        </select>
+    </div>
+
+    <div id="Service_Delay"></div>
+
+    <script>
+        // 设置图表的宽度和高度
+        const margin = {top: 20, right: 30, bottom: 40, left: 50},
+              width = 800 - margin.left - margin.right,
+              height = 400 - margin.top - margin.bottom;
+
+        const svg = d3.select("#Service_Delay")
+          .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform",`translate(${margin.left},${margin.top})`);
+
+        // 读取 CSV 数据
+        d3.csv("data/No_of_Service_Delays.csv").then( function(data) {
+
+          // MRT 和 LRT 的子组
+          const MRT_subgroups = ["NSL", "EWL", "NEL", "CCL", "DTL"];
+          const LRT_subgroups = ["BPLRT", "SPLRT"];
+
+          // X轴的年份组
+          const groups = data.map(d => d.Year);
+
+          // 初始化 X 轴
+          const x = d3.scaleBand()
+              .domain(groups)
+              .range([0, width])
+              .padding([0.2]);
+
+          svg.append("g")
+            .attr("transform", `translate(0, ${height})`)
+            .call(d3.axisBottom(x).tickSizeOuter(0));
+
+          // 初始化 Y 轴
+          const y = d3.scaleLinear()
+            .range([ height, 0 ]);
+
+          const yAxis = svg.append("g");
+
+          // 定义不同的颜色比例尺
+          const colorMRT = d3.scaleOrdinal()
+            .domain(MRT_subgroups)
+            .range(['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd']); // MRT颜色
+
+          const colorLRT = d3.scaleOrdinal()
+            .domain(LRT_subgroups)
+            .range(['#8c564b','#e377c2']); // LRT颜色
+
+          // 设置工具提示
+          const tooltip = d3.select("#Service_Delay")
+            .append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+          const mouseover = function(event, d) {
+            const subgroupName = d3.select(this.parentNode).datum().key;
+            const subgroupValue = d.data[subgroupName];
+            tooltip
+                .html("Line: " + subgroupName + "<br>" + "Delays: " + subgroupValue)
+                .style("opacity", 1);
+
+            // 鼠标悬停时，高亮当前条形柱，其他条形柱透明度降低
+            d3.selectAll(".bar")
+              .style("opacity", 0.3); // 降低所有柱子的透明度
+            d3.select(this)
+              .style("opacity", 1); // 高亮当前悬停的柱子
+          }
+
+          const mousemove = function(event) {
+            tooltip
+              .style("left", (event.pageX + 10) + "px")
+              .style("top", (event.pageY - 10) + "px");
+          }
+
+          const mouseleave = function() {
+            tooltip.style("opacity", 0);
+
+                        // 鼠标离开时，恢复所有柱子的透明度
+            d3.selectAll(".bar")
+              .style("opacity", 0.8); // 恢复默认的透明度
+          }
+
+          // 更新图表函数
+          function updateChart(selectedChart) {
+              let subgroups, maxDelay;
+              if (selectedChart === "MRT") {
+                  subgroups = MRT_subgroups;
+                  maxDelay = d3.max(data, d => d.MRT_TOTAL);
+                  color = colorMRT; // 使用 MRT 颜色组
+              } else {
+                  subgroups = LRT_subgroups;
+                  maxDelay = d3.max(data, d => d.LRT_TOTAL);
+                  color = colorLRT;
+              }
+
+              // 更新 Y 轴范围
+              y.domain([0, maxDelay]);
+              yAxis.transition().duration(1000)
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("d")));  // 使用整数刻度
+
+
+              // 堆叠数据
+              const stackedData = d3.stack()
+                .keys(subgroups)
+                (data);
+
+              // 绘制堆叠条形图
+              const bars = svg.selectAll("g.layer")
+                .data(stackedData, d => d.key);
+
+              const barsEnter = bars.enter().append("g")
+                .attr("class", "layer")
+                .attr("fill", d => color(d.key));
+
+              barsEnter.selectAll("rect")
+                .data(d => d)
+                .enter().append("rect")
+                  .attr("x", d => x(d.data.Year))
+                  .attr("y", d => y(d[1]))
+                  .attr("height", d => y(d[0]) - y(d[1]))
+                  .attr("width", x.bandwidth())
+                  .attr("stroke", "grey")
+                  .attr("class", "bar") // 为每个柱子添加 class 以便控制透明度
+                  .on("mouseover", mouseover)
+                  .on("mousemove", mousemove)
+                  .on("mouseleave", mouseleave);
+
+              barsEnter.merge(bars).selectAll("rect")
+                  .transition()
+                  .duration(1000)
+                  .attr("x", d => x(d.data.Year))
+                  .attr("y", d => y(d[1]))
+                  .attr("height", d => y(d[0]) - y(d[1]))
+                  .attr("width", x.bandwidth());
+
+              bars.exit().remove();
+          }
+
+          // 初始化为 MRT 图表
+          updateChart("MRT");
+
+          // 监听下拉菜单变化，切换 MRT 和 LRT 图表
+          d3.select("#LrtMrtSelect").on("change", function() {
+              const selectedChart = d3.select(this).property("value");
+              updateChart(selectedChart);
+          });
+        });
+    </script>
+</body>
+</html>

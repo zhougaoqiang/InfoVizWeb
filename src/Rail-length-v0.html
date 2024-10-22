@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3 Line Chart from CSV - Singapore Rail Data</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/railLength.css">
+</head>
+<body>
+    <h2>Singapore Rail System Evolution (1990-2023)</h2>
+    <svg id="chart" width="800" height="500"></svg>
+
+    <script>
+        // web reference: https://d3-graph-gallery.com/index.html
+        // web server start: python3 -m http.server
+
+        // 设置图表的宽度和高度
+        const svg = d3.select("#chart");
+        const margin = { top: 50, right: 50, bottom: 50, left: 70 };
+        const width = svg.attr("width") - margin.left - margin.right;
+        const height = svg.attr("height") - margin.top - margin.bottom;
+
+        const g = svg.append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // 加载 CSV 文件
+        d3.csv("data/Rail-length.csv").then(data => {
+            // 将数据中的 year 字段转换为数字
+            data.forEach(d => {
+                console.log(d); 
+                d.year = +d.year;
+                console.log("year => " + d.year);
+                d.Total_KM = +d.Total_KM;
+                console.log("total km => " + d.Total_KM);
+                d.MRT_KM = +d.MRT_KM;
+                console.log("MRT km => " + d.MRT_KM);
+                d.LRT_KM = +d.LRT_KM;
+                console.log("LRT km => " + d.LRT_KM);
+            });
+
+            // 定义比例尺
+            const x = d3.scaleLinear()
+                .domain(d3.extent(data, d => d.year))
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.Total_KM)]).nice()
+                .range([height, 0]);
+
+            // 定义坐标轴
+            g.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x).tickFormat(d3.format("d"))); // 按年份格式化为整数
+
+            g.append("g")
+                .call(d3.axisLeft(y));
+
+            // 定义折线生成器函数
+            const railLine = d3.line()
+                .x(d => x(d.year))
+                .y(d => y(d.Total_KM));
+
+            const mrtLine = d3.line()
+                .x(d => x(d.year))
+                .y(d => y(d.MRT_KM));
+
+            const lrtLine = d3.line()
+                .x(d => x(d.year))
+                .y(d => y(d.LRT_KM));
+
+            // 绘制每条线
+            g.append("path")
+                .datum(data)
+                .attr("class", "line rail")
+                .attr("d", railLine);
+
+            g.append("path")
+                .datum(data)
+                .attr("class", "line mrt")
+                .attr("d", mrtLine);
+
+            g.append("path")
+                .datum(data)
+                .attr("class", "line lrt")
+                .attr("d", lrtLine);
+
+            // 添加标签
+            svg.append("text")
+                .attr("x", width / 2 + margin.left)
+                .attr("y", height + margin.top + 40)
+                .attr("class", "axis-label")
+                .style("text-anchor", "middle")
+                .text("Year");
+
+            svg.append("text")
+                .attr("x", -height / 2)
+                .attr("y", margin.left / 3)
+                .attr("class", "axis-label")
+                .attr("transform", "rotate(-90)")
+                .style("text-anchor", "middle")
+                .text("Length (Kilometres)");
+        });
+    </script>
+</body>
+</html>
