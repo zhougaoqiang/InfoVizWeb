@@ -38,6 +38,14 @@ const margin = {
    left: 0
 };
 
+const colorMapping = {
+   "MRT": "#1f77b4", // 蓝色
+   "Bus": "#ff7f0e", // 橙色
+   "LRT": "#2ca02c", // 绿色
+   "P2P": "#d62728", // 红色
+   "default": "#9467bd" // 默认颜色，紫色
+};
+
 let barPadding = (height - (margin.bottom + margin.top)) / (top_n * 5); // 柱状图的间距
 
 // 设置图表标题
@@ -70,7 +78,7 @@ d3.csv('data/public-transport-ridership.csv').then(function(data) {
       d.Last_Ridership = +d.Last_Ridership; // 上一年的品牌价值
       d.Ridership = isNaN(d.Ridership) ? 0 : d.Ridership; // 检查是否为数值
       d.Year = +d.Year; // 年份
-      d.colour = d3.hsl(Math.random() * 360, 0.75, 0.75); // 随机颜色分配
+      // d.colour = d3.hsl(Math.random() * 360, 0.75, 0.75); // 随机颜色分配
 
       console.log("get ridership " + d.Ridership);
       console.log("get Last_Ridership " + d.Last_Ridership);
@@ -120,7 +128,8 @@ d3.csv('data/public-transport-ridership.csv').then(function(data) {
       .attr('width', d => x(d.Ridership) - x(0) - 1) // 设置矩形的宽度，基于品牌价值
       .attr('y', d => y(d.Rank) + 5) // 设置矩形Y轴的位置，基于排名
       .attr('height', y(1) - y(0) - barPadding) // 设置矩形的高度
-      .style('fill', d => d.colour); // 设置矩形的颜色
+      // .style('fill', d => d.colour); // 设置矩形的颜色
+      .style('fill', d => colorMapping[d.Type] || colorMapping["default"])
 
 //    svg.selectAll('text.label')
 //       .data(yearSlice, d => d.Type) // 绑定数据
@@ -203,7 +212,8 @@ d3.csv('data/public-transport-ridership.csv').then(function(data) {
          .attr('width', d => x(d.Ridership) - x(0) - 1)
          .attr('y', d => y(top_n + 1) + 5)
          .attr('height', y(1) - y(0) - barPadding)
-         .style('fill', d => d.colour)
+         // .style('fill', d => d.colour)
+         .style('fill', d => colorMapping[d.Type] || colorMapping["default"])
          .transition()
          .duration(tickDuration)
          .ease(d3.easeLinear) //用于控制动画速度的函数。
