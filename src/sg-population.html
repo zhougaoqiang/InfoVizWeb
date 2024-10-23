@@ -9,154 +9,152 @@
     stroke-width: 1.5px;
   }
 </style>
+
 <body>
   <div id="sg_population"></div>
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
 
-  // set the dimensions and margins of the graph
-  var margin = {top: 130, right: 180, bottom: 50, left: 80};  // Adjust margins to add more space
-  // var margin = {top: 130, right: 150, bottom: 130, left: 130},
-    var  width = 800 - margin.left - margin.right;
-    var  height = 460 - margin.top - margin.bottom;
+    // set the dimensions and margins of the graph
+    var population_margin = { top: 130, right: 180, bottom: 50, left: 80 };  // Adjust margins to add more space
+    // var margin = {top: 130, right: 150, bottom: 130, left: 130},
+    var population_width = 800 - population_margin.left - population_margin.right;
+    var population_height = 460 - population_margin.top - population_margin.bottom;
 
-  // append the svg object to the body of the page
-  var svg = d3.select("#sg_population")
-    .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    // append the svg object to the body of the page
+    var population_svg = d3.select("#sg_population")
+      .append("svg")
+      .attr("width", population_width + population_margin.left + population_margin.right)
+      .attr("height", population_height + population_margin.top + population_margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + population_margin.left + "," + population_margin.top + ")");
 
-  // Read the data
-  d3.csv('data/sg_population.csv').then(function(data) {
+    // Read the data
+    d3.csv('data/sg_population.csv').then(function (data) {
 
-    // Parse the data
-    var parseYear = d3.timeParse("%Y");
-    data.forEach(function(d) {
-      d.year = parseYear(d.year);
-      d.Population = +d.Population;
-    });
-    
-    // Add X axis --> use time scale now
-    var x = d3.scaleTime()
-      .domain(d3.extent(data, function(d) { return d.year; }))
-      .range([ 0, width ]);
-    svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x).ticks(10).tickFormat(d3.timeFormat("%Y"))) // Reduce number of ticks to 6 on X axis
-      .call(g => g.selectAll(".tick").filter(function(d) {
-      return d >= d3.max(data, d => d.year);  // Only filter the tick where the value equals the max year
-      }).remove());
+      // Parse the data
+      var parseYear = d3.timeParse("%Y");
 
-    // Add Y axis
-    var y = d3.scaleLinear()
-      // .domain([0, d3.max(data, function(d) { return +d.Population; })])
-      .domain([0, 7000000])
-      .range([ height, 0 ]);
-    svg.append("g")
-      .call(d3.axisLeft(y).ticks(7)) // Reduce number of ticks to 6 on Y axis
-      .call(g => g.selectAll(".tick").filter(function(d) {
-        return d >= d3.max(data, d => d.Population);  // Only filter the tick where the value equals the max population
-      }).remove());
-      
-    svg.append("defs").append("clipPath")
-    .attr("id", "clip")
-    .append("rect")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("x", 0)
-    .attr("y", 0);
+      data.forEach(function (d) {
+        d.year = parseYear(d.year);
+        d.Population = +d.Population;
+      });
+
+      // Add X axis --> use time scale now
+      var population_x = d3.scaleTime()
+        .domain(d3.extent(data, function (d) { return d.year; }))
+        .range([0, population_width]);
+
+      population_svg.append("g")
+        .attr("transform", "translate(0," + population_height + ")")
+        .call(d3.axisBottom(population_x).ticks(10).tickFormat(d3.timeFormat("%Y"))) // Reduce number of ticks to 6 on X axis
+        .call(g => g.selectAll(".tick").filter(function (d) {
+          return d >= d3.max(data, d => d.year);  // Only filter the tick where the value equals the max year
+        }).remove());
+
+      // Add Y axis
+      var population_y = d3.scaleLinear()
+        // .domain([0, d3.max(data, function(d) { return +d.Population; })])
+        .domain([0, 7000000])
+        .range([population_height, 0]);
+
+      population_svg.append("g")
+        .call(d3.axisLeft(population_y).ticks(7)) // Reduce number of ticks to 6 on Y axis
+        .call(g => g.selectAll(".tick").filter(function (d) {
+          return d >= d3.max(data, d => d.Population);  // Only filter the tick where the value equals the max population
+        }).remove());
+
+      population_svg.append("defs").append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("width", population_width)
+        .attr("height", population_height)
+        .attr("x", 0)
+        .attr("y", 0);
 
 
-    // Add the line
-    svg.append("path")
-      .datum(data)
-      .attr("class", "line")
-      .attr("d", d3.line()
-        .x(function(d) { return x(d.year) })
-        .y(function(d) { return y(d.Population) })
-      )
-      .attr("clip-path", "url(#clip)");  // Add the clip-path here
+      // Add the line
+      population_svg.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", d3.line()
+          .x(function (d) { return population_x(d.year) })
+          .y(function (d) { return population_y(d.Population) })
+        )
+        .attr("clip-path", "url(#clip)");  // Add the clip-path here
 
-    // Create the circle that travels along the curve of chart
-    var focus = svg
-      .append('g')
-      .append('circle')
+      // Create the circle that travels along the curve of chart
+      var population_focus = population_svg
+        .append('g')
+        .append('circle')
         .style("fill", "none")
         .attr("stroke", "black")
         .attr('r', 4)
         .style("opacity", 0);
 
-    // Create the text that travels along the curve of chart
-    var focusText = svg
-      .append('g')
-      .append('text')
+      // Create the text that travels along the curve of chart
+      var population_focusText = population_svg
+        .append('g')
+        .append('text')
         .style("opacity", 0)
         .attr("text-anchor", "left")
         .attr("alignment-baseline", "middle");
 
-    // Create a rect on top of the svg area: this rectangle captures mouse position
-    svg
-      .append('rect')
-      .style("fill", "none")
-      .style("pointer-events", "all")
-      .attr('width', width)
-      .attr('height', height)
-      .on('mouseover', mouseover)
-      .on('mousemove', mousemove)
-      .on('mouseout', mouseout);
+      // Create a rect on top of the svg area: this rectangle captures mouse position
+      population_svg
+        .append('rect')
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .attr('width', population_width)
+        .attr('height', population_height)
+        .on('mouseover', mouseover)
+        .on('mousemove', mousemove)
+        .on('mouseout', mouseout);
 
-    // What happens when the mouse moves -> show the annotations at the right positions.
-    function mouseover() {
-      focus.style("opacity", 1);
-      focusText.style("opacity", 1);
-    }
-
-    function mousemove(event) {
-      // Get mouse position and invert it to the X domain
-      var pointer = d3.pointer(event);
-      var x0 = x.invert(pointer[0]);
-
-    // 使用 d3.least() 找到与鼠标位置最接近的年份数据点
-    // d3.least() 返回满足最小条件的数组元素
-    var closestData = d3.least(data, function(d) {
-    // 计算每个数据点的年份 (d.year) 与鼠标对应年份 (x0) 的绝对差值
-    // Math.abs() 用于取绝对值，保证不论差值正负都能正确比较
-    return Math.abs(d.year - x0);
-    });
-
-
-      // Update the focus point and text
-      if (closestData) {
-        focus
-          .attr("cx", x(closestData.year))
-          .attr("cy", y(closestData.Population));
-        // focusText
-        //   .html("Year: " + d3.timeFormat("%Y")(closestData.year) + "<br>" + "Population: " + closestData.Population) //not work
-        //   .attr("x", x(closestData.year) + 15)
-        //   .attr("y", y(closestData.Population));
-
-        focusText
-        .html(null)  // Clear any previous content
-        .append("tspan")
-        .attr("x", x(closestData.year) + 15)  // X position for both lines
-        .attr("y", y(closestData.Population)-5)  // Y position for the first line
-        .text("Year: " + d3.timeFormat("%Y")(closestData.year))  // First line (Year)
-        .append("tspan")
-        .attr("x", x(closestData.year) + 15)  // Same X position
-        .attr("y", y(closestData.Population) + 15)  // Y position for the second line (20 pixels below the first line)
-        .text("Population: " + closestData.Population);  // Second line (Population)
+      // What happens when the mouse moves -> show the annotations at the right positions.
+      function mouseover() {
+        population_focus.style("opacity", 1);
+        population_focusText.style("opacity", 1);
       }
-    }
 
-    function mouseout() {
-      focus.style("opacity", 0);
-      focusText.style("opacity", 0);
-    }
+      function mousemove(event) {
+        // Get mouse position and invert it to the X domain
+        var pointer = d3.pointer(event);
+        var x0 = population_x.invert(pointer[0]);
 
-  });
+        // 使用 d3.least() 找到与鼠标位置最接近的年份数据点
+        // d3.least() 返回满足最小条件的数组元素
+        var closestData = d3.least(data, function (d) {
+          // 计算每个数据点的年份 (d.year) 与鼠标对应年份 (x0) 的绝对差值
+          // Math.abs() 用于取绝对值，保证不论差值正负都能正确比较
+          return Math.abs(d.year - x0);
+        });
 
+
+        // Update the focus point and text
+        if (closestData) {
+          population_focus
+            .attr("cx", population_x(closestData.year))
+            .attr("cy", population_y(closestData.Population));
+
+          population_focusText
+            .html(null)  // Clear any previous content
+            .append("tspan")
+            .attr("x", population_x(closestData.year) + 15)  // X position for both lines
+            .attr("y", population_y(closestData.Population) - 5)  // Y position for the first line
+            .text("Year: " + d3.timeFormat("%Y")(closestData.year))  // First line (Year)
+            .append("tspan")
+            .attr("x", population_x(closestData.year) + 15)  // Same X position
+            .attr("y", population_y(closestData.Population) + 15)  // Y position for the second line (20 pixels below the first line)
+            .text("Population: " + closestData.Population);  // Second line (Population)
+        }
+      }
+
+      function mouseout() {
+        population_focus.style("opacity", 0);
+        population_focusText.style("opacity", 0);
+      }
+    });
   </script>
 </body>

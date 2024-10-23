@@ -25,13 +25,13 @@
 
     <script>
         // 设置图表的宽度和高度
-        const svg = d3.select("#Rail_Length_Chart");
-        const margin = { top: 50, right: 50, bottom: 50, left: 70 };
-        const width = svg.attr("width") - margin.left - margin.right;
-        const height = svg.attr("height") - margin.top - margin.bottom;
+        const rail_length_svg = d3.select("#Rail_Length_Chart");
+        const rail_length_margin = { top: 50, right: 50, bottom: 50, left: 70 };
+        const rail_length_width = rail_length_svg.attr("width") - rail_length_margin.left - rail_length_margin.right;
+        const rail_length_height = rail_length_svg.attr("height") - rail_length_margin.top - rail_length_margin.bottom;
 
-        const g = svg.append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
+        const rail_length_g = rail_length_svg.append("g")
+            .attr("transform", `translate(${rail_length_margin.left},${rail_length_margin.top})`);
 
         // 加载 CSV 文件
         d3.csv("data/Rail-length.csv").then(data => {
@@ -44,47 +44,47 @@
             });
 
             // 定义比例尺
-            const x = d3.scaleLinear()
+            const rail_length_x = d3.scaleLinear()
                 .domain(d3.extent(data, d => d.year))
-                .range([0, width]);
+                .range([0, rail_length_width]);
 
-            const y = d3.scaleLinear()
+            const rail_length_y = d3.scaleLinear()
                 .domain([0, d3.max(data, d => d.Total_KM)]).nice()
-                .range([height, 0]);
+                .range([rail_length_height, 0]);
 
             // 定义坐标轴
-            g.append("g")
-                .attr("transform", `translate(0,${height})`)
-                .call(d3.axisBottom(x).tickFormat(d3.format("d"))); // 按年份格式化为整数
+            rail_length_g.append("g")
+                .attr("transform", `translate(0,${rail_length_height})`)
+                .call(d3.axisBottom(rail_length_x).tickFormat(d3.format("d"))); // 按年份格式化为整数
 
-            g.append("g")
-                .call(d3.axisLeft(y));
+            rail_length_g.append("g")
+                .call(d3.axisLeft(rail_length_y));
 
             // 定义折线生成器函数
-            const lineGenerator = d3.line()
-                .x(d => x(d.year))
-                .y(d => y(d.Total_KM)); // 默认显示总铁路长度
+            const rail_length_lineGenerator = d3.line()
+                .x(d => rail_length_x(d.year))
+                .y(d => rail_length_y(d.Total_KM)); // 默认显示总铁路长度
 
             // 初始化线条
-            let line = g.append("path")
+            let rail_length_line = rail_length_g.append("path")
                 .datum(data)
                 .attr("class", "line rail")
-                .attr("d", lineGenerator)
+                .attr("d", rail_length_lineGenerator)
                 .attr("stroke", "steelblue")
                 .style("stroke-width", 2)
                 .style("fill", "none");
 
             // 添加标签
-            svg.append("text")
-                .attr("x", width / 2 + margin.left)
-                .attr("y", height + margin.top + 40)
+            rail_length_svg.append("text")
+                .attr("x", rail_length_width / 2 + rail_length_margin.left)
+                .attr("y", rail_length_height + rail_length_margin.top + 40)
                 .attr("class", "axis-label")
                 .style("text-anchor", "middle")
                 .text("Year");
 
-            svg.append("text")
-                .attr("x", -height / 2)
-                .attr("y", margin.left / 3)
+            rail_length_svg.append("text")
+                .attr("x", -rail_length_height / 2)
+                .attr("y", rail_length_margin.left / 3)
                 .attr("class", "axis-label")
                 .attr("transform", "rotate(-90)")
                 .style("text-anchor", "middle")
@@ -93,23 +93,23 @@
             // 动态更新函数，用于更新选择的线条
             function update(selectedLine) {
                 // 更新 y 轴比例
-                y.domain([0, d3.max(data, d => d[selectedLine])]);
+                rail_length_y.domain([0, d3.max(data, d => d[selectedLine])]);
 
                 // 重新生成线条
-                lineGenerator.y(d => y(d[selectedLine]));
+                rail_length_lineGenerator.y(d => rail_length_y(d[selectedLine]));
 
                 // 应用过渡效果更新线条
-                line
+                rail_length_line
                     .datum(data)
                     .transition()  // 添加过渡
                     .duration(1000) // 设置过渡持续时间
-                    .attr("d", lineGenerator);
+                    .attr("d", rail_length_lineGenerator);
 
                 // 更新 y 轴
-                g.select(".y-axis")
+                rail_length_g.select(".y-axis")
                     .transition()
                     .duration(1000)
-                    .call(d3.axisLeft(y));
+                    .call(d3.axisLeft(rail_length_y));
             }
 
             // 绑定选择事件，控制线条的显示
