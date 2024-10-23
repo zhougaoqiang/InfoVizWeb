@@ -9,7 +9,7 @@ body {
     background-color: black;
 } */
 
-.mv_pop_tooltip {
+.tooltip {
     position: absolute;
     text-align: center;
     width: 120px;

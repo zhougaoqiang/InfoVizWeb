@@ -5,7 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D3 Stacked Barchart - MRT & LRT Delays</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .legend-text { /* 移除下划线 */
+            text-decoration: none;
+        }
+
+        /*for service delay only*/
+        #Service_Delay.bar {
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        #Service_Delay.bar:hover {
+            opacity: 1; /* 鼠标悬停时高亮 */
+        }
+    </style>
 </head>
 <body>
     <h2>Service Delays (>30 mins) - MRT and LRT (2020-2023)</h2>
@@ -69,38 +82,41 @@
             .domain(LRT_subgroups)
             .range(['#8c564b','#e377c2']); // LRT颜色
 
-          // 设置工具提示
-          const service_delay_tooltip = d3.select("#Service_Delay")
-            .append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0);
+          // 在 SVG 内创建 tooltip 作为文本元素
+          const tooltipGroup = service_delay_svg.append("g")
+            .style("display", "none");  // 初始时隐藏
 
+          const tooltipText = tooltipGroup.append('text')
+            .attr("class", "tooltip-text")
+            .attr("x", 10)
+            .attr("y", -10)
+            .attr("font-size", "12px")
+            .attr("fill", "black");
+
+          // 鼠标悬停事件处理程序
           const service_delay_mouseover = function(event, d) {
             const subgroupName = d3.select(this.parentNode).datum().key;
             const subgroupValue = d.data[subgroupName];
-            service_delay_tooltip
-                .html("Line: " + subgroupName + "<br>" + "Delays: " + subgroupValue)
-                .style("opacity", 1);
+            tooltipGroup.style("display", null);  // 显示 tooltip
+            tooltipText.text(`Line: ${subgroupName}, Delays: ${subgroupValue}`);
+
+            tooltipGroup.raise();
 
             // 鼠标悬停时，高亮当前条形柱，其他条形柱透明度降低
-            d3.selectAll(".bar")
-              .style("opacity", 0.3); // 降低所有柱子的透明度
-            d3.select(this)
-              .style("opacity", 1); // 高亮当前悬停的柱子
+            d3.selectAll(".bar").style("opacity", 0.3); // 降低所有柱子的透明度
+            d3.select(this).style("opacity", 1); // 高亮当前悬停的柱子
           }
 
+          // 鼠标移动事件处理程序
           const service_delay_mousemove = function(event) {
-            service_delay_tooltip
-              .style("left", (event.pageX + 10) + "px")
-              .style("top", (event.pageY - 10) + "px");
+            tooltipGroup
+            .attr("transform", `translate(${event.pageX - service_delay_margin.left}, ${event.pageY - 4 * service_delay_margin.top})`);
           }
 
+          // 鼠标离开事件处理程序
           const service_delay_mouseleave = function() {
-            service_delay_tooltip.style("opacity", 0);
-
-                        // 鼠标离开时，恢复所有柱子的透明度
-            d3.selectAll(".bar")
-              .style("opacity", 0.8); // 恢复默认的透明度
+            tooltipGroup.style("display", "none");  // 隐藏 tooltip
+            d3.selectAll(".bar").style("opacity", 0.8); // 恢复默认的透明度
           }
 
           // 更新图表函数
