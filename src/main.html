@@ -1235,7 +1235,6 @@
                                 <div class="swiper-slide">
                                     <!-- <img src="assets/img/img_h_4.jpg" alt="Image" class="img-fluid"> -->
                                     <div id="mv_population"></div>
-
                                     <script>
                                         // 设置图表的宽度和高度
                                         const mv_pop_margin = { top: 60, right: 230, bottom: 50, left: 50 },
@@ -1249,11 +1248,7 @@
                                             .append("g")
                                             .attr("transform", `translate(${mv_pop_margin.left},${mv_pop_margin.top})`);
 
-                                        // 设置工具提示
-                                        const mv_pop_tooltip = d3.select("#mv_population")
-                                            .append("div")
-                                            .attr("class", "mv_pop_tooltip")
-                                            .style("opacity", 0);
+
 
                                         // 读取 CSV 数据
                                         d3.csv("data/public_motor_vehicle_population.csv").then(function (data) {
@@ -1290,7 +1285,7 @@
 
                                             const mv_pop_xAxis = mv_pop_svg.append("g")
                                                 .attr("transform", `translate(0, ${mv_pop_height})`)
-                                                .call(d3.axisBottom(mv_pop_x).ticks(10));
+                                                .call(d3.axisBottom(mv_pop_x).ticks(5));
 
                                             // Y轴：车辆数量
                                             const mv_pop_y = d3.scaleLinear()
@@ -1298,13 +1293,88 @@
                                                 .range([mv_pop_height, 0]);
 
                                             mv_pop_svg.append("g")
-                                                .call(d3.axisLeft(mv_pop_y));
+                                                .call(d3.axisLeft(mv_pop_y).ticks(5));
 
                                             // 定义面积生成器
                                             const mv_pop_area = d3.area()
                                                 .x(function (d) { return mv_pop_x(d.data.year); })
                                                 .y0(function (d) { return mv_pop_y(d[0]); })
                                                 .y1(function (d) { return mv_pop_y(d[1]); });
+
+                                            // 设置SVG工具提示，包含背景矩形和文本
+                                            const tooltipGroup = mv_pop_svg.append("g")
+                                                .style("display", "none") // 初始时隐藏
+                                                .style("pointer-events", "none");
+
+                                            const tooltipRect = tooltipGroup.append("rect")
+                                                .attr("class", "tooltip-rect")
+                                                .attr("width", 180)
+                                                .attr("height", 80)
+                                                .attr("rx", 10) // 设置圆角
+                                                .attr("ry", 10)
+                                                .attr("fill", "lightsteelblue") // 背景色
+                                                .attr("stroke", "lightsteelblue") // 边框颜色
+                                                .attr("stroke-width", 1)
+                                                .attr("opacity", 0.8); // 设置透明度
+
+                                            const tooltipText = tooltipGroup.append("text")
+                                                .attr("class", "tooltip-text")
+                                                .attr("x", 10)
+                                                .attr("y", 20)
+                                                .attr("font-size", "12px")
+                                                .attr("fill", "black")
+                                                .attr("font-family", "Arial");
+
+
+                                            // 鼠标悬停事件处理程序
+                                            const service_delay_mouseover = function (event, d) {
+                                                tooltipGroup.style("display", null);  // 显示 tooltip
+
+                                                // 更新工具提示的位置并确保在最前面
+                                                tooltipGroup.raise();
+                                            };
+
+                                            // 鼠标移动事件处理程序
+                                            const service_delay_mousemove = function (event, d) {
+                                                const mv_pop_year = mv_pop_x.invert(d3.pointer(event, this)[0]);  // 获取年份
+                                                const mv_pop_index = data.findIndex(dt => dt.year.getFullYear() === Math.round(mv_pop_year.getFullYear()));
+                                                const mv_pop_tooltipData = data[mv_pop_index];
+
+                                                // 设置工具提示文本内容
+                                                tooltipText.text(`Year: ${mv_pop_tooltipData.year.getFullYear()}`)
+                                                    .selectAll("tspan").remove();  // 移除之前的 tspan 元素以确保更新内容
+                                                tooltipText.append("tspan")
+                                                    .attr("x", 10)
+                                                    .attr("dy", "1.2em")
+                                                    .text(`Buses: ${mv_pop_tooltipData.Buses}`);
+                                                tooltipText.append("tspan")
+                                                    .attr("x", 10)
+                                                    .attr("dy", "1.2em")
+                                                    .text(`Taxis: ${mv_pop_tooltipData.Taxis}`);
+                                                tooltipText.append("tspan")
+                                                    .attr("x", 10)
+                                                    .attr("dy", "1.2em")
+                                                    .text(`Private Hire Cars: ${mv_pop_tooltipData.Private_Hire_Cars}`);
+
+
+                                                // console.log("x=", event.pageX);
+                                                // console.log("y=", event.pageY);
+                                                const mv_svgPosition = mv_pop_svg.node().getBoundingClientRect();
+                                                const mv_absoluteX = mv_svgPosition.left + window.pageXOffset;
+                                                const mv_absoluteY = mv_svgPosition.top + window.pageYOffset;
+
+                                                console.log("new x=", event.pageX - mv_absoluteX);
+                                                console.log("new y=", event.pageY - mv_absoluteY);
+                                                tooltipGroup
+                                                    .attr("transform", `translate(${event.pageX - mv_absoluteX - 70}, ${event.pageY - mv_absoluteY-30})`);
+                                                tooltipGroup.raise();
+                                            };
+
+                                            // 鼠标离开事件处理程序
+                                            const service_delay_mouseleave = function () {
+                                                console.log("mouse leave");
+                                                tooltipGroup.style("display", "none");  // 隐藏工具提示
+                                            };
 
                                             // 显示堆叠区域
                                             mv_pop_svg.selectAll("mylayers")
@@ -1313,29 +1383,13 @@
                                                 .append("path")
                                                 .attr("class", function (d) { return "myArea " + d.key })
                                                 .style("fill", function (d) { return mv_pop_color(d.key); })
-                                                .attr("d", mv_pop_area)
-                                                // 添加鼠标事件，用于显示工具提示
-                                                .on("mouseover", function (event, d) {
-                                                    mv_pop_tooltip.transition().duration(200).style("opacity", .9);
-                                                })
-                                                .on("mousemove", function (event, d) {
-                                                    const mv_pop_year = mv_pop_x.invert(d3.pointer(event, this)[0]);  // 获取年份
-                                                    const mv_pop_index = data.findIndex(dt => dt.year.getFullYear() === Math.round(mv_pop_year.getFullYear()));
-                                                    const mv_pop_tooltipData = data[mv_pop_index];
+                                                .attr("d", mv_pop_area);
 
-                                                    // 显示工具提示的内容
-                                                    mv_pop_tooltip.html(
-                                                        `Year: ${mv_pop_tooltipData.year.getFullYear()}<br>` +
-                                                        `Buses: ${mv_pop_tooltipData.Buses}<br>` +
-                                                        `Taxis: ${mv_pop_tooltipData.Taxis}<br>` +
-                                                        `Private Hire Cars: ${mv_pop_tooltipData.Private_Hire_Cars}`
-                                                    )
-                                                        .style("left", (event.pageX + 10) + "px")
-                                                        .style("top", (event.pageY - 28) + "px");
-                                                })
-                                                .on("mouseout", function () {
-                                                    mv_pop_tooltip.transition().duration(500).style("opacity", 0);
-                                                });
+                                            // 添加鼠标事件，用于显示SVG工具提示
+                                            mv_pop_svg.selectAll("path")
+                                                .on("mouseover", service_delay_mouseover)
+                                                .on("mousemove", service_delay_mousemove)
+                                                .on("mouseout", service_delay_mouseleave);
 
                                             // 添加 X 轴标签
                                             mv_pop_svg.append("text")
@@ -1375,7 +1429,6 @@
                                                 .text(function (d) { return d.replace(/_/g, ' ') })  // 移除下划线
                                                 .attr("text-anchor", "left")
                                                 .style("alignment-baseline", "middle");
-
                                         });
 
                                     </script>
@@ -1480,38 +1533,65 @@
                                                 .domain(LRT_subgroups)
                                                 .range(['#8c564b', '#e377c2']); // LRT颜色
 
-                                            // 设置工具提示
-                                            const service_delay_tooltip = d3.select("#Service_Delay")
-                                                .append("div")
-                                                .attr("class", "tooltip")
-                                                .style("opacity", 0);
+                                            // 在 SVG 内创建 tooltip 作为文本元素
+                                            const tooltipGroup = service_delay_svg.append("g")
+                                                .style("display", "none");  // 初始时隐藏
 
+                                            const tooltipRect = tooltipGroup.append('rect')
+                                                .attr("class", "tooltip-rect")
+                                                .attr("width", 80)
+                                                .attr("height", 45)
+                                                .attr("rx", 10) // 设置圆角
+                                                .attr("ry", 10)
+                                                .attr("fill", "lightsteelblue") // 背景色
+                                                .attr("stroke", "lightsteelblue") // 边框颜色
+                                                .attr("stroke-width", 1)
+                                                .attr("opacity", 0.9); // 设置透明度
+
+                                            const tooltipText = tooltipGroup.append('text')
+                                                .attr("class", "tooltip-text")
+                                                .attr("x", 10)
+                                                .attr("y", 20)
+                                                .attr("font-size", "12px")
+                                                .attr("fill", "black")
+                                                .attr("font-family", "Arial");
+                                            // .attr("font-weight", "bold");
+
+                                            // 鼠标悬停事件处理程序
                                             const service_delay_mouseover = function (event, d) {
                                                 const subgroupName = d3.select(this.parentNode).datum().key;
                                                 const subgroupValue = d.data[subgroupName];
-                                                service_delay_tooltip
-                                                    .html("Line: " + subgroupName + "<br>" + "Delays: " + subgroupValue)
-                                                    .style("opacity", 1);
+                                                tooltipGroup.style("display", null);  // 显示 tooltip
+
+                                                tooltipText.text(`Line: ${subgroupName}`)
+                                                    .append("tspan")
+                                                    .attr("x", 10)
+                                                    .attr("dy", "1.2em")
+                                                    .text(`Delays: ${subgroupValue}`);
+
+                                                tooltipGroup.raise();
 
                                                 // 鼠标悬停时，高亮当前条形柱，其他条形柱透明度降低
-                                                d3.selectAll(".bar")
-                                                    .style("opacity", 0.3); // 降低所有柱子的透明度
-                                                d3.select(this)
-                                                    .style("opacity", 1); // 高亮当前悬停的柱子
+                                                d3.selectAll(".bar").style("opacity", 0.3); // 降低所有柱子的透明度
+                                                d3.select(this).style("opacity", 1); // 高亮当前悬停的柱子
                                             }
 
+                                            // 鼠标移动事件处理程序
                                             const service_delay_mousemove = function (event) {
-                                                service_delay_tooltip
-                                                    .style("left", (event.pageX + 10) + "px")
-                                                    .style("top", (event.pageY - 10) + "px");
+                                                const svgPosition = service_delay_svg.node().getBoundingClientRect();
+                                                const absoluteX = svgPosition.left + window.pageXOffset;
+                                                const absoluteY = svgPosition.top + window.pageYOffset;
+
+                                                console.log("new x=", event.pageX - absoluteX);
+                                                console.log("new y=", event.pageY - absoluteY);
+                                                tooltipGroup
+                                                    .attr("transform", `translate(${event.pageX - absoluteX}, ${event.pageY - absoluteY})`);
                                             }
 
+                                            // 鼠标离开事件处理程序
                                             const service_delay_mouseleave = function () {
-                                                service_delay_tooltip.style("opacity", 0);
-
-                                                // 鼠标离开时，恢复所有柱子的透明度
-                                                d3.selectAll(".bar")
-                                                    .style("opacity", 0.8); // 恢复默认的透明度
+                                                tooltipGroup.style("display", "none");  // 隐藏 tooltip
+                                                d3.selectAll(".bar").style("opacity", 0.8); // 恢复默认的透明度
                                             }
 
                                             // 更新图表函数

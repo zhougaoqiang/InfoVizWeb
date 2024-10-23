@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>D3 Stacked Area Chart - Motor Vehicle Population</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  <link rel="stylesheet" href="css/common.css">
+  <!-- <link rel="stylesheet" href="css/common.css"> -->
 </head>
 
 <body>
@@ -27,11 +27,7 @@
       .append("g")
       .attr("transform", `translate(${mv_pop_margin.left},${mv_pop_margin.top})`);
 
-    // 设置工具提示
-    const mv_pop_tooltip = d3.select("#mv_population")
-      .append("div")
-      .attr("class", "tooltip")
-      .style("opacity", 0);
+
 
     // 读取 CSV 数据
     d3.csv("data/public_motor_vehicle_population.csv").then(function (data) {
@@ -68,7 +64,7 @@
 
       const mv_pop_xAxis = mv_pop_svg.append("g")
         .attr("transform", `translate(0, ${mv_pop_height})`)
-        .call(d3.axisBottom(mv_pop_x).ticks(10));
+        .call(d3.axisBottom(mv_pop_x).ticks(5));
 
       // Y轴：车辆数量
       const mv_pop_y = d3.scaleLinear()
@@ -76,13 +72,77 @@
         .range([mv_pop_height, 0]);
 
       mv_pop_svg.append("g")
-        .call(d3.axisLeft(mv_pop_y));
+        .call(d3.axisLeft(mv_pop_y).ticks(5));
 
       // 定义面积生成器
       const mv_pop_area = d3.area()
         .x(function (d) { return mv_pop_x(d.data.year); })
         .y0(function (d) { return mv_pop_y(d[0]); })
         .y1(function (d) { return mv_pop_y(d[1]); });
+
+      // 设置SVG工具提示，包含背景矩形和文本
+      const tooltipGroup = mv_pop_svg.append("g")
+        .style("display", "none") // 初始时隐藏
+        .style("pointer-events", "none");
+
+      const tooltipRect = tooltipGroup.append("rect")
+        .attr("class", "tooltip-rect")
+        .attr("width", 180)
+        .attr("height", 80)
+        .attr("rx", 10) // 设置圆角
+        .attr("ry", 10)
+        .attr("fill", "lightsteelblue") // 背景色
+        .attr("stroke", "lightsteelblue") // 边框颜色
+        .attr("stroke-width", 1)
+        .attr("opacity", 0.8); // 设置透明度
+
+      const tooltipText = tooltipGroup.append("text")
+        .attr("class", "tooltip-text")
+        .attr("x", 10)
+        .attr("y", 20)
+        .attr("font-size", "12px")
+        .attr("fill", "black")
+        .attr("font-family", "Arial");
+
+
+      // 鼠标悬停事件处理程序
+      const service_delay_mouseover = function (event, d) {
+        tooltipGroup.style("display", null);  // 显示 tooltip
+
+        // 更新工具提示的位置并确保在最前面
+        tooltipGroup.raise();
+      };
+
+      // 鼠标移动事件处理程序
+      const service_delay_mousemove = function (event, d) {
+        const mv_pop_year = mv_pop_x.invert(d3.pointer(event, this)[0]);  // 获取年份
+        const mv_pop_index = data.findIndex(dt => dt.year.getFullYear() === Math.round(mv_pop_year.getFullYear()));
+        const mv_pop_tooltipData = data[mv_pop_index];
+
+        // 设置工具提示文本内容
+        tooltipText.text(`Year: ${mv_pop_tooltipData.year.getFullYear()}`)
+          .selectAll("tspan").remove();  // 移除之前的 tspan 元素以确保更新内容
+        tooltipText.append("tspan")
+          .attr("x", 10)
+          .attr("dy", "1.2em")
+          .text(`Buses: ${mv_pop_tooltipData.Buses}`);
+        tooltipText.append("tspan")
+          .attr("x", 10)
+          .attr("dy", "1.2em")
+          .text(`Taxis: ${mv_pop_tooltipData.Taxis}`);
+        tooltipText.append("tspan")
+          .attr("x", 10)
+          .attr("dy", "1.2em")
+          .text(`Private Hire Cars: ${mv_pop_tooltipData.Private_Hire_Cars}`);
+        tooltipGroup.attr("transform", `translate(${event.pageX - mv_pop_margin.left - 90}, ${event.pageY - mv_pop_margin.top - 90})`);
+        tooltipGroup.raise();
+      };
+
+      // 鼠标离开事件处理程序
+      const service_delay_mouseleave = function () {
+        console.log("mouse leave");
+        tooltipGroup.style("display", "none");  // 隐藏工具提示
+      };
 
       // 显示堆叠区域
       mv_pop_svg.selectAll("mylayers")
@@ -91,29 +151,13 @@
         .append("path")
         .attr("class", function (d) { return "myArea " + d.key })
         .style("fill", function (d) { return mv_pop_color(d.key); })
-        .attr("d", mv_pop_area)
-        // 添加鼠标事件，用于显示工具提示
-        .on("mouseover", function (event, d) {
-          mv_pop_tooltip.transition().duration(200).style("opacity", .9);
-        })
-        .on("mousemove", function (event, d) {
-          const mv_pop_year = mv_pop_x.invert(d3.pointer(event, this)[0]);  // 获取年份
-          const mv_pop_index = data.findIndex(dt => dt.year.getFullYear() === Math.round(mv_pop_year.getFullYear()));
-          const mv_pop_tooltipData = data[mv_pop_index];
+        .attr("d", mv_pop_area);
 
-          // 显示工具提示的内容
-          mv_pop_tooltip.html(
-            `Year: ${mv_pop_tooltipData.year.getFullYear()}<br>` +
-            `Buses: ${mv_pop_tooltipData.Buses}<br>` +
-            `Taxis: ${mv_pop_tooltipData.Taxis}<br>` +
-            `Private Hire Cars: ${mv_pop_tooltipData.Private_Hire_Cars}`
-          )
-            .style("left", (event.pageX + 10) + "px")
-            .style("top", (event.pageY - 28) + "px");
-        })
-        .on("mouseout", function () {
-          mv_pop_tooltip.transition().duration(500).style("opacity", 0);
-        });
+      // 添加鼠标事件，用于显示SVG工具提示
+      mv_pop_svg.selectAll("path")
+        .on("mouseover", service_delay_mouseover)
+        .on("mousemove", service_delay_mousemove)
+        .on("mouseout", service_delay_mouseleave);
 
       // 添加 X 轴标签
       mv_pop_svg.append("text")
@@ -153,7 +197,6 @@
         .text(function (d) { return d.replace(/_/g, ' ') })  // 移除下划线
         .attr("text-anchor", "left")
         .style("alignment-baseline", "middle");
-
     });
 
   </script>

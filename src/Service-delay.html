@@ -1,189 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D3 Stacked Barchart - MRT & LRT Delays</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-        .legend-text { /* 移除下划线 */
-            text-decoration: none;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D3 Stacked Barchart - MRT & LRT Delays</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    .legend-text {
+      /* 移除下划线 */
+      text-decoration: none;
+    }
 
-        /*for service delay only*/
-        #Service_Delay.bar {
-            opacity: 0.8;
-            transition: opacity 0.3s;
-        }
-        #Service_Delay.bar:hover {
-            opacity: 1; /* 鼠标悬停时高亮 */
-        }
-    </style>
+    /*for service delay only*/
+    #Service_Delay.bar {
+      opacity: 0.8;
+      transition: opacity 0.3s;
+    }
+
+    #Service_Delay.bar:hover {
+      opacity: 1;
+      /* 鼠标悬停时高亮 */
+    }
+  </style>
 </head>
+
 <body>
-    <h2>Service Delays (>30 mins) - MRT and LRT (2020-2023)</h2>
+  <h2>Service Delays (>30 mins) - MRT and LRT (2020-2023)</h2>
 
-    <!-- Single-selection button for toggling the barcharts -->
-    <div>
-        <label for="LrtMrtSelect">Select Chart to Display:</label>
-        <select id="LrtMrtSelect">
-            <option value="MRT">MRT Delays</option>
-            <option value="LRT">LRT Delays</option>
-        </select>
-    </div>
+  <!-- Single-selection button for toggling the barcharts -->
+  <div>
+    <label for="LrtMrtSelect">Select Chart to Display:</label>
+    <select id="LrtMrtSelect">
+      <option value="MRT">MRT Delays</option>
+      <option value="LRT">LRT Delays</option>
+    </select>
+  </div>
 
-    <div id="Service_Delay"></div>
+  <div id="Service_Delay"></div>
 
-    <script>
-        // 设置图表的宽度和高度
-        const service_delay_margin = {top: 20, right: 30, bottom: 40, left: 50},
-              service_delay_width = 800 - service_delay_margin.left - service_delay_margin.right,
-              service_delay_height = 400 - service_delay_margin.top - service_delay_margin.bottom;
+  <script>
+    // 设置图表的宽度和高度
+    const service_delay_margin = { top: 20, right: 30, bottom: 40, left: 50 },
+      service_delay_width = 800 - service_delay_margin.left - service_delay_margin.right,
+      service_delay_height = 400 - service_delay_margin.top - service_delay_margin.bottom;
 
-        const service_delay_svg = d3.select("#Service_Delay")
-          .append("svg")
-            .attr("width", service_delay_width + service_delay_margin.left + service_delay_margin.right)
-            .attr("height", service_delay_height + service_delay_margin.top + service_delay_margin.bottom)
-          .append("g")
-            .attr("transform",`translate(${service_delay_margin.left},${service_delay_margin.top})`);
+    const service_delay_svg = d3.select("#Service_Delay")
+      .append("svg")
+      .attr("width", service_delay_width + service_delay_margin.left + service_delay_margin.right)
+      .attr("height", service_delay_height + service_delay_margin.top + service_delay_margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${service_delay_margin.left},${service_delay_margin.top})`);
 
-        // 读取 CSV 数据
-        d3.csv("data/No_of_Service_Delays.csv").then( function(data) {
+    // 读取 CSV 数据
+    d3.csv("data/No_of_Service_Delays.csv").then(function (data) {
 
-          // MRT 和 LRT 的子组
-          const MRT_subgroups = ["NSL", "EWL", "NEL", "CCL", "DTL"];
-          const LRT_subgroups = ["BPLRT", "SPLRT"];
+      // MRT 和 LRT 的子组
+      const MRT_subgroups = ["NSL", "EWL", "NEL", "CCL", "DTL"];
+      const LRT_subgroups = ["BPLRT", "SPLRT"];
 
-          // X轴的年份组
-          const service_delay_groups = data.map(d => d.Year);
+      // X轴的年份组
+      const service_delay_groups = data.map(d => d.Year);
 
-          // 初始化 X 轴
-          const service_delay_x = d3.scaleBand()
-              .domain(service_delay_groups)
-              .range([0, service_delay_width])
-              .padding([0.2]);
+      // 初始化 X 轴
+      const service_delay_x = d3.scaleBand()
+        .domain(service_delay_groups)
+        .range([0, service_delay_width])
+        .padding([0.2]);
 
-          service_delay_svg.append("g")
-            .attr("transform", `translate(0, ${service_delay_height})`)
-            .call(d3.axisBottom(service_delay_x).tickSizeOuter(0));
+      service_delay_svg.append("g")
+        .attr("transform", `translate(0, ${service_delay_height})`)
+        .call(d3.axisBottom(service_delay_x).tickSizeOuter(0));
 
-          // 初始化 Y 轴
-          const service_delay_y = d3.scaleLinear()
-            .range([ service_delay_height, 0 ]);
+      // 初始化 Y 轴
+      const service_delay_y = d3.scaleLinear()
+        .range([service_delay_height, 0]);
 
-          const service_delay_yAxis = service_delay_svg.append("g");
+      const service_delay_yAxis = service_delay_svg.append("g");
 
-          // 定义不同的颜色比例尺
-          const colorMRT = d3.scaleOrdinal()
-            .domain(MRT_subgroups)
-            .range(['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd']); // MRT颜色
+      // 定义不同的颜色比例尺
+      const colorMRT = d3.scaleOrdinal()
+        .domain(MRT_subgroups)
+        .range(['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']); // MRT颜色
 
-          const colorLRT = d3.scaleOrdinal()
-            .domain(LRT_subgroups)
-            .range(['#8c564b','#e377c2']); // LRT颜色
+      const colorLRT = d3.scaleOrdinal()
+        .domain(LRT_subgroups)
+        .range(['#8c564b', '#e377c2']); // LRT颜色
 
-          // 在 SVG 内创建 tooltip 作为文本元素
-          const tooltipGroup = service_delay_svg.append("g")
-            .style("display", "none");  // 初始时隐藏
+      // 在 SVG 内创建 tooltip 作为文本元素
+      const tooltipGroup = service_delay_svg.append("g")
+        .style("display", "none");  // 初始时隐藏
 
-          const tooltipText = tooltipGroup.append('text')
-            .attr("class", "tooltip-text")
-            .attr("x", 10)
-            .attr("y", -10)
-            .attr("font-size", "12px")
-            .attr("fill", "black");
+      const tooltipRect = tooltipGroup.append('rect')
+        .attr("class", "tooltip-rect")
+        .attr("width", 80)
+        .attr("height", 45)
+        .attr("rx", 10) // 设置圆角
+        .attr("ry", 10)
+        .attr("fill", "lightsteelblue") // 背景色
+        .attr("stroke", "lightsteelblue") // 边框颜色
+        .attr("stroke-width", 1)
+        .attr("opacity", 0.9); // 设置透明度
 
-          // 鼠标悬停事件处理程序
-          const service_delay_mouseover = function(event, d) {
-            const subgroupName = d3.select(this.parentNode).datum().key;
-            const subgroupValue = d.data[subgroupName];
-            tooltipGroup.style("display", null);  // 显示 tooltip
-            tooltipText.text(`Line: ${subgroupName}, Delays: ${subgroupValue}`);
+      const tooltipText = tooltipGroup.append('text')
+        .attr("class", "tooltip-text")
+        .attr("x", 10)
+        .attr("y", 20)
+        .attr("font-size", "12px")
+        .attr("fill", "black")
+        .attr("font-family", "Arial");
+      // .attr("font-weight", "bold");
 
-            tooltipGroup.raise();
+      // 鼠标悬停事件处理程序
+      const service_delay_mouseover = function (event, d) {
+        const subgroupName = d3.select(this.parentNode).datum().key;
+        const subgroupValue = d.data[subgroupName];
+        tooltipGroup.style("display", null);  // 显示 tooltip
 
-            // 鼠标悬停时，高亮当前条形柱，其他条形柱透明度降低
-            d3.selectAll(".bar").style("opacity", 0.3); // 降低所有柱子的透明度
-            d3.select(this).style("opacity", 1); // 高亮当前悬停的柱子
-          }
+        tooltipText.text(`Line: ${subgroupName}`)
+          .append("tspan")
+          .attr("x", 10)
+          .attr("dy", "1.2em")
+          .text(`Delays: ${subgroupValue}`);
 
-          // 鼠标移动事件处理程序
-          const service_delay_mousemove = function(event) {
-            tooltipGroup
-            .attr("transform", `translate(${event.pageX - service_delay_margin.left}, ${event.pageY - 4 * service_delay_margin.top})`);
-          }
+        tooltipGroup.raise();
 
-          // 鼠标离开事件处理程序
-          const service_delay_mouseleave = function() {
-            tooltipGroup.style("display", "none");  // 隐藏 tooltip
-            d3.selectAll(".bar").style("opacity", 0.8); // 恢复默认的透明度
-          }
+        // 鼠标悬停时，高亮当前条形柱，其他条形柱透明度降低
+        d3.selectAll(".bar").style("opacity", 0.3); // 降低所有柱子的透明度
+        d3.select(this).style("opacity", 1); // 高亮当前悬停的柱子
+      }
 
-          // 更新图表函数
-          function updateChart(selectedChart) {
-              let subgroups, maxDelay;
-              if (selectedChart === "MRT") {
-                  subgroups = MRT_subgroups;
-                  maxDelay = d3.max(data, d => d.MRT_TOTAL);
-                  color = colorMRT; // 使用 MRT 颜色组
-              } else {
-                  subgroups = LRT_subgroups;
-                  maxDelay = d3.max(data, d => d.LRT_TOTAL);
-                  color = colorLRT;
-              }
+      // 鼠标移动事件处理程序
+      const service_delay_mousemove = function (event) {
+        tooltipGroup
+          .attr("transform", `translate(${event.pageX - 2* service_delay_margin.left}, ${event.pageY - 5 * service_delay_margin.top})`);
+      }
 
-              // 更新 Y 轴范围
-              service_delay_y.domain([0, maxDelay]);
-              service_delay_yAxis.transition().duration(1000)
-                .call(d3.axisLeft(service_delay_y).ticks(5).tickFormat(d3.format("d")));  // 使用整数刻度
+      // 鼠标离开事件处理程序
+      const service_delay_mouseleave = function () {
+        tooltipGroup.style("display", "none");  // 隐藏 tooltip
+        d3.selectAll(".bar").style("opacity", 0.8); // 恢复默认的透明度
+      }
+
+      // 更新图表函数
+      function updateChart(selectedChart) {
+        let subgroups, maxDelay;
+        if (selectedChart === "MRT") {
+          subgroups = MRT_subgroups;
+          maxDelay = d3.max(data, d => d.MRT_TOTAL);
+          color = colorMRT; // 使用 MRT 颜色组
+        } else {
+          subgroups = LRT_subgroups;
+          maxDelay = d3.max(data, d => d.LRT_TOTAL);
+          color = colorLRT;
+        }
+
+        // 更新 Y 轴范围
+        service_delay_y.domain([0, maxDelay]);
+        service_delay_yAxis.transition().duration(1000)
+          .call(d3.axisLeft(service_delay_y).ticks(5).tickFormat(d3.format("d")));  // 使用整数刻度
 
 
-              // 堆叠数据
-              const service_delay_stackedData = d3.stack()
-                .keys(subgroups)
-                (data);
+        // 堆叠数据
+        const service_delay_stackedData = d3.stack()
+          .keys(subgroups)
+          (data);
 
-              // 绘制堆叠条形图
-              const service_delay_bars = service_delay_svg.selectAll("g.layer")
-                .data(service_delay_stackedData, d => d.key);
+        // 绘制堆叠条形图
+        const service_delay_bars = service_delay_svg.selectAll("g.layer")
+          .data(service_delay_stackedData, d => d.key);
 
-              const service_delay_barsEnter = service_delay_bars.enter().append("g")
-                .attr("class", "layer")
-                .attr("fill", d => color(d.key));
+        const service_delay_barsEnter = service_delay_bars.enter().append("g")
+          .attr("class", "layer")
+          .attr("fill", d => color(d.key));
 
-              service_delay_barsEnter.selectAll("rect")
-                .data(d => d)
-                .enter().append("rect")
-                  .attr("x", d => service_delay_x(d.data.Year))
-                  .attr("y", d => service_delay_y(d[1]))
-                  .attr("height", d => service_delay_y(d[0]) - service_delay_y(d[1]))
-                  .attr("width", service_delay_x.bandwidth())
-                  .attr("stroke", "grey")
-                  .attr("class", "bar") // 为每个柱子添加 class 以便控制透明度
-                  .on("mouseover", service_delay_mouseover)
-                  .on("mousemove", service_delay_mousemove)
-                  .on("mouseleave", service_delay_mouseleave);
+        service_delay_barsEnter.selectAll("rect")
+          .data(d => d)
+          .enter().append("rect")
+          .attr("x", d => service_delay_x(d.data.Year))
+          .attr("y", d => service_delay_y(d[1]))
+          .attr("height", d => service_delay_y(d[0]) - service_delay_y(d[1]))
+          .attr("width", service_delay_x.bandwidth())
+          .attr("stroke", "grey")
+          .attr("class", "bar") // 为每个柱子添加 class 以便控制透明度
+          .on("mouseover", service_delay_mouseover)
+          .on("mousemove", service_delay_mousemove)
+          .on("mouseleave", service_delay_mouseleave);
 
-              service_delay_barsEnter.merge(service_delay_bars).selectAll("rect")
-                  .transition()
-                  .duration(1000)
-                  .attr("x", d => service_delay_x(d.data.Year))
-                  .attr("y", d => service_delay_y(d[1]))
-                  .attr("height", d => service_delay_y(d[0]) - service_delay_y(d[1]))
-                  .attr("width", service_delay_x.bandwidth());
+        service_delay_barsEnter.merge(service_delay_bars).selectAll("rect")
+          .transition()
+          .duration(1000)
+          .attr("x", d => service_delay_x(d.data.Year))
+          .attr("y", d => service_delay_y(d[1]))
+          .attr("height", d => service_delay_y(d[0]) - service_delay_y(d[1]))
+          .attr("width", service_delay_x.bandwidth());
 
-              service_delay_bars.exit().remove();
-          }
+        service_delay_bars.exit().remove();
+      }
 
-          // 初始化为 MRT 图表
-          updateChart("MRT");
+      // 初始化为 MRT 图表
+      updateChart("MRT");
 
-          // 监听下拉菜单变化，切换 MRT 和 LRT 图表
-          d3.select("#LrtMrtSelect").on("change", function() {
-              const selectedChart = d3.select(this).property("value");
-              updateChart(selectedChart);
-          });
-        });
-    </script>
+      // 监听下拉菜单变化，切换 MRT 和 LRT 图表
+      d3.select("#LrtMrtSelect").on("change", function () {
+        const selectedChart = d3.select(this).property("value");
+        updateChart(selectedChart);
+      });
+    });
+  </script>
 </body>
+
 </html>
