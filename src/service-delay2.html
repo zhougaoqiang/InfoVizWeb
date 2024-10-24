@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grouped Bar Chart - MRT & LRT Delays</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    /* 简单的条形样式 */
+    .bar {
+      stroke-width: 0.5;
+      stroke: black;
+    }
+
+    /* 隐藏 X 轴的刻度线 */
+    .tick line {
+      display: none;
+    }
+
+    /* Y 轴的刻度字体 */
+    .axis text {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="my_dataviz"></div>
+
+<script>
+
+// 设置图表的尺寸和边距
+const margin = {top: 10, right: 30, bottom: 40, left: 50},
+    width = 460 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+// 在页面中添加 SVG 对象
+const svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+// 解析 CSV 数据
+d3.csv("data/No_of_Service_Delays.csv").then(function(data) {
+
+  // 定义子组，即不同的 MRT 和 LRT 线路（不包括总数列）
+  const subgroups = ["NSL", "EWL", "NEL", "CCL", "DTL", "BPLRT", "SPLRT"];
+
+  // 定义组（年份）
+  const groups = data.map(d => d.Year);
+
+  // 添加 X 轴
+  const x = d3.scaleBand()
+      .domain(groups)
+      .range([0, width])
+      .padding([0.2]);
+  svg.append("g")
+    .attr("transform", `translate(0, ${height})`)
+    .call(d3.axisBottom(x).tickSize(0)) // 隐藏 X 轴刻度线
+    .selectAll("text")
+    .attr("transform", "translate(0,10)")
+    .style("text-anchor", "middle");
+
+  // 添加 Y 轴
+  const y = d3.scaleLinear()
+    .domain([0, 10]) // 根据延迟数据最大值设定 Y 轴范围
+    .range([height, 0]);
+  svg.append("g")
+    .call(d3.axisLeft(y));
+
+  // 子组的位置
+  const xSubgroup = d3.scaleBand()
+    .domain(subgroups)
+    .range([0, x.bandwidth()])
+    .padding([0.05]);
+
+  // 定义颜色调色板
+  const color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['#e41a1c', '#377eb8', '#4daf4a', '#ff7f00', '#984ea3', '#a65628', '#f781bf']);
+
+  // 显示条形图
+  svg.append("g")
+    .selectAll("g")
+    .data(data)
+    .join("g")
+      .attr("transform", d => `translate(${x(d.Year)}, 0)`)
+    .selectAll("rect")
+    .data(function(d) { 
+      return subgroups.map(function(key) { 
+        return {key: key, value: d[key]}; 
+      }); 
+    })
+    .join("rect")
+      .attr("x", d => xSubgroup(d.key))
+      .attr("y", d => y(d.value))
+      .attr("width", xSubgroup.bandwidth())
+      .attr("height", d => height - y(d.value))
+      .attr("fill", d => color(d.key))
+      .attr("class", "bar");
+
+});
+
+</script>
+
+</body>
+</html>

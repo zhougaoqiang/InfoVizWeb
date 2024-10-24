@@ -62,21 +62,21 @@
       // X轴的年份组
       const service_delay_groups = data.map(d => d.Year);
 
-      // 初始化 X 轴
-      const service_delay_x = d3.scaleBand()
+      // 初始化 Y 轴（以前的X轴）作为分类轴
+      const service_delay_y = d3.scaleBand()
         .domain(service_delay_groups)
-        .range([0, service_delay_width])
+        .range([0, service_delay_height])
         .padding([0.2]);
 
       service_delay_svg.append("g")
-        .attr("transform", `translate(0, ${service_delay_height})`)
-        .call(d3.axisBottom(service_delay_x).tickSizeOuter(0));
+        .call(d3.axisLeft(service_delay_y).tickSizeOuter(0));
 
-      // 初始化 Y 轴
-      const service_delay_y = d3.scaleLinear()
-        .range([service_delay_height, 0]);
+      // 初始化 X 轴（以前的Y轴）作为数值轴
+      const service_delay_x = d3.scaleLinear()
+        .range([0, service_delay_width]);
 
-      const service_delay_yAxis = service_delay_svg.append("g");
+      const service_delay_xAxis = service_delay_svg.append("g")
+        .attr("transform", `translate(0, ${service_delay_height})`);
 
       // 定义不同的颜色比例尺
       const colorMRT = d3.scaleOrdinal()
@@ -109,7 +109,6 @@
         .attr("font-size", "12px")
         .attr("fill", "black")
         .attr("font-family", "Arial");
-      // .attr("font-weight", "bold");
 
       // 鼠标悬停事件处理程序
       const service_delay_mouseover = function (event, d) {
@@ -136,8 +135,6 @@
         const absoluteX = svgPosition.left + window.pageXOffset;
         const absoluteY = svgPosition.top + window.pageYOffset;
 
-        console.log("new x=", event.pageX - absoluteX);
-        console.log("new y=", event.pageY - absoluteY);
         tooltipGroup
           .attr("transform", `translate(${event.pageX - absoluteX}, ${event.pageY - absoluteY})`);
       }
@@ -161,11 +158,10 @@
           color = colorLRT;
         }
 
-        // 更新 Y 轴范围
-        service_delay_y.domain([0, maxDelay]);
-        service_delay_yAxis.transition().duration(1000)
-          .call(d3.axisLeft(service_delay_y).ticks(5).tickFormat(d3.format("d")));  // 使用整数刻度
-
+        // 更新 X 轴范围
+        service_delay_x.domain([0, maxDelay]);
+        service_delay_xAxis.transition().duration(1000)
+          .call(d3.axisBottom(service_delay_x).ticks(5).tickFormat(d3.format("d")));  // 使用整数刻度
 
         // 堆叠数据
         const service_delay_stackedData = d3.stack()
@@ -183,23 +179,15 @@
         service_delay_barsEnter.selectAll("rect")
           .data(d => d)
           .enter().append("rect")
-          .attr("x", d => service_delay_x(d.data.Year))
-          .attr("y", d => service_delay_y(d[1]))
-          .attr("height", d => service_delay_y(d[0]) - service_delay_y(d[1]))
-          .attr("width", service_delay_x.bandwidth())
+          .attr("y", d => service_delay_y(d.data.Year))
+          .attr("x", d => service_delay_x(d[0]))  // 左边界
+          .attr("width", d => service_delay_x(d[1]) - service_delay_x(d[0]))  // 使用宽度表示值
+          .attr("height", service_delay_y.bandwidth())  // 条形高度
           .attr("stroke", "grey")
           .attr("class", "bar") // 为每个柱子添加 class 以便控制透明度
           .on("mouseover", service_delay_mouseover)
           .on("mousemove", service_delay_mousemove)
           .on("mouseleave", service_delay_mouseleave);
-
-        //service_delay_barsEnter.merge(service_delay_bars).selectAll("rect")
-        //  .transition()
-        //  .duration(1000)
-        //  .attr("x", d => service_delay_x(d.data.Year))
-        //  .attr("y", d => service_delay_y(d[1]))
-        //  .attr("height", d => service_delay_y(d[0]) - service_delay_y(d[1]))
-        //  .attr("width", service_delay_x.bandwidth());
 
         service_delay_bars.exit().remove();
       }
