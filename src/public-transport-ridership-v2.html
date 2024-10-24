@@ -1,13 +1,21 @@
-
 <!DOCTYPE html>
 <head>
    <meta charset="utf-8">
    <script src="https://d3js.org/d3.v5.min.js"></script>
    <link rel="stylesheet" href="css/common.css">
    <link rel="stylesheet" href="css/pubTransRidership.css">
+   <!-- 加载 Bootstrap 样式 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- 加载 Bootstrap Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
 </head>
 
 <body>
+   <!-- <button id="restart-btn">Restart</button>-->
+    <button id="restart-btn" class="btn btn-primary">
+   <i class="bi bi-arrow-repeat"></i>
+</button>
    <div id="public-transport-ridership">
    </div>
 <script>
@@ -19,6 +27,7 @@ var tickDuration = 1000; // 动画时长（以毫秒为单位）
 var top_n = 4; // 只显示前4
 var height = 600;
 var width = 960;
+let ticker; // 用于存储动画引用
 
 var g_labelOffset= 5;
 var g_valueOffset= 55;
@@ -80,9 +89,9 @@ d3.csv('data/public-transport-ridership.csv').then(function(data) {
       d.Year = +d.Year; // 年份
       // d.colour = d3.hsl(Math.random() * 360, 0.75, 0.75); // 随机颜色分配
 
-      console.log("get ridership " + d.Ridership);
-      console.log("get Last_Ridership " + d.Last_Ridership);
-      console.log("get Year " + d.Year);
+      // console.log("get ridership " + d.Ridership);
+      // console.log("get Last_Ridership " + d.Last_Ridership);
+      // console.log("get Year " + d.Year);
    });
 
    // 过滤数据，选择对应年份的前n个品牌，并按价值排序
@@ -182,10 +191,10 @@ d3.csv('data/public-transport-ridership.csv').then(function(data) {
       .html(~~Year) // 显示年份
       .call(halo, 10); // 调用halo函数给年份添加高亮效果
 
-   // 创建ticker用于动画更新
-   let ticker = d3.interval(e => {
 
-      // 更新数据，重新选择前n名品牌
+   function playAnimation()
+   {
+  // 更新数据，重新选择前n名品牌
       yearSlice = data.filter(d => d.Year == Year && !isNaN(d.Ridership))
          .sort((a, b) => b.Ridership - a.Ridership)
          .slice(0, top_n);
@@ -302,10 +311,22 @@ d3.csv('data/public-transport-ridership.csv').then(function(data) {
 
       // 逐年更新
       if (Year == 2023) 
-        ticker.stop(); // 当年份到2018年时停止动画
+        ticker.stop();
     //   Year = d3.format('.1f')((+Year) + 0.1); // 将年份每次加0.1，以实现动画效果
        Year = (+Year) + 1;
+   }
+
+   // 创建ticker用于动画更新
+   ticker = d3.interval(e => { playAnimation()
    }, tickDuration); // 设定动画间隔时间
+
+
+   d3.select("#restart-btn").on("click", function() {
+        ticker.stop(); // 停止当前动画
+        Year = 1995; // 将年份重置为初始年份
+        ticker = d3.interval(e => { playAnimation()
+   }, tickDuration); // 重新启动动画
+    });
 });
 
 // halo函数，用于在年份周围添加白色边框效果

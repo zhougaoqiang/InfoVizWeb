@@ -365,6 +365,16 @@
                         <div class="images-overlap">
                             <!-- <img src="assets/img/img_v_1.jpg" alt="student" class="img-fluid img-1" data-aos="fade-up"> -->
                             <!--add population chart here-->
+
+
+
+
+                            <!--TODO: Singpoare Population Chart -->
+
+
+
+
+
                             <div id="sg_population"></div>
 
                             <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -801,6 +811,16 @@
                                     </div>
                                 </div> -->
                                 <div class="swiper-slide">
+
+
+
+
+
+                                    <!--TODO: Rail length chart-->
+
+
+
+
                                     <!-- <img src="assets/img/img_h_2.jpg" alt="Image" class="img-fluid"> -->
                                     <div>
                                         <label for="lineSelect">Select Line to Display:</label>
@@ -912,26 +932,34 @@
                                     </script>
                                 </div>
                                 <div class="swiper-slide">
-                                    <!-- <img src="assets/img/img_h_3.jpg" alt="Image" class="img-fluid">
-                                      -->
+
+
+
+
+                                    <!-- TODO: public transport ridership chart-->
+                                    <button id="restart-btn" class="btn btn-primary">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
                                     <div id="public-transport-ridership">
                                     </div>
                                     <script>
+                                        var height = 500;
+                                        var width = 860;
                                         var svg = d3.select("#public-transport-ridership").append("svg") // 在网页上添加一个SVG元素，用于绘制图表
-                                            .attr("width", 860) // 设置SVG的宽度
-                                            .attr("height", 600); // 设置SVG的高度
+                                            .attr("width", width) // 设置SVG的宽度
+                                            .attr("height", height); // 设置SVG的高度
 
                                         var tickDuration = 1000; // 动画时长（以毫秒为单位）
                                         var top_n = 4; // 只显示前4
-                                        var height = 600;
-                                        var width = 860;
+                                        let ticker; // 用于存储动画引用
 
                                         var g_labelOffset = 5;
                                         var g_valueOffset = 55;
+                                        var g_valueYOffset = 35;
                                         var g_rightMargin = 80;
-                                        var g_imageYOffset = -30;
-                                        var g_imageWidth = 50;
-                                        var g_imageHeight = 50;
+                                        var g_imageYOffset = -90;
+                                        var g_imageWidth = 150;
+                                        var g_imageHeight = 150;
 
                                         var yearFontColor = "#808080"
                                         var yearHaloColot = "#ffffff"
@@ -986,9 +1014,9 @@
                                                 d.Year = +d.Year; // 年份
                                                 // d.colour = d3.hsl(Math.random() * 360, 0.75, 0.75); // 随机颜色分配
 
-                                                console.log("get ridership " + d.Ridership);
-                                                console.log("get Last_Ridership " + d.Last_Ridership);
-                                                console.log("get Year " + d.Year);
+                                                // console.log("get ridership " + d.Ridership);
+                                                // console.log("get Last_Ridership " + d.Last_Ridership);
+                                                // console.log("get Year " + d.Year);
                                             });
 
                                             // 过滤数据，选择对应年份的前n个品牌，并按价值排序
@@ -1076,7 +1104,7 @@
                                                 .append('text') // 添加文本元素
                                                 .attr('class', 'valueLabel') // 添加类名
                                                 .attr('x', d => x(d.Ridership) + g_valueOffset) // 设置文本X轴的位置
-                                                .attr('y', d => y(d.Rank) + 5 + ((y(1) - y(0)) / 2) + 1) // 设置文本Y轴的位置
+                                                .attr('y', d => y(d.Rank) + ((y(1) - y(0)) / 2) + g_valueYOffset) // 设置文本Y轴的位置
                                                 .text(d => d3.format(',.0f')(d.Last_Ridership)); // 显示品牌的上一年的价值
 
                                             // 在右下角添加年份文本
@@ -1088,9 +1116,8 @@
                                                 .html(~~Year) // 显示年份
                                                 .call(halo, 10); // 调用halo函数给年份添加高亮效果
 
-                                            // 创建ticker用于动画更新
-                                            let ticker = d3.interval(e => {
 
+                                            function playAnimation() {
                                                 // 更新数据，重新选择前n名品牌
                                                 yearSlice = data.filter(d => d.Year == Year && !isNaN(d.Ridership))
                                                     .sort((a, b) => b.Ridership - a.Ridership)
@@ -1180,13 +1207,13 @@
                                                     .transition()
                                                     .duration(tickDuration)
                                                     .ease(d3.easeLinear)
-                                                    .attr('y', d => y(d.Rank) + 5 + ((y(1) - y(0)) / 2) + 1);
+                                                    .attr('y', d => y(d.Rank) + ((y(1) - y(0)) / 2) + g_valueYOffset);
 
                                                 valueLabels.transition()
                                                     .duration(tickDuration)
                                                     .ease(d3.easeLinear)
                                                     .attr('x', d => x(d.Ridership) + g_valueOffset)
-                                                    .attr('y', d => y(d.Rank) + 5 + ((y(1) - y(0)) / 2) + 1)
+                                                    .attr('y', d => y(d.Rank) + ((y(1) - y(0)) / 2) + g_valueYOffset)
                                                     .tween("text", function (d) {
                                                         let i = d3.interpolateRound(d.Last_Ridership, d.Ridership);
                                                         return function (t) {
@@ -1208,10 +1235,24 @@
 
                                                 // 逐年更新
                                                 if (Year == 2023)
-                                                    ticker.stop(); // 当年份到2018年时停止动画
+                                                    ticker.stop();
                                                 //   Year = d3.format('.1f')((+Year) + 0.1); // 将年份每次加0.1，以实现动画效果
                                                 Year = (+Year) + 1;
+                                            }
+
+                                            // 创建ticker用于动画更新
+                                            ticker = d3.interval(e => {
+                                                playAnimation()
                                             }, tickDuration); // 设定动画间隔时间
+
+
+                                            d3.select("#restart-btn").on("click", function () {
+                                                ticker.stop(); // 停止当前动画
+                                                Year = 1995; // 将年份重置为初始年份
+                                                ticker = d3.interval(e => {
+                                                    playAnimation()
+                                                }, tickDuration); // 重新启动动画
+                                            });
                                         });
 
                                         // halo函数，用于在年份周围添加白色边框效果
@@ -1231,213 +1272,231 @@
                                         }
 
                                     </script>
-                                </div>
-                                <div class="swiper-slide">
-                                    <!-- <img src="assets/img/img_h_4.jpg" alt="Image" class="img-fluid"> -->
-                                    <div id="mv_population"></div>
-                                    <script>
-                                        // 设置图表的宽度和高度
-                                        const mv_pop_margin = { top: 60, right: 230, bottom: 50, left: 50 },
-                                            mv_pop_width = 800 - mv_pop_margin.left - mv_pop_margin.right,
-                                            mv_pop_height = 400 - mv_pop_margin.top - mv_pop_margin.bottom;
-
-                                        const mv_pop_svg = d3.select("#mv_population")
-                                            .append("svg")
-                                            .attr("width", mv_pop_width + mv_pop_margin.left + mv_pop_margin.right)
-                                            .attr("height", mv_pop_height + mv_pop_margin.top + mv_pop_margin.bottom)
-                                            .append("g")
-                                            .attr("transform", `translate(${mv_pop_margin.left},${mv_pop_margin.top})`);
+                                    </div>
 
 
 
-                                        // 读取 CSV 数据
-                                        d3.csv("data/public_motor_vehicle_population.csv").then(function (data) {
 
-                                            // 数据预处理：将年份转换为Date对象，并过滤掉1990年之前的数据
-                                            data = data.filter(d => {
-                                                d.year = d3.timeParse("%Y %b")(d.year);
-                                                return d.year >= new Date(1990, 0, 1); // 过滤1990年后的数据
+                                    <!-- <img src="assets/img/img_h_3.jpg" alt="Image" class="img-fluid">
+                                      -->
+                                    <div class="swiper-slide">
+
+
+
+
+
+                                        <!-- TODO: Motor vechicle population chart-->
+
+
+
+
+
+
+                                        <!-- <img src="assets/img/img_h_4.jpg" alt="Image" class="img-fluid"> -->
+                                        <div id="mv_population"></div>
+                                        <script>
+                                            // 设置图表的宽度和高度
+                                            const mv_pop_margin = { top: 60, right: 230, bottom: 50, left: 50 },
+                                                mv_pop_width = 800 - mv_pop_margin.left - mv_pop_margin.right,
+                                                mv_pop_height = 400 - mv_pop_margin.top - mv_pop_margin.bottom;
+
+                                            const mv_pop_svg = d3.select("#mv_population")
+                                                .append("svg")
+                                                .attr("width", mv_pop_width + mv_pop_margin.left + mv_pop_margin.right)
+                                                .attr("height", mv_pop_height + mv_pop_margin.top + mv_pop_margin.bottom)
+                                                .append("g")
+                                                .attr("transform", `translate(${mv_pop_margin.left},${mv_pop_margin.top})`);
+
+
+
+                                            // 读取 CSV 数据
+                                            d3.csv("data/public_motor_vehicle_population.csv").then(function (data) {
+
+                                                // 数据预处理：将年份转换为Date对象，并过滤掉1990年之前的数据
+                                                data = data.filter(d => {
+                                                    d.year = d3.timeParse("%Y %b")(d.year);
+                                                    return d.year >= new Date(1990, 0, 1); // 过滤1990年后的数据
+                                                });
+
+                                                data.forEach(d => {
+                                                    d.Private_Hire_Cars = +d.Private_Hire_Cars;
+                                                    d.Taxis = +d.Taxis;
+                                                    d.Buses = +d.Buses;
+                                                });
+
+                                                // 列名作为子组，调整顺序以确保 Buses 在最底层
+                                                const mv_pop_keys = ["Buses", "Taxis", "Private_Hire_Cars"];
+
+                                                // 颜色比例尺
+                                                const mv_pop_color = d3.scaleOrdinal()
+                                                    .domain(mv_pop_keys)
+                                                    .range(d3.schemeSet2);
+
+                                                // 堆叠数据
+                                                const mv_pop_stackedData = d3.stack()
+                                                    .keys(mv_pop_keys)
+                                                    (data);
+
+                                                // X轴：年份
+                                                const mv_pop_x = d3.scaleTime()
+                                                    .domain(d3.extent(data, function (d) { return d.year; }))
+                                                    .range([0, mv_pop_width]);
+
+                                                const mv_pop_xAxis = mv_pop_svg.append("g")
+                                                    .attr("transform", `translate(0, ${mv_pop_height})`)
+                                                    .call(d3.axisBottom(mv_pop_x).ticks(5));
+
+                                                // Y轴：车辆数量
+                                                const mv_pop_y = d3.scaleLinear()
+                                                    .domain([0, d3.max(data, d => d.Private_Hire_Cars + d.Taxis + d.Buses)])
+                                                    .range([mv_pop_height, 0]);
+
+                                                mv_pop_svg.append("g")
+                                                    .call(d3.axisLeft(mv_pop_y).ticks(5));
+
+                                                // 定义面积生成器
+                                                const mv_pop_area = d3.area()
+                                                    .x(function (d) { return mv_pop_x(d.data.year); })
+                                                    .y0(function (d) { return mv_pop_y(d[0]); })
+                                                    .y1(function (d) { return mv_pop_y(d[1]); });
+
+                                                // 设置SVG工具提示，包含背景矩形和文本
+                                                const tooltipGroup = mv_pop_svg.append("g")
+                                                    .style("display", "none") // 初始时隐藏
+                                                    .style("pointer-events", "none");
+
+                                                const tooltipRect = tooltipGroup.append("rect")
+                                                    .attr("class", "tooltip-rect")
+                                                    .attr("width", 180)
+                                                    .attr("height", 80)
+                                                    .attr("rx", 10) // 设置圆角
+                                                    .attr("ry", 10)
+                                                    .attr("fill", "lightsteelblue") // 背景色
+                                                    .attr("stroke", "lightsteelblue") // 边框颜色
+                                                    .attr("stroke-width", 1)
+                                                    .attr("opacity", 0.8); // 设置透明度
+
+                                                const tooltipText = tooltipGroup.append("text")
+                                                    .attr("class", "tooltip-text")
+                                                    .attr("x", 10)
+                                                    .attr("y", 20)
+                                                    .attr("font-size", "12px")
+                                                    .attr("fill", "black")
+                                                    .attr("font-family", "Arial");
+
+
+                                                // 鼠标悬停事件处理程序
+                                                const service_delay_mouseover = function (event, d) {
+                                                    tooltipGroup.style("display", null);  // 显示 tooltip
+
+                                                    // 更新工具提示的位置并确保在最前面
+                                                    tooltipGroup.raise();
+                                                };
+
+                                                // 鼠标移动事件处理程序
+                                                const service_delay_mousemove = function (event, d) {
+                                                    const mv_pop_year = mv_pop_x.invert(d3.pointer(event, this)[0]);  // 获取年份
+                                                    const mv_pop_index = data.findIndex(dt => dt.year.getFullYear() === Math.round(mv_pop_year.getFullYear()));
+                                                    const mv_pop_tooltipData = data[mv_pop_index];
+
+                                                    // 设置工具提示文本内容
+                                                    tooltipText.text(`Year: ${mv_pop_tooltipData.year.getFullYear()}`)
+                                                        .selectAll("tspan").remove();  // 移除之前的 tspan 元素以确保更新内容
+                                                    tooltipText.append("tspan")
+                                                        .attr("x", 10)
+                                                        .attr("dy", "1.2em")
+                                                        .text(`Buses: ${mv_pop_tooltipData.Buses}`);
+                                                    tooltipText.append("tspan")
+                                                        .attr("x", 10)
+                                                        .attr("dy", "1.2em")
+                                                        .text(`Taxis: ${mv_pop_tooltipData.Taxis}`);
+                                                    tooltipText.append("tspan")
+                                                        .attr("x", 10)
+                                                        .attr("dy", "1.2em")
+                                                        .text(`Private Hire Cars: ${mv_pop_tooltipData.Private_Hire_Cars}`);
+
+
+                                                    // console.log("x=", event.pageX);
+                                                    // console.log("y=", event.pageY);
+                                                    const mv_svgPosition = mv_pop_svg.node().getBoundingClientRect();
+                                                    const mv_absoluteX = mv_svgPosition.left + window.pageXOffset;
+                                                    const mv_absoluteY = mv_svgPosition.top + window.pageYOffset;
+
+                                                    console.log("new x=", event.pageX - mv_absoluteX);
+                                                    console.log("new y=", event.pageY - mv_absoluteY);
+                                                    tooltipGroup
+                                                        .attr("transform", `translate(${event.pageX - mv_absoluteX - 70}, ${event.pageY - mv_absoluteY - 30})`);
+                                                    tooltipGroup.raise();
+                                                };
+
+                                                // 鼠标离开事件处理程序
+                                                const service_delay_mouseleave = function () {
+                                                    console.log("mouse leave");
+                                                    tooltipGroup.style("display", "none");  // 隐藏工具提示
+                                                };
+
+                                                // 显示堆叠区域
+                                                mv_pop_svg.selectAll("mylayers")
+                                                    .data(mv_pop_stackedData)
+                                                    .enter()
+                                                    .append("path")
+                                                    .attr("class", function (d) { return "myArea " + d.key })
+                                                    .style("fill", function (d) { return mv_pop_color(d.key); })
+                                                    .attr("d", mv_pop_area);
+
+                                                // 添加鼠标事件，用于显示SVG工具提示
+                                                mv_pop_svg.selectAll("path")
+                                                    .on("mouseover", service_delay_mouseover)
+                                                    .on("mousemove", service_delay_mousemove)
+                                                    .on("mouseout", service_delay_mouseleave);
+
+                                                // 添加 X 轴标签
+                                                mv_pop_svg.append("text")
+                                                    .attr("text-anchor", "end")
+                                                    .attr("x", mv_pop_width)
+                                                    .attr("y", mv_pop_height + 40)
+                                                    .text("Year");
+
+                                                // 添加 Y 轴标签
+                                                mv_pop_svg.append("text")
+                                                    .attr("text-anchor", "end")
+                                                    .attr("x", 0)
+                                                    .attr("y", -20)
+                                                    .text("Number of Vehicles")
+                                                    .attr("text-anchor", "start");
+
+                                                // 调整图例的位置，使其靠近图表左侧
+                                                const mv_pop_size = 20;
+                                                mv_pop_svg.selectAll("myrect")
+                                                    .data(mv_pop_keys)
+                                                    .enter()
+                                                    .append("rect")
+                                                    .attr("x", 50)  // 调整 x 坐标，使图例靠左显示
+                                                    .attr("y", function (d, i) { return 10 + i * (mv_pop_size + 5) })
+                                                    .attr("width", mv_pop_size)
+                                                    .attr("height", mv_pop_size)
+                                                    .style("fill", function (d) { return mv_pop_color(d) });
+
+                                                mv_pop_svg.selectAll("mylabels")
+                                                    .data(mv_pop_keys)
+                                                    .enter()
+                                                    .append("text")
+                                                    .attr("x", 50 + mv_pop_size * 1.2)  // 调整 x 坐标，使图例文字靠左显示
+                                                    .attr("y", function (d, i) { return 10 + i * (mv_pop_size + 5) + (mv_pop_size / 2) })
+                                                    .attr("class", "legend-text")  // 确保没有下划线
+                                                    .style("fill", function (d) { return mv_pop_color(d) })
+                                                    .text(function (d) { return d.replace(/_/g, ' ') })  // 移除下划线
+                                                    .attr("text-anchor", "left")
+                                                    .style("alignment-baseline", "middle");
                                             });
 
-                                            data.forEach(d => {
-                                                d.Private_Hire_Cars = +d.Private_Hire_Cars;
-                                                d.Taxis = +d.Taxis;
-                                                d.Buses = +d.Buses;
-                                            });
-
-                                            // 列名作为子组，调整顺序以确保 Buses 在最底层
-                                            const mv_pop_keys = ["Buses", "Taxis", "Private_Hire_Cars"];
-
-                                            // 颜色比例尺
-                                            const mv_pop_color = d3.scaleOrdinal()
-                                                .domain(mv_pop_keys)
-                                                .range(d3.schemeSet2);
-
-                                            // 堆叠数据
-                                            const mv_pop_stackedData = d3.stack()
-                                                .keys(mv_pop_keys)
-                                                (data);
-
-                                            // X轴：年份
-                                            const mv_pop_x = d3.scaleTime()
-                                                .domain(d3.extent(data, function (d) { return d.year; }))
-                                                .range([0, mv_pop_width]);
-
-                                            const mv_pop_xAxis = mv_pop_svg.append("g")
-                                                .attr("transform", `translate(0, ${mv_pop_height})`)
-                                                .call(d3.axisBottom(mv_pop_x).ticks(5));
-
-                                            // Y轴：车辆数量
-                                            const mv_pop_y = d3.scaleLinear()
-                                                .domain([0, d3.max(data, d => d.Private_Hire_Cars + d.Taxis + d.Buses)])
-                                                .range([mv_pop_height, 0]);
-
-                                            mv_pop_svg.append("g")
-                                                .call(d3.axisLeft(mv_pop_y).ticks(5));
-
-                                            // 定义面积生成器
-                                            const mv_pop_area = d3.area()
-                                                .x(function (d) { return mv_pop_x(d.data.year); })
-                                                .y0(function (d) { return mv_pop_y(d[0]); })
-                                                .y1(function (d) { return mv_pop_y(d[1]); });
-
-                                            // 设置SVG工具提示，包含背景矩形和文本
-                                            const tooltipGroup = mv_pop_svg.append("g")
-                                                .style("display", "none") // 初始时隐藏
-                                                .style("pointer-events", "none");
-
-                                            const tooltipRect = tooltipGroup.append("rect")
-                                                .attr("class", "tooltip-rect")
-                                                .attr("width", 180)
-                                                .attr("height", 80)
-                                                .attr("rx", 10) // 设置圆角
-                                                .attr("ry", 10)
-                                                .attr("fill", "lightsteelblue") // 背景色
-                                                .attr("stroke", "lightsteelblue") // 边框颜色
-                                                .attr("stroke-width", 1)
-                                                .attr("opacity", 0.8); // 设置透明度
-
-                                            const tooltipText = tooltipGroup.append("text")
-                                                .attr("class", "tooltip-text")
-                                                .attr("x", 10)
-                                                .attr("y", 20)
-                                                .attr("font-size", "12px")
-                                                .attr("fill", "black")
-                                                .attr("font-family", "Arial");
-
-
-                                            // 鼠标悬停事件处理程序
-                                            const service_delay_mouseover = function (event, d) {
-                                                tooltipGroup.style("display", null);  // 显示 tooltip
-
-                                                // 更新工具提示的位置并确保在最前面
-                                                tooltipGroup.raise();
-                                            };
-
-                                            // 鼠标移动事件处理程序
-                                            const service_delay_mousemove = function (event, d) {
-                                                const mv_pop_year = mv_pop_x.invert(d3.pointer(event, this)[0]);  // 获取年份
-                                                const mv_pop_index = data.findIndex(dt => dt.year.getFullYear() === Math.round(mv_pop_year.getFullYear()));
-                                                const mv_pop_tooltipData = data[mv_pop_index];
-
-                                                // 设置工具提示文本内容
-                                                tooltipText.text(`Year: ${mv_pop_tooltipData.year.getFullYear()}`)
-                                                    .selectAll("tspan").remove();  // 移除之前的 tspan 元素以确保更新内容
-                                                tooltipText.append("tspan")
-                                                    .attr("x", 10)
-                                                    .attr("dy", "1.2em")
-                                                    .text(`Buses: ${mv_pop_tooltipData.Buses}`);
-                                                tooltipText.append("tspan")
-                                                    .attr("x", 10)
-                                                    .attr("dy", "1.2em")
-                                                    .text(`Taxis: ${mv_pop_tooltipData.Taxis}`);
-                                                tooltipText.append("tspan")
-                                                    .attr("x", 10)
-                                                    .attr("dy", "1.2em")
-                                                    .text(`Private Hire Cars: ${mv_pop_tooltipData.Private_Hire_Cars}`);
-
-
-                                                // console.log("x=", event.pageX);
-                                                // console.log("y=", event.pageY);
-                                                const mv_svgPosition = mv_pop_svg.node().getBoundingClientRect();
-                                                const mv_absoluteX = mv_svgPosition.left + window.pageXOffset;
-                                                const mv_absoluteY = mv_svgPosition.top + window.pageYOffset;
-
-                                                console.log("new x=", event.pageX - mv_absoluteX);
-                                                console.log("new y=", event.pageY - mv_absoluteY);
-                                                tooltipGroup
-                                                    .attr("transform", `translate(${event.pageX - mv_absoluteX - 70}, ${event.pageY - mv_absoluteY-30})`);
-                                                tooltipGroup.raise();
-                                            };
-
-                                            // 鼠标离开事件处理程序
-                                            const service_delay_mouseleave = function () {
-                                                console.log("mouse leave");
-                                                tooltipGroup.style("display", "none");  // 隐藏工具提示
-                                            };
-
-                                            // 显示堆叠区域
-                                            mv_pop_svg.selectAll("mylayers")
-                                                .data(mv_pop_stackedData)
-                                                .enter()
-                                                .append("path")
-                                                .attr("class", function (d) { return "myArea " + d.key })
-                                                .style("fill", function (d) { return mv_pop_color(d.key); })
-                                                .attr("d", mv_pop_area);
-
-                                            // 添加鼠标事件，用于显示SVG工具提示
-                                            mv_pop_svg.selectAll("path")
-                                                .on("mouseover", service_delay_mouseover)
-                                                .on("mousemove", service_delay_mousemove)
-                                                .on("mouseout", service_delay_mouseleave);
-
-                                            // 添加 X 轴标签
-                                            mv_pop_svg.append("text")
-                                                .attr("text-anchor", "end")
-                                                .attr("x", mv_pop_width)
-                                                .attr("y", mv_pop_height + 40)
-                                                .text("Year");
-
-                                            // 添加 Y 轴标签
-                                            mv_pop_svg.append("text")
-                                                .attr("text-anchor", "end")
-                                                .attr("x", 0)
-                                                .attr("y", -20)
-                                                .text("Number of Vehicles")
-                                                .attr("text-anchor", "start");
-
-                                            // 调整图例的位置，使其靠近图表左侧
-                                            const mv_pop_size = 20;
-                                            mv_pop_svg.selectAll("myrect")
-                                                .data(mv_pop_keys)
-                                                .enter()
-                                                .append("rect")
-                                                .attr("x", 50)  // 调整 x 坐标，使图例靠左显示
-                                                .attr("y", function (d, i) { return 10 + i * (mv_pop_size + 5) })
-                                                .attr("width", mv_pop_size)
-                                                .attr("height", mv_pop_size)
-                                                .style("fill", function (d) { return mv_pop_color(d) });
-
-                                            mv_pop_svg.selectAll("mylabels")
-                                                .data(mv_pop_keys)
-                                                .enter()
-                                                .append("text")
-                                                .attr("x", 50 + mv_pop_size * 1.2)  // 调整 x 坐标，使图例文字靠左显示
-                                                .attr("y", function (d, i) { return 10 + i * (mv_pop_size + 5) + (mv_pop_size / 2) })
-                                                .attr("class", "legend-text")  // 确保没有下划线
-                                                .style("fill", function (d) { return mv_pop_color(d) })
-                                                .text(function (d) { return d.replace(/_/g, ' ') })  // 移除下划线
-                                                .attr("text-anchor", "left")
-                                                .style("alignment-baseline", "middle");
-                                        });
-
-                                    </script>
+                                        </script>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </section><!-- /Tabs Section -->
 
         <!-- Services 2 Section -->
@@ -1472,6 +1531,19 @@
                   }
                 }
               </script>
+
+
+
+
+
+
+                            <!-- TODO:    Service Delay Chart-->
+
+
+
+
+
+
                             <div class="swiper-wrapper">
                                 <div class="swiper-slide">
                                     <!-- <img src="media/mrt-swiper1.png" alt="Image" class="img-fluid"> -->
