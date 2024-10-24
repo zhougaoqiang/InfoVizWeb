@@ -49,7 +49,7 @@
                 .range([0, rail_length_width]);
 
             const rail_length_y = d3.scaleLinear()
-                .domain([0, d3.max(data, d => d.Total_KM)]).nice()
+                .domain([0, d3.max(data, d => d.Total_KM) + 20]).nice()
                 .range([rail_length_height, 0]);
 
             // 定义坐标轴
@@ -58,7 +58,8 @@
                 .call(d3.axisBottom(rail_length_x).tickFormat(d3.format("d"))); // 按年份格式化为整数
 
             rail_length_g.append("g")
-                .call(d3.axisLeft(rail_length_y));
+                .attr("class", "y-axis")  // 为 Y 轴添加类
+                .call(d3.axisLeft(rail_length_y).ticks(5));
 
             // 定义折线生成器函数
             const rail_length_lineGenerator = d3.line()
@@ -106,10 +107,10 @@
                     .attr("d", rail_length_lineGenerator);
 
                 // 更新 y 轴
-                rail_length_g.select(".y-axis")
+                rail_length_g.select(".y-axis")  // 使用正确的类名更新 y 轴
                     .transition()
                     .duration(1000)
-                    .call(d3.axisLeft(rail_length_y));
+                    .call(d3.axisLeft(rail_length_y).ticks(5));
             }
 
             // 绑定选择事件，控制线条的显示
