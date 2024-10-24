@@ -822,13 +822,18 @@
 
 
                                     <!-- <img src="assets/img/img_h_2.jpg" alt="Image" class="img-fluid"> -->
-                                    <div>
-                                        <label for="lineSelect">Select Line to Display:</label>
-                                        <select id="lineSelect">
-                                            <option value="Total_KM">Total Rail Length</option>
-                                            <option value="MRT_KM">MRT Length</option>
-                                            <option value="LRT_KM">LRT Length</option>
-                                        </select>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-1"></div>
+                                        <div class="col-md-3">
+                                            <label for="lineSelect">Select Line to Display:</label>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select id="lineSelect" class="form-select form-select-sm">
+                                                <option value="Total_KM">Total Rail Length</option>
+                                                <option value="MRT_KM">MRT Length</option>
+                                                <option value="LRT_KM">LRT Length</option>
+                                            </select>
+                                        </div>
                                     </div>
 
                                     <svg id="Rail_Length_Chart" width="860" height="500"></svg>
@@ -1542,12 +1547,17 @@
                             <div class="swiper-wrapper">
                                 <div class="swiper-slide">
                                     <!-- <img src="media/mrt-swiper1.png" alt="Image" class="img-fluid"> -->
-                                    <div>
-                                        <label for="LrtMrtSelect">Select Chart to Display:</label>
-                                        <select id="LrtMrtSelect">
-                                            <option value="MRT">MRT Delays</option>
-                                            <option value="LRT">LRT Delays</option>
-                                        </select>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-1"></div>
+                                        <div class="col-md-3">
+                                            <label for="LrtMrtSelect">Select Chart to Display:</label>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select id="LrtMrtSelect" class="form-select form-select-sm">
+                                                <option value="MRT">MRT Delays</option>
+                                                <option value="LRT">LRT Delays</option>
+                                            </select>
+                                        </div>
                                     </div>
 
                                     <div id="Service_Delay"></div>
