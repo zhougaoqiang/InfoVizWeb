@@ -243,8 +243,10 @@
                             World Class Public Transport System
                         </h4>
                         <p data-aos="fade-up">
-                            Based on the Urban Mobility Index Ranking 2023 by Oliver Wyman Forum, Singapore’s public transport system was ranked <b>third place</b>, just behind Hong Kong and
-                            Zurich. Find out how Singapore evolved and established a world-class public transport system.
+                            Based on the Urban Mobility Index Ranking 2023 by Oliver Wyman Forum, Singapore’s public
+                            transport system was ranked <b>third place</b>, just behind Hong Kong and
+                            Zurich. Find out how Singapore evolved and established a world-class public transport
+                            system.
                         </p>
                         <p class="mt-5" data-aos="fade-up">
                             <a href="#about-2" class="btn btn-get-started">Start Discovering</a>
@@ -421,7 +423,7 @@
                                         .range([population_height, 0]);
 
                                     population_svg.append("g")
-                                        .call(d3.axisLeft(population_y).ticks(7, "s")) // Reduce number of ticks to 6 on Y axis
+                                        .call(d3.axisLeft(population_y).ticks(7, 's')) // Reduce number of ticks to 6 on Y axis
                                         .call(g => g.selectAll(".tick").filter(function (d) {
                                             return d >= d3.max(data, d => d.Population);  // Only filter the tick where the value equals the max population
                                         }).remove());
@@ -454,6 +456,19 @@
                                         .attr('r', 4)
                                         .style("opacity", 0);
 
+                                    var population_tooltipBackground = population_svg
+                                        .append('g')
+                                        .append('rect')
+                                        .attr("class", "tooltip-rect")
+                                        .attr("width", 180)
+                                        .attr("height", 80)
+                                        .attr("rx", 10) // 设置圆角
+                                        .attr("ry", 10)
+                                        .attr("fill", "lightsteelblue") // 背景色
+                                        .attr("stroke", "lightsteelblue") // 边框颜色
+                                        .attr("stroke-width", 1)
+                                        .attr("opacity", 0.8); // 设置透明度
+
                                     // Create the text that travels along the curve of chart
                                     var population_focusText = population_svg
                                         .append('g')
@@ -480,43 +495,59 @@
                                     }
 
                                     function mousemove(event) {
-                                        // Get mouse position and invert it to the X domain
                                         var pointer = d3.pointer(event);
                                         var x0 = population_x.invert(pointer[0]);
 
-                                        // 使用 d3.least() 找到与鼠标位置最接近的年份数据点
-                                        // d3.least() 返回满足最小条件的数组元素
                                         var closestData = d3.least(data, function (d) {
-                                            // 计算每个数据点的年份 (d.year) 与鼠标对应年份 (x0) 的绝对差值
-                                            // Math.abs() 用于取绝对值，保证不论差值正负都能正确比较
                                             return Math.abs(d.year - x0);
                                         });
 
-
-                                        // Update the focus point and text
                                         if (closestData) {
+                                            // 更新圆圈位置
                                             population_focus
                                                 .attr("cx", population_x(closestData.year))
                                                 .attr("cy", population_y(closestData.Population));
 
+                                            // 定义 tooltip 文字内容
+                                            var yearText = "Year: " + d3.timeFormat("%Y")(closestData.year);
+                                            var populationText = "Population: " + closestData.Population;
+
+                                            // 更新 tooltip 文本
                                             population_focusText
-                                                .html(null)  // Clear any previous content
+                                                .attr("x", population_x(closestData.year) + 15)
+                                                .attr("y", population_y(closestData.Population) - 5)
+                                                .html(null)  // 清空之前的文本
                                                 .append("tspan")
-                                                .attr("x", population_x(closestData.year) + 15)  // X position for both lines
-                                                .attr("y", population_y(closestData.Population) - 5)  // Y position for the first line
-                                                .text("Year: " + d3.timeFormat("%Y")(closestData.year))  // First line (Year)
+                                                .attr("x", population_x(closestData.year) + 15)
+                                                .attr("y", population_y(closestData.Population) - 5)
+                                                .text(yearText)
                                                 .append("tspan")
-                                                .attr("x", population_x(closestData.year) + 15)  // Same X position
-                                                .attr("y", population_y(closestData.Population) + 15)  // Y position for the second line (20 pixels below the first line)
-                                                .text("Population: " + closestData.Population);  // Second line (Population)
+                                                .attr("x", population_x(closestData.year) + 15)
+                                                .attr("y", population_y(closestData.Population) + 15)
+                                                .text(populationText);
+
+                                            // 估计 tooltip 文本的宽度和高度
+                                            var bbox = population_focusText.node().getBBox();
+
+                                            // 更新 tooltip 背景矩形的位置和大小
+                                            population_tooltipBackground
+                                                .attr("x", bbox.x - 5)
+                                                .attr("y", bbox.y - 5)
+                                                .attr("width", bbox.width + 10)
+                                                .attr("height", bbox.height + 10)
+                                                .style("opacity", 1);  // 显示矩形
                                         }
                                     }
 
                                     function mouseout() {
                                         population_focus.style("opacity", 0);
                                         population_focusText.style("opacity", 0);
+                                        population_tooltipBackground.style("opacity", 0);  // 隐藏背景矩形
+
                                     }
                                 });
+
+
                             </script>
 
                         </div>
@@ -832,7 +863,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    
+
                                     <svg id="Rail_Length_Chart" width="860" height="500"></svg>
                                     <script>
                                         // 设置图表的宽度和高度

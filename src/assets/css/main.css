@@ -17,12 +17,22 @@
   --nav-font: "Lato",  sans-serif;
 }
 
+:root { /*project use color*/
+  --infoviz-color-lead: #1f1f1f;
+  --infoviz-color-ping-forest: #415441;
+  --infoviz-color-spicy-mix: #8B5C4B;
+  --infoviz-color-mink-haze: #C6b2a0;
+  --infoviz-color-aquatone: #A4B2A7;
+  --infoviz-color-luster-white: #f4f1ec;
+}
+
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
 :root { 
   --background-color: #ffffff; /* Background color for the entire website, including individual sections */
   --default-color: #212529; /* Default color used for the majority of the text content across the entire website */
   --heading-color: #2d465e; /* Color for headings, subheadings and title throughout the website */
-  --accent-color: #34bf49; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+  --accent-color: #34bf49; /*Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+  /* --accent-color: #2d465e; */
   --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
   --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
 }
