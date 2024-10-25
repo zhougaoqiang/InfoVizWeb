@@ -79,6 +79,8 @@
         .x(function (d) { return mv_pop_x(d.data.year); })
         .y0(function (d) { return mv_pop_y(d[0]); })
         .y1(function (d) { return mv_pop_y(d[1]); });
+      //y0定义了面积图的底部边界。d[0]通常代表堆叠数据中的起始值，通过mv_pop_y缩放函数将其映射到Y轴的位置。
+      //y1定义了面积图的顶部边界。d[1]通常代表堆叠数据中的结束值，通过mv_pop_y缩放函数将其映射到Y轴的位置。
 
       // 设置SVG工具提示，包含背景矩形和文本
       const tooltipGroup = mv_pop_svg.append("g")
