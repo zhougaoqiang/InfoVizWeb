@@ -117,7 +117,7 @@
             height: auto;
             padding: 5px;
             font: 12px sans-serif;
-            background: lightsteelblue;
+            background: #C6B2A0;
             border: 0px;
             border-radius: 8px;
             pointer-events: none;
@@ -129,14 +129,24 @@
         }
 
         /*for service delay only*/
-        #Service_Delay.bar {
+        /* #Service_Delay.bar {
             opacity: 0.8;
             transition: opacity 0.3s;
         }
 
         #Service_Delay.bar:hover {
             opacity: 1;
-            /* 鼠标悬停时高亮 */
+        } */
+
+        #Service_Delay rect {
+            fill: #8B5C4B;
+            opacity: 0.6;
+            stroke: white;
+        }
+        #Service_Delay text {
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+            fill: #F4F1EC;
+            font-size: 13px;
         }
     </style>
 
@@ -160,8 +170,8 @@
                 <ul>
                     <li><a href="#about">Overview</a></li>
                     <li><a href="#about-2">Our History</a></li>
-                    <li><a href="#tabs">Key Trends</a></li>
-                    <li><a href="#">Our Future</a></li>
+                    <li><a href="#blog-posts1">Key Trends</a></li>
+                    <li><a href="#about-3">Our Future</a></li>
                     <!-- <li><a href="portfolio.html">Portfolio</a></li> -->
                     <!-- <li><a href="team.html">Team</a></li>
                     <li><a href="blog.html">Blog</a></li> -->
@@ -359,267 +369,6 @@
     </section> -->
         <!-- /Services Section -->
 
-        <!-- Stats Section -->
-        <!-- <section id="stats" class="stats section light-background"> -->
-        <section id="stats" class="stats section light-background">
-            <div class="container">
-                <div class="row gy-4 justify-content-center">
-                    <div class="col-lg-6">
-                        <div class="images-overlap">
-                            <!-- <img src="assets/img/img_v_1.jpg" alt="student" class="img-fluid img-1" data-aos="fade-up"> -->
-                            <!--add population chart here-->
-
-
-
-
-                            <!--TODO: Singpoare Population Chart -->
-
-
-
-                            <!-- <h4>
-                                Singapore Population Reaches 6 Million
-                            </h4> -->
-
-                            <div id="sg_population"></div>
-
-                            <script src="https://d3js.org/d3.v7.min.js"></script>
-                            <script>
-
-                                // set the dimensions and margins of the graph
-                                var population_margin = { top: 30, right: 180, bottom: 30, left: 30 };  // Adjust margins to add more space
-                                // var margin = {top: 130, right: 150, bottom: 130, left: 130},
-                                var population_width = 700 - population_margin.left - population_margin.right;
-                                var population_height = 400 - population_margin.top - population_margin.bottom;
-
-                                // append the svg object to the body of the page
-                                var population_svg = d3.select("#sg_population")
-                                    .append("svg")
-                                    .attr("width", population_width + population_margin.left + population_margin.right)
-                                    .attr("height", population_height + population_margin.top + population_margin.bottom)
-                                    .append("g")
-                                    .attr("transform", "translate(" + population_margin.left + "," + population_margin.top + ")");
-
-                                // Read the data
-                                d3.csv('data/sg_population.csv').then(function (data) {
-
-                                    // Parse the data
-                                    var parseYear = d3.timeParse("%Y");
-
-                                    data.forEach(function (d) {
-                                        d.year = parseYear(d.year);
-                                        d.Population = +d.Population;
-                                    });
-
-                                    // Add X axis --> use time scale now
-                                    var population_x = d3.scaleTime()
-                                        .domain(d3.extent(data, function (d) { return d.year; }))
-                                        .range([0, population_width]);
-
-                                    population_svg.append("g")
-                                        .attr("transform", "translate(0," + population_height + ")")
-                                        .call(d3.axisBottom(population_x).ticks(10).tickFormat(d3.timeFormat("%Y"))) // Reduce number of ticks to 6 on X axis
-                                        .call(g => g.selectAll(".tick").filter(function (d) {
-                                            return d >= d3.max(data, d => d.year);  // Only filter the tick where the value equals the max year
-                                        }).remove());
-
-                                    // Add Y axis
-                                    var population_y = d3.scaleLinear()
-                                        // .domain([0, d3.max(data, function(d) { return +d.Population; })])
-                                        .domain([0, 7000000])
-                                        .range([population_height, 0]);
-
-                                    population_svg.append("g")
-                                        .call(d3.axisLeft(population_y).ticks(7, 's')) // Reduce number of ticks to 6 on Y axis
-                                        .call(g => g.selectAll(".tick").filter(function (d) {
-                                            return d >= d3.max(data, d => d.Population);  // Only filter the tick where the value equals the max population
-                                        }).remove());
-
-                                    population_svg.append("defs").append("clipPath")
-                                        .attr("id", "clip")
-                                        .append("rect")
-                                        .attr("width", population_width)
-                                        .attr("height", population_height)
-                                        .attr("x", 0)
-                                        .attr("y", 0);
-
-                                    population_svg.append("text")
-                                        .attr("x",0)
-                                        .attr("y",50)
-                                        .attr("class", "axis-label")
-                                        .attr("transform", "rotate(-90)")
-                                        .style("text-anchor", "middle")
-                                        .text("Number of people(in millions)");
-
-                                    // Add the line
-                                    population_svg.append("path")
-                                        .datum(data)
-                                        .attr("class", "line")
-                                        .attr("d", d3.line()
-                                            .x(function (d) { return population_x(d.year) })
-                                            .y(function (d) { return population_y(d.Population) })
-                                        )
-                                        .attr("clip-path", "url(#clip)");  // Add the clip-path here
-
-                                    // Create the circle that travels along the curve of chart
-                                    var population_focus = population_svg
-                                        .append('g')
-                                        .append('circle')
-                                        .style("fill", "none")
-                                        .attr("stroke", "black")
-                                        .attr('r', 4)
-                                        .style("opacity", 0);
-
-                                    var population_tooltipBackground = population_svg
-                                        .append('g')
-                                        .append('rect')
-                                        .attr("class", "tooltip-rect")
-                                        .attr("width", 180)
-                                        .attr("height", 80)
-                                        .attr("rx", 10) // 设置圆角
-                                        .attr("ry", 10)
-                                        .attr("fill", "lightsteelblue") // 背景色
-                                        .attr("stroke", "lightsteelblue") // 边框颜色
-                                        .attr("stroke-width", 1)
-                                        .attr("opacity", 0.8); // 设置透明度
-
-                                    // Create the text that travels along the curve of chart
-                                    var population_focusText = population_svg
-                                        .append('g')
-                                        .append('text')
-                                        .style("opacity", 0)
-                                        .attr("text-anchor", "left")
-                                        .attr("alignment-baseline", "middle");
-
-                                    // Create a rect on top of the svg area: this rectangle captures mouse position
-                                    population_svg
-                                        .append('rect')
-                                        .style("fill", "none")
-                                        .style("pointer-events", "all")
-                                        .attr('width', population_width)
-                                        .attr('height', population_height)
-                                        .on('mouseover', mouseover)
-                                        .on('mousemove', mousemove)
-                                        .on('mouseout', mouseout);
-
-                                    // What happens when the mouse moves -> show the annotations at the right positions.
-                                    function mouseover() {
-                                        population_focus.style("opacity", 1);
-                                        population_focusText.style("opacity", 1);
-                                    }
-
-                                    function mousemove(event) {
-                                        var pointer = d3.pointer(event);
-                                        var x0 = population_x.invert(pointer[0]);
-
-                                        var closestData = d3.least(data, function (d) {
-                                            return Math.abs(d.year - x0);
-                                        });
-
-                                        if (closestData) {
-                                            // 更新圆圈位置
-                                            population_focus
-                                                .attr("cx", population_x(closestData.year))
-                                                .attr("cy", population_y(closestData.Population));
-
-                                            // 定义 tooltip 文字内容
-                                            var yearText = "Year: " + d3.timeFormat("%Y")(closestData.year);
-                                            var populationText = "Population: " + closestData.Population;
-
-                                            // 更新 tooltip 文本
-                                            population_focusText
-                                                .attr("x", population_x(closestData.year) + 15)
-                                                .attr("y", population_y(closestData.Population) - 5)
-                                                .html(null)  // 清空之前的文本
-                                                .append("tspan")
-                                                .attr("x", population_x(closestData.year) + 15)
-                                                .attr("y", population_y(closestData.Population) - 5)
-                                                .text(yearText)
-                                                .append("tspan")
-                                                .attr("x", population_x(closestData.year) + 15)
-                                                .attr("y", population_y(closestData.Population) + 15)
-                                                .text(populationText);
-
-                                            // 估计 tooltip 文本的宽度和高度
-                                            var bbox = population_focusText.node().getBBox();
-
-                                            // 更新 tooltip 背景矩形的位置和大小
-                                            population_tooltipBackground
-                                                .attr("x", bbox.x - 5)
-                                                .attr("y", bbox.y - 5)
-                                                .attr("width", bbox.width + 10)
-                                                .attr("height", bbox.height + 10)
-                                                .style("opacity", 1);  // 显示矩形
-                                        }
-                                    }
-
-                                    function mouseout() {
-                                        population_focus.style("opacity", 0);
-                                        population_focusText.style("opacity", 0);
-                                        population_tooltipBackground.style("opacity", 0);  // 隐藏背景矩形
-
-                                    }
-                                });
-
-
-                            </script>
-                            <p style="position: relative; left: 120px;"><b style="color:#415441">Singapore Population
-                                    Reaches 6 Million</b></p>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 ps-lg-5">
-                        <h1 class="about" style="color:#415441">RIDE THE WAVE</h1>
-                        <h4 class="about mb-4" style="color:#415441">Meeting the rising demands</h2>
-                            <p class="about">
-                                Singapore’s strategic location attracted an influx of foreign human capital over the
-                                years
-                                and is now known to be Asia’s most densely populated country. To cater for this
-                                population growth,
-                                there is a strong pressure to ensure an efficient public transport system that
-                                can move millions of passengers
-                            </p>
-                            <!-- <p class="mb-5">
-              There live the blind texts. Separated they live in Bookmarksgrove
-              right at the coast of the Semantics, a large language ocean.
-            </p> -->
-                            <div class="row mb-5 count-numbers">
-
-                                <!-- Start Stats Item -->
-                                <div class="col-4 counter" data-aos="fade-up" data-aos-delay="100">
-                                    <span data-purecounter-separator="true" data-purecounter-start="0"
-                                        data-purecounter-end="6" data-purecounter-duration="1"
-                                        class="purecounter number"></span>
-                                    <span class="d-block">MRT lines</span>
-                                </div>
-                                <!-- End Stats Item -->
-
-                                <!-- Start Stats Item -->
-                                <div class="col-4 counter" data-aos="fade-up" data-aos-delay="200">
-                                    <span data-purecounter-separator="true" data-purecounter-start="0"
-                                        data-purecounter-end="140" data-purecounter-duration="1"
-                                        class="purecounter number"></span>
-                                    <span class="d-block">MRT stations</span>
-                                </div>
-                                <!-- End Stats Item -->
-
-                                <!-- Start Stats Item -->
-                                <div class="col-4 counter" data-aos="fade-up" data-aos-delay="300">
-                                    <span data-purecounter-separator="true" data-purecounter-start="0"
-                                        data-purecounter-end="397" data-purecounter-duration="1"
-                                        class="purecounter number"></span>
-                                    <span class="d-block">Bus routes</span>
-                                </div>
-                                <!-- End Stats Item -->
-
-                            </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </section><!-- /Stats Section -->
-
-        <!-- Blog Posts Section -->
         <section id="blog-posts" class="blog-posts section">
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
@@ -720,7 +469,385 @@
                     </div>
                 </div>
             </div>
-        </section><!-- /Blog Posts Section -->
+        </section>
+
+        <!-- Stats Section -->
+        <!-- <section id="stats" class="stats section light-background"> -->
+        <section id="stats" class="stats section light-background">
+            <div class="container">
+                <div class="row gy-4 justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="images-overlap">
+                            <!-- <img src="assets/img/img_v_1.jpg" alt="student" class="img-fluid img-1" data-aos="fade-up"> -->
+                            <!--add population chart here-->
+
+
+
+
+                            <!--TODO: Singpoare Population Chart -->
+
+
+
+                            <!-- <h4>
+                                Singapore Population Reaches 6 Million
+                            </h4> -->
+
+                            <div id="sg_population"></div>
+
+                            <script src="https://d3js.org/d3.v7.min.js"></script>
+                            <script>
+
+                                // set the dimensions and margins of the graph
+                                var population_margin = { top: 30, right: 180, bottom: 30, left: 50 };  // Adjust margins to add more space
+                                // var margin = {top: 130, right: 150, bottom: 130, left: 130},
+                                var population_width = 700 - population_margin.left - population_margin.right;
+                                var population_height = 400 - population_margin.top - population_margin.bottom;
+
+                                // append the svg object to the body of the page
+                                var population_svg = d3.select("#sg_population")
+                                    .append("svg")
+                                    .attr("width", population_width + population_margin.left + population_margin.right)
+                                    .attr("height", population_height + population_margin.top + population_margin.bottom)
+                                    .append("g")
+                                    .attr("transform", "translate(" + population_margin.left + "," + population_margin.top + ")");
+
+                                // Read the data
+                                d3.csv('data/sg_population.csv').then(function (data) {
+
+                                    // Parse the data
+                                    var parseYear = d3.timeParse("%Y");
+
+                                    data.forEach(function (d) {
+                                        d.year = parseYear(d.year);
+                                        d.Population = +d.Population;
+                                    });
+
+                                    // Add X axis --> use time scale now
+                                    var population_x = d3.scaleTime()
+                                        .domain(d3.extent(data, function (d) { return d.year; }))
+                                        .range([0, population_width]);
+
+                                    population_svg.append("g")
+                                        .attr("transform", "translate(0," + population_height + ")")
+                                        .call(d3.axisBottom(population_x).ticks(5).tickFormat(d3.timeFormat("%Y"))) // Reduce number of ticks to 6 on X axis
+                                        .call(g => g.selectAll(".tick").filter(function (d) {
+                                            return d >= d3.max(data, d => d.year);  // Only filter the tick where the value equals the max year
+                                        }).remove());
+
+                                    // Add Y axis
+                                    var population_y = d3.scaleLinear()
+                                        // .domain([0, d3.max(data, function(d) { return +d.Population; })])
+                                        .domain([0, 7000000])
+                                        .range([population_height, 0]);
+
+                                    population_svg.append("g")
+                                        .call(d3.axisLeft(population_y).ticks(7, 's')) // Reduce number of ticks to 6 on Y axis
+                                        .call(g => g.selectAll(".tick").filter(function (d) {
+                                            return d >= d3.max(data, d => d.Population);  // Only filter the tick where the value equals the max population
+                                        }).remove());
+
+                                    population_svg.append("defs").append("clipPath")
+                                        .attr("id", "clip")
+                                        .append("rect")
+                                        .attr("width", population_width)
+                                        .attr("height", population_height)
+                                        .attr("x", 0)
+                                        .attr("y", 0);
+
+                                    population_svg.append("text")
+                                        .attr("x", -population_height / 2)
+                                        .attr("y", -population_margin.left + 20)
+                                        .attr("class", "axis-label")
+                                        .attr("transform", "rotate(-90)")
+                                        .style("text-anchor", "middle")
+                                        .text("Number of people(in millions)");
+
+                                    // Add the line
+                                    population_svg.append("path")
+                                        .datum(data)
+                                        .attr("class", "line")
+                                        .attr("d", d3.line()
+                                            .x(function (d) { return population_x(d.year) })
+                                            .y(function (d) { return population_y(d.Population) })
+                                        )
+                                        .attr("clip-path", "url(#clip)")
+                                        .style("stroke", "#8B5C48")  // Set the color of the line
+                                        .style("stroke-width", 3); // Optional
+                                    ;  // Add the clip-path here
+
+                                    // Create the circle that travels along the curve of chart
+                                    var population_focus = population_svg
+                                        .append('g')
+                                        .append('circle')
+                                        .style("fill", "#8B5C48")
+                                        .style("stroke", "#8B5C48")
+                                        .attr('r', 5)
+                                        .style("opacity", 0);
+
+                                    var population_tooltipBackground = population_svg
+                                        .append('g')
+                                        .append('rect')
+                                        .attr("class", "tooltip-rect")
+                                        .attr("width", 180)
+                                        .attr("height", 80)
+                                        .attr("rx", 10) // 设置圆角
+                                        .attr("ry", 10)
+                                        .attr("fill", "#C6B2A0") // 背景色
+                                        .attr("stroke", "#C6B2A0") // 边框颜色
+                                        .attr("stroke-width", 1)
+                                        .attr("opacity", 0); // 设置透明度
+
+                                    // Create the text that travels along the curve of chart
+                                    var population_focusText = population_svg
+                                        .append('g')
+                                        .append('text')
+                                        .style("opacity", 0)
+                                        .attr("text-anchor", "left")
+                                        .attr("alignment-baseline", "middle");
+
+                                    // Create a rect on top of the svg area: this rectangle captures mouse position
+                                    population_svg
+                                        .append('rect')
+                                        .style("fill", "none")
+                                        .style("pointer-events", "all")
+                                        .attr('width', population_width)
+                                        .attr('height', population_height)
+                                        .on('mouseover', mouseover)
+                                        .on('mousemove', mousemove)
+                                        .on('mouseout', mouseout);
+
+                                    // What happens when the mouse moves -> show the annotations at the right positions.
+                                    function mouseover() {
+                                        population_focus.style("opacity", 1);
+                                        population_focusText.style("opacity", 1);
+                                    }
+
+                                    function mousemove(event) {
+                                        var pointer = d3.pointer(event);
+                                        var x0 = population_x.invert(pointer[0]);
+
+                                        var closestData = d3.least(data, function (d) {
+                                            return Math.abs(d.year - x0);
+                                        });
+
+                                        if (closestData) {
+                                            // 更新圆圈位置
+                                            population_focus
+                                                .attr("cx", population_x(closestData.year))
+                                                .attr("cy", population_y(closestData.Population));
+
+                                            // 定义 tooltip 文字内容
+                                            var yearText = "Year: " + d3.timeFormat("%Y")(closestData.year);
+                                            var populationText = "Population: " + closestData.Population;
+
+                                            // 更新 tooltip 文本
+                                            population_focusText
+                                                .attr("x", population_x(closestData.year) + 15)
+                                                .attr("y", population_y(closestData.Population) - 5)
+                                                .html(null)  // 清空之前的文本
+                                                .append("tspan")
+                                                .attr("x", population_x(closestData.year) + 15)
+                                                .attr("y", population_y(closestData.Population) - 5)
+                                                .text(yearText)
+                                                .append("tspan")
+                                                .attr("x", population_x(closestData.year) + 15)
+                                                .attr("y", population_y(closestData.Population) + 15)
+                                                .text(populationText);
+
+                                            // 估计 tooltip 文本的宽度和高度
+                                            var bbox = population_focusText.node().getBBox();
+
+                                            // 更新 tooltip 背景矩形的位置和大小
+                                            population_tooltipBackground
+                                                .attr("x", bbox.x - 5)
+                                                .attr("y", bbox.y - 5)
+                                                .attr("width", bbox.width + 10)
+                                                .attr("height", bbox.height + 10)
+                                                .style("opacity", 1);  // 显示矩形
+                                        }
+                                    }
+
+                                    function mouseout() {
+                                        population_focus.style("opacity", 0);
+                                        population_focusText.style("opacity", 0);
+                                        population_tooltipBackground.style("opacity", 0);  // 隐藏背景矩形
+
+                                    }
+                                });
+
+
+                            </script>
+                            <p style="position: relative; left: 120px;"><b style="color:#8B5C4B">Singapore Population
+                                    Reaches 6 Million</b></p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 ps-lg-5">
+                        <h1 class="about" style="color:#415441">RIDE THE WAVE</h1>
+                        <h4 class="about mb-4" style="color:#415441">Meeting the rising demands</h2>
+                            <p class="about">
+                                Singapore’s strategic location attracted an influx of foreign human capital over the
+                                years
+                                and is now known to be Asia’s most densely populated country. To cater for this
+                                population growth,
+                                there is a strong pressure to ensure an efficient public transport system that
+                                can move millions of passengers
+                            </p>
+                            <!-- <p class="mb-5">
+              There live the blind texts. Separated they live in Bookmarksgrove
+              right at the coast of the Semantics, a large language ocean.
+            </p> -->
+                            <div class="row mb-5 count-numbers">
+
+                                <!-- Start Stats Item -->
+                                <div class="col-4 counter" data-aos="fade-up" data-aos-delay="100">
+                                    <span data-purecounter-separator="true" data-purecounter-start="0"
+                                        data-purecounter-end="6" data-purecounter-duration="1"
+                                        class="purecounter number"></span>
+                                    <span class="d-block">MRT lines</span>
+                                </div>
+                                <!-- End Stats Item -->
+
+                                <!-- Start Stats Item -->
+                                <div class="col-4 counter" data-aos="fade-up" data-aos-delay="200">
+                                    <span data-purecounter-separator="true" data-purecounter-start="0"
+                                        data-purecounter-end="140" data-purecounter-duration="1"
+                                        class="purecounter number"></span>
+                                    <span class="d-block">MRT stations</span>
+                                </div>
+                                <!-- End Stats Item -->
+
+                                <!-- Start Stats Item -->
+                                <div class="col-4 counter" data-aos="fade-up" data-aos-delay="300">
+                                    <span data-purecounter-separator="true" data-purecounter-start="0"
+                                        data-purecounter-end="397" data-purecounter-duration="1"
+                                        class="purecounter number"></span>
+                                    <span class="d-block">Bus routes</span>
+                                </div>
+                                <!-- End Stats Item -->
+
+                            </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section><!-- /Stats Section -->
+
+        <!-- Blog Posts Section -->
+        <section id="blog-posts1" class="blog-posts section">
+            <div class="container">
+                <!-- <div class="row align-items-center justify-content-between">
+                    <div class="col-lg-7 mb-5 mb-lg-0 order-lg-2" data-aos="fade-up" data-aos-delay="400">
+                        <div class="swiper init-swiper">
+                            <script type="application/json" class="swiper-config">
+                    {
+                      "loop": true,
+                      "speed": 600,
+                      "autoplay": {
+                        "delay": 5000000
+                      },
+                      "slidesPerView": "auto",
+                      "pagination": {
+                        "el": ".swiper-pagination",
+                        "type": "bullets",
+                        "clickable": true
+                      },
+                      "breakpoints": {
+                        "320": {
+                          "slidesPerView": 1,
+                          "spaceBetween": 40
+                        },
+                        "1200": {
+                          "slidesPerView": 1,
+                          "spaceBetween": 1
+                        }
+                      }
+                    }
+                  </script>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div> -->
+
+                <div class="container section-title" data-aos="fade-up">
+                    <h1>AT A GLANCE</h1>
+                    <h4>Industry insights to public transport</h4>
+                </div>
+                <div class="row justify-content-center" data-aos="fade-up">
+                    <div class="col-md-6 col-lg-4 ">
+                        <!-- <h1 class="about">AT A GLANCE</h1>
+                    <h4 class="about mb-4">
+                        Industry insights to public transport
+                    </h4> -->
+                        <img src="media/mrtstation.jpg" alt="student" class="img-fluid img-1" data-aos="fade-up">
+                    </div>
+                    <div class="col-md-6 col-lg-6 ps-lg-5">
+                        <div class="row mb-3">
+                            <p class="about">
+                                2.5 million commuters depend on Singapore's public transport system daily to get to
+                                their workplaces.
+                                Public transport is not only essential for our daily
+                                lives but also serves as a key enabler of economic
+                                activities and environmental sustainability for our city
+                                state.
+                            </p>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-6 col-sm-6 col-md-6 col-lg-6 mb-3 mt-3">
+                                <div class="services-item" data-aos="fade-up" data-aos-delay="">
+                                    <div class="services-icon">
+                                        <!-- <i class="bi bi-search"></i> -->
+                                    </div>
+                                    <div>
+                                        <h3 style="color:#8B5C4B; font-size: 2.0rem;">7 in 10</h3>
+                                        <p>households are within a 10-minute walk from a train station</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-sm-6 col-md-6 col-lg-6 mb-3 mt-3">
+                                <div class="services-item" data-aos="fade-up" data-aos-delay="100">
+                                    <div class="services-icon">
+                                        <!-- <i class="bi bi-command"></i> -->
+                                    </div>
+                                    <div>
+                                        <h3 style="color:#8B5C4B; font-size: 2.0rem;">90%</h3>
+                                        <p>of carbon footprint is reduced by taking public transport</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-6 col-md-6 col-lg-6 mt-3 mb-3">
+                                <div class="services-item" data-aos="fade-up" data-aos-delay="200">
+                                    <div class="services-icon">
+                                        <!-- <i class="bi bi-grid"></i> -->
+                                    </div>
+                                    <div>
+                                        <h3 style="color:#8B5C4B; font-size: 2.0rem;">1.7% - 2.2%</h3>
+                                        <p>share of monthly household income is spent on public transport</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-6 col-md-6 col-lg-6 mt-3 mb-3">
+                                <div class="services-item" data-aos="fade-up" data-aos-delay="300">
+                                    <div class="services-icon">
+                                        <!-- <i class="bi bi-globe"></i> -->
+                                    </div>
+                                    <div>
+                                        <h3 style="color:#8B5C4B; font-size: 2.0rem;"> >$2 billion</h3>
+                                        <p>worth of annual operating subsidy is allocated to public transport</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+        </section>
+        <!-- /Blog Posts Section -->
 
         <!-- Tabs Section -->
         <section id="tabs" class="tabs section light-background">
@@ -741,7 +868,7 @@
                             </div>
                             <!-- /.icon -->
                             <div class="service-contents">
-                                <h3>Rail Network Length Reaches 287.3 KM</h3>
+                                <h3>Rail Network Length Reaches 258.5 KM</h3>
                                 <p>
                                     MRT and LRT rail network expansions from 1990 to 2023
                                 </p>
@@ -773,7 +900,7 @@
                             </div>
                             <!-- /.icon -->
                             <div class="service-contents">
-                                <h3>Public Motor Vehicle Grows To 118,378</h3>
+                                <h3>Public Motor Vehicle Grows To 118K</h3>
                                 <p>
                                     Buses, taxis and private hire cars population from 1990 to 2024
                                 </p>
@@ -827,51 +954,13 @@
                 }
               </script>
                             <div class="swiper-wrapper">
-                                <!-- <div class="swiper-slide">
-                                    <img src="assets/img/img_h_1.jpg" alt="Image" class="img-fluid">
-                                    <div class="p-4">
-                                        <h3 class="text-black h5 mb-3">Modern and clean design</h3>
-                                        <div class="row">
-                                            <div class="col-lg-8">
-                                                <p>
-                                                    Far far away, behind the word mountains, far from the
-                                                    countries Vokalia and Consonantia, there live the blind
-                                                    texts. Separated they live in Bookmarksgrove right at the
-                                                    coast of the Semantics, a large language ocean.
-                                                </p>
-                                                <p>
-                                                    A small river named Duden flows by their place and
-                                                    supplies it with the necessary regelialia. It is a
-                                                    paradisematic country, in which roasted parts of sentences
-                                                    fly into your mouth.
-                                                </p>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <ul class="list-unstyled list-check">
-                                                    <li>Far far away, behind the word</li>
-                                                    <li>Far from the countries Vokalia</li>
-                                                    <li>Separated they live in Bookmarksgrove</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> -->
                                 <div class="swiper-slide">
-
-
-
-
-
-                                    <!--TODO: Rail length chart-->
-
-
-
 
                                     <!-- <img src="assets/img/img_h_2.jpg" alt="Image" class="img-fluid"> -->
                                     <div class="row align-items-center">
                                         <div class="col-md-1"></div>
-                                        <div class="col-md-3">
-                                            <label for="lineSelect">Select Line to Display:</label>
+                                        <div class="col-md-2">
+                                            <label for="lineSelect">Select rail type:</label>
                                         </div>
                                         <div class="col-md-3">
                                             <select id="lineSelect" class="form-select form-select-sm">
@@ -886,13 +975,14 @@
                                     <script>
                                         // 设置图表的宽度和高度
                                         const rail_length_svg = d3.select("#Rail_Length_Chart");
-                                        const rail_length_margin = { top: 50, right: 50, bottom: 50, left: 70 };
+                                        const rail_length_margin = { top: 50, right: 130, bottom: 50, left: 70 };
                                         const rail_length_width = rail_length_svg.attr("width") - rail_length_margin.left - rail_length_margin.right;
                                         const rail_length_height = rail_length_svg.attr("height") - rail_length_margin.top - rail_length_margin.bottom;
 
                                         const rail_length_g = rail_length_svg.append("g")
                                             .attr("transform", `translate(${rail_length_margin.left},${rail_length_margin.top})`);
 
+                                        var g_currentSelectedLine;
                                         // 加载 CSV 文件
                                         d3.csv("data/Rail-length.csv").then(data => {
                                             // 将数据中的 year 字段转换为数字
@@ -931,25 +1021,131 @@
                                                 .datum(data)
                                                 .attr("class", "line rail")
                                                 .attr("d", rail_length_lineGenerator)
-                                                .attr("stroke", "steelblue")
-                                                .style("stroke-width", 2)
+                                                .style("stroke", "#8B5C4B")
+                                                .style("stroke-width", 3)
                                                 .style("fill", "none");
 
                                             // 添加标签
-                                            rail_length_svg.append("text")
-                                                .attr("x", rail_length_width / 2 + rail_length_margin.left)
-                                                .attr("y", rail_length_height + rail_length_margin.top + 40)
-                                                .attr("class", "axis-label")
-                                                .style("text-anchor", "middle")
-                                                .text("Year");
-
                                             rail_length_svg.append("text")
                                                 .attr("x", -rail_length_height / 2)
                                                 .attr("y", rail_length_margin.left / 3)
                                                 .attr("class", "axis-label")
                                                 .attr("transform", "rotate(-90)")
                                                 .style("text-anchor", "middle")
-                                                .text("Length (Kilometres)");
+                                                .text("Length of rail (in KM)");
+
+                                            var rail_length_focus = rail_length_g.append('g')
+                                                .append('circle')
+                                                .style('fill', '#8B5C48')
+                                                .style('stroke', '#8B5C48')
+                                                .attr('r', 5)
+                                                .style("opacity", 0)
+
+                                            var rail_length_tooltipBackground = rail_length_g
+                                                .append('g')
+                                                .append('rect')
+                                                .attr("class", "tooltip-rect")
+                                                .attr("width", 180)
+                                                .attr("height", 80)
+                                                .attr("rx", 10) //圆角
+                                                .attr("ry", 10)
+                                                .attr("fill", "#C6B2A0")
+                                                .attr("stroke", "#C6B2A0")
+                                                .attr("stroke-width", 1)
+                                                .attr("opacity", 0)
+
+                                            var rail_length_focusText = rail_length_g
+                                                .append('g')
+                                                .append('text')
+                                                .style('opacity', 0)
+                                                .attr('text-anchor', "left")
+                                                .attr("alignment-baseline", "middle");
+
+                                            rail_length_g.append('rect')
+                                                .style("fill", "none")
+                                                .style("pointer-events", "all")
+                                                .attr('width', rail_length_width)
+                                                .attr('height', rail_length_height)
+                                                .on('mouseover', mouseover)
+                                                .on('mousemove', mousemove)
+                                                .on('mouseout', mouseout);
+
+                                            function mouseover() {
+                                                rail_length_focus.style("opacity", 1);
+                                                rail_length_focusText.style("opacity", 1);
+                                            }
+
+                                            function mousemove(event) {
+                                                var rail_length_pointer = d3.pointer(event);
+                                                var rail_x0 = rail_length_x.invert(rail_length_pointer[0]);
+                                                var rail_length_closestData = d3.least(data, function (d) {
+                                                    return Math.abs(d.year - rail_x0);
+                                                });
+
+                                                console.log(rail_length_closestData);
+
+                                                var rail_length_y_value = 0;
+                                                var rail_actual_length = 0;
+                                                if (g_currentSelectedLine === "Total_KM") {
+                                                    rail_actual_length = rail_length_closestData.Total_KM;
+                                                    rail_length_y_value = rail_length_y(rail_length_closestData.Total_KM);
+                                                }
+                                                else if (g_currentSelectedLine === "MRT_KM") {
+                                                    rail_actual_length = rail_length_closestData.MRT_KM;
+                                                    rail_length_y_value = rail_length_y(rail_length_closestData.MRT_KM);
+                                                }
+                                                else if (g_currentSelectedLine === "LRT_KM") {
+                                                    rail_actual_length = rail_length_closestData.LRT_KM;
+                                                    rail_length_y_value = rail_length_y(rail_length_closestData.LRT_KM);
+                                                }
+                                                else {
+                                                    rail_actual_length = rail_length_closestData.Total_KM;
+                                                    rail_length_y_value = rail_length_y(rail_length_closestData.Total_KM);
+                                                }
+                                                console.log("rail_length_y_value=>", rail_length_y_value)
+                                                if (rail_length_closestData) {
+                                                    rail_length_focus
+                                                        .attr("cx", rail_length_x(rail_length_closestData.year))
+                                                        .attr("cy", rail_length_y_value);
+                                                }
+
+                                                // 定义 tooltip 文字内容
+                                                console.log("rail_length_closestData.year = ", rail_length_closestData.year);
+                                                var rail_length_yearText = "Year: " + rail_length_closestData.year;
+                                                var rail_lengthText = "Length: " + rail_actual_length;
+
+                                                // 更新 tooltip 文本
+                                                rail_length_focusText
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_y_value - 5)
+                                                    .html(null)  // 清空之前的文本
+                                                    .append("tspan")
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_y_value - 5)
+                                                    .text(rail_length_yearText)
+                                                    .append("tspan")
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_y_value + 15)
+                                                    .text(rail_lengthText);
+
+                                                // 估计 tooltip 文本的宽度和高度
+                                                var rail_length_bbox = rail_length_focusText.node().getBBox();
+
+                                                // 更新 tooltip 背景矩形的位置和大小
+                                                rail_length_tooltipBackground
+                                                    .attr("x", rail_length_bbox.x - 5)
+                                                    .attr("y", rail_length_bbox.y - 5)
+                                                    .attr("width", rail_length_bbox.width + 10)
+                                                    .attr("height", rail_length_bbox.height + 10)
+                                                    .style("opacity", 1);  // 显示矩形
+                                            }
+
+
+                                            function mouseout() {
+                                                rail_length_focus.style("opacity", 0);
+                                                rail_length_focusText.style("opacity", 0);
+                                                rail_length_tooltipBackground.style("opacity", 0);
+                                            }
 
                                             // 动态更新函数，用于更新选择的线条
                                             function update(selectedLine) {
@@ -976,23 +1172,23 @@
                                             // 绑定选择事件，控制线条的显示
                                             d3.select("#lineSelect").on("change", function () {
                                                 const selectedLine = d3.select(this).property("value");
-
+                                                g_currentSelectedLine = selectedLine;
+                                                console.log(g_currentSelectedLine);
                                                 // 更新线条数据和过渡效果
                                                 update(selectedLine);
                                             });
                                         });
 
                                     </script>
+
+                                    <div>
+                                        <p style="position: relative; left: 300px;"><b style="color:#8B5C4B">
+                                                Rail Network Length Reaches 258.5 KM</b></p>
+                                    </div>
                                 </div>
 
 
                                 <div class="swiper-slide">
-
-
-
-
-                                    <!-- TODO: public transport ridership chart-->
-
                                     <div id="public-transport-ridership">
                                     </div>
                                     <script>
@@ -1014,9 +1210,7 @@
                                         var g_imageWidth = 150;
                                         var g_imageHeight = 150;
 
-                                        var yearFontColor = "#808080"
-                                        var yearHaloColot = "#ffffff"
-
+                                        var yearFontColor = "#C6B2A0"
 
                                         const margin = {
                                             top: 80, // 图表顶部的空白区域
@@ -1026,34 +1220,34 @@
                                         };
 
                                         const colorMapping = {
-                                            "MRT": "#9A383B",
-                                            "Bus": "#70D83A",
-                                            "LRT": "#A1B5DB",
-                                            "P2P": "#2D518B",
-                                            "default": "#9467bd" // 默认颜色，紫色
+                                            "MRT": "#8B5C4B",
+                                            "Bus": "#415441",
+                                            "LRT": "#C6B2A0",
+                                            "P2P": "#A4B2A7",
+                                            "default": "#1F1F1F" // 默认颜色，紫色
                                         };
 
                                         let barPadding = (height - (margin.bottom + margin.top)) / (top_n * 5); // 柱状图的间距
 
                                         // 设置图表标题
-                                        let title = svg.append('text')
-                                            .attr('class', 'title') // 给标题添加类
-                                            .attr('y', 24) // 设置Y轴的位置
-                                            .text('Public Transport Ridership'); // 标题内容
+                                        // let title = svg.append('text')
+                                        //     .attr('class', 'title') // 给标题添加类
+                                        //     .attr('y', 24) // 设置Y轴的位置
+                                        //     .text('Public Transport Ridership'); // 标题内容
 
                                         // 设置副标题
                                         let subTitle = svg.append("text")
                                             .attr("class", "subTitle") // 给副标题添加类
-                                            .attr("y", 55) // 设置Y轴的位置
-                                            .html("Type, Population"); // 副标题内容
+                                            .attr("y", 35) // 设置Y轴的位置
+                                            .html("Ridership Population"); // 副标题内容
 
                                         // 设置图表右下角的注释
-                                        let caption = svg.append('text')
-                                            .attr('class', 'caption') // 给注释添加类
-                                            .attr('x', width - g_rightMargin) // 设置X轴的位置
-                                            .attr('y', height - 5) // 设置Y轴的位置
-                                            .style('text-anchor', 'end') // 文本对齐方式为右对齐
-                                            .html('Source: Interbrand'); // 注释内容
+                                        // let caption = svg.append('text')
+                                        //     .attr('class', 'caption') // 给注释添加类
+                                        //     .attr('x', width - g_rightMargin) // 设置X轴的位置
+                                        //     .attr('y', height - 5) // 设置Y轴的位置
+                                        //     .style('text-anchor', 'end') // 文本对齐方式为右对齐
+                                        //     .html('Source: Interbrand'); // 注释内容
 
                                         let Year = 1995; // 起始年份
 
@@ -1317,8 +1511,8 @@
 
                                             // 给克隆节点添加一个特定的类以便于后续选择
                                             clone.classed('halo-clone', true)
-                                                .style('fill', '#ffffff')
-                                                .style('stroke', '#ffffff')
+                                                .style('fill', '#FFFFFF')
+                                                .style('stroke', '#FFFFFF')
                                                 .style('stroke-width', strokeWidth)
                                                 .style('stroke-linejoin', 'round')
                                                 .style('opacity', 1);
@@ -1327,28 +1521,25 @@
                                     </script>
                                     <div class="d-grid gap-2 mt-3">
                                         <button id="restart-btn" class="btn btn-primary" type="button">
-                                            <i class="bi bi-arrow-repeat"> Reset</i></button>
+                                            <i class="bi bi-arrow-repeat"> Watch Ridership Numbers Change Over the
+                                                Years</i></button>
                                     </div>
                                 </div>
 
 
 
 
-                                <!-- <img src="assets/img/img_h_3.jpg" alt="Image" class="img-fluid">-->
                                 <div class="swiper-slide">
-
-
-
-
-
-                                    <!-- TODO: Motor vechicle population chart-->
-                                    <!-- <img src="assets/img/img_h_4.jpg" alt="Image" class="img-fluid"> -->
                                     <div id="mv_population"></div>
+                                    <div>
+                                        <p style="position: relative; left: 300px;"><b style="color:#8B5C4B">
+                                                Public Motor Vehicle Grows To 118K</b></p>
+                                    </div>
                                     <script>
                                         // 设置图表的宽度和高度
-                                        const mv_pop_margin = { top: 60, right: 120, bottom: 50, left: 50 },
-                                            mv_pop_width = 860 - mv_pop_margin.left - mv_pop_margin.right,
-                                            mv_pop_height = 400 - mv_pop_margin.top - mv_pop_margin.bottom;
+                                        const mv_pop_margin = { top: 50, right: 130, bottom: 50, left: 70 };
+                                        mv_pop_width = 960 - mv_pop_margin.left - mv_pop_margin.right,
+                                            mv_pop_height = 500 - mv_pop_margin.top - mv_pop_margin.bottom;
 
                                         const mv_pop_svg = d3.select("#mv_population")
                                             .append("svg")
@@ -1378,7 +1569,7 @@
                                             // 颜色比例尺
                                             const mv_pop_color = d3.scaleOrdinal()
                                                 .domain(mv_pop_keys)
-                                                .range(d3.schemeSet2);
+                                                .range(["#8B5C4B", "#415441", "#A4B2A7"]);
 
                                             // 堆叠数据
                                             const mv_pop_stackedData = d3.stack()
@@ -1397,10 +1588,10 @@
                                             // Y轴：车辆数量
                                             const mv_pop_y = d3.scaleLinear()
                                                 .domain([0, d3.max(data, d => d.Private_Hire_Cars + d.Taxis + d.Buses)])
-                                                .range([mv_pop_height, 0]);
+                                                .range([mv_pop_height, 0])
 
                                             mv_pop_svg.append("g")
-                                                .call(d3.axisLeft(mv_pop_y).ticks(5));
+                                                .call(d3.axisLeft(mv_pop_y).ticks(5, "s"));
 
                                             // 定义面积生成器
                                             const mv_pop_area = d3.area()
@@ -1419,10 +1610,10 @@
                                                 .attr("height", 80)
                                                 .attr("rx", 10) // 设置圆角
                                                 .attr("ry", 10)
-                                                .attr("fill", "lightsteelblue") // 背景色
-                                                .attr("stroke", "lightsteelblue") // 边框颜色
+                                                .attr("fill", "#C6B2A0") // 背景色
+                                                .attr("stroke", "#C6B2A0") // 边框颜色
                                                 .attr("stroke-width", 1)
-                                                .attr("opacity", 0.8); // 设置透明度
+                                                .attr("opacity", 1); // 设置透明度
 
                                             const tooltipText = tooltipGroup.append("text")
                                                 .attr("class", "tooltip-text")
@@ -1499,19 +1690,20 @@
                                                 .on("mouseout", service_delay_mouseleave);
 
                                             // 添加 X 轴标签
-                                            mv_pop_svg.append("text")
-                                                .attr("text-anchor", "end")
-                                                .attr("x", mv_pop_width)
-                                                .attr("y", mv_pop_height + 40)
-                                                .text("Year");
+                                            // mv_pop_svg.append("text")
+                                            //     .attr("text-anchor", "end")
+                                            //     .attr("x", mv_pop_width)
+                                            //     .attr("y", mv_pop_height + 40)
+                                            //     .text("Year");
 
                                             // 添加 Y 轴标签
                                             mv_pop_svg.append("text")
-                                                .attr("text-anchor", "end")
-                                                .attr("x", 0)
-                                                .attr("y", -20)
+                                                .attr("x", -mv_pop_height / 2)
+                                                .attr("y", mv_pop_margin.left / 3 - 55)
+                                                .attr("class", "axis-label")
+                                                .attr("transform", "rotate(-90)")
+                                                .style("text-anchor", "middle")
                                                 .text("Number of Vehicles")
-                                                .attr("text-anchor", "start");
 
                                             // 调整图例的位置，使其靠近图表左侧
                                             const mv_pop_size = 20;
@@ -1541,194 +1733,406 @@
                                     </script>
                                 </div>
 
+
+
+
+
+
+                                <!-- TODO: Motor vechicle population chart-->
+                                <!-- <img src="assets/img/img_h_4.jpg" alt="Image" class="img-fluid"> -->
                                 <div class="swiper-slide">
-
-
-
-
-
-                                    <!-- TODO: Motor vechicle population chart-->
-                                    <!-- <img src="assets/img/img_h_4.jpg" alt="Image" class="img-fluid"> -->
-                                    <div class="swiper-slide">
-                                        <!-- <img src="media/mrt-swiper1.png" alt="Image" class="img-fluid"> -->
-                                        <div class="row align-items-center">
-                                            <div class="col-md-1"></div>
-                                            <div class="col-md-3">
-                                                <label for="LrtMrtSelect">Select Chart to Display:</label>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <select id="LrtMrtSelect" class="form-select form-select-sm">
-                                                    <option value="MRT">MRT Delays</option>
-                                                    <option value="LRT">LRT Delays</option>
-                                                </select>
-                                            </div>
+                                    <!-- <img src="media/mrt-swiper1.png" alt="Image" class="img-fluid"> -->
+                                    <div class="row align-items-center">
+                                        <!-- <div class="col-md-1"></div>
+                                        <div class="col-md-3">
+                                            <label for="LrtMrtSelect">Select Chart to Display:</label>
                                         </div>
-                                        <div id="Service_Delay"></div>
-                                        <script>
-                                            const service_delay_margin = { top: 20, right: 30, bottom: 40, left: 50 },
-                                                service_delay_width = 800 - service_delay_margin.left - service_delay_margin.right,
-                                                service_delay_height = 400 - service_delay_margin.top - service_delay_margin.bottom;
-
-                                            const service_delay_svg = d3.select("#Service_Delay")
-                                                .append("svg")
-                                                .attr("width", service_delay_width + service_delay_margin.left + service_delay_margin.right)
-                                                .attr("height", service_delay_height + service_delay_margin.top + service_delay_margin.bottom)
-                                                .append("g")
-                                                .attr("transform", `translate(${service_delay_margin.left},${service_delay_margin.top})`);
-
-                                            // 读取 CSV 数据
-                                            d3.csv("data/No_of_Service_Delays.csv").then(function (data) {
-
-                                                // MRT 和 LRT 的子组
-                                                const MRT_subgroups = ["NSL", "EWL", "NEL", "CCL", "DTL"];
-                                                const LRT_subgroups = ["BPLRT", "SPLRT"];
-
-                                                // X轴的年份组
-                                                const service_delay_groups = data.map(d => d.Year);
-
-                                                // 初始化 Y 轴（以前的X轴）作为分类轴
-                                                const service_delay_y = d3.scaleBand()
-                                                    .domain(service_delay_groups)
-                                                    .range([0, service_delay_height])
-                                                    .padding([0.4]);
-
-                                                service_delay_svg.append("g")
-                                                    .call(d3.axisLeft(service_delay_y).tickSizeOuter(0));
-
-                                                // 初始化 X 轴（以前的Y轴）作为数值轴
-                                                console.log("width=>", service_delay_width);
-                                                const service_delay_x = d3.scaleLinear()
-                                                    .range([0, service_delay_width - 100]);
-
-                                                const service_delay_xAxis = service_delay_svg.append("g")
-                                                    .attr("transform", `translate(0, ${service_delay_height})`);
-
-                                                // 定义不同的颜色比例尺
-                                                const colorMRT = d3.scaleOrdinal()
-                                                    .domain(MRT_subgroups)
-                                                    .range(['#d42e12', '#009645', '#9900aa', '#fa9e0d', '#005ec4']); // MRT颜色
-
-                                                const colorLRT = d3.scaleOrdinal()
-                                                    .domain(LRT_subgroups)
-                                                    .range(['#8c564b', '#e377c2']); // LRT颜色
-
-                                                // 在 SVG 内创建 tooltip 作为文本元素
-                                                const tooltipGroup = service_delay_svg.append("g")
-                                                    .style("display", "none");  // 初始时隐藏
-
-                                                const tooltipRect = tooltipGroup.append('rect')
-                                                    .attr("class", "tooltip-rect")
-                                                    .attr("width", 80)
-                                                    .attr("height", 45)
-                                                    .attr("rx", 10) // 设置圆角
-                                                    .attr("ry", 10)
-                                                    .attr("fill", "lightsteelblue") // 背景色
-                                                    .attr("stroke", "lightsteelblue") // 边框颜色
-                                                    .attr("stroke-width", 1)
-                                                    .attr("opacity", 0.9); // 设置透明度
-
-                                                const tooltipText = tooltipGroup.append('text')
-                                                    .attr("class", "tooltip-text")
-                                                    .attr("x", 10)
-                                                    .attr("y", 20)
-                                                    .attr("font-size", "12px")
-                                                    .attr("fill", "black")
-                                                    .attr("font-family", "Arial");
-
-                                                // 鼠标悬停事件处理程序
-                                                const service_delay_mouseover = function (event, d) {
-                                                    const subgroupName = d3.select(this.parentNode).datum().key;
-                                                    const subgroupValue = d.data[subgroupName];
-                                                    tooltipGroup.style("display", null);  // 显示 tooltip
-
-                                                    tooltipText.text(`Line: ${subgroupName}`)
-                                                        .append("tspan")
-                                                        .attr("x", 10)
-                                                        .attr("dy", "1.2em")
-                                                        .text(`Delays: ${subgroupValue}`);
-
-                                                    tooltipGroup.raise();
-
-                                                    // 鼠标悬停时，高亮当前条形柱，其他条形柱透明度降低
-                                                    d3.selectAll("#Service_Delay .bar").style("opacity", 0.3); // 降低所有柱子的透明度
-                                                    d3.select(this).style("opacity", 1); // 高亮当前悬停的柱子
-                                                }
-
-                                                // 鼠标移动事件处理程序
-                                                const service_delay_mousemove = function (event) {
-                                                    const svgPosition = service_delay_svg.node().getBoundingClientRect();
-                                                    const absoluteX = svgPosition.left + window.pageXOffset;
-                                                    const absoluteY = svgPosition.top + window.pageYOffset;
-
-                                                    tooltipGroup
-                                                        .attr("transform", `translate(${event.pageX - absoluteX - 20}, ${event.pageY - absoluteY - 20})`);
-                                                }
-
-                                                // 鼠标离开事件处理程序
-                                                const service_delay_mouseleave = function () {
-                                                    tooltipGroup.style("display", "none");  // 隐藏 tooltip
-                                                    d3.selectAll("#Service_Delay .bar").style("opacity", 0.8); // 恢复默认的透明度
-                                                }
-
-                                                // 更新图表函数
-                                                function updateChart(selectedChart) {
-                                                    let subgroups, maxDelay;
-                                                    if (selectedChart === "MRT") {
-                                                        subgroups = MRT_subgroups;
-                                                        maxDelay = d3.max(data, d => d.MRT_TOTAL);
-                                                        color = colorMRT; // 使用 MRT 颜色组
-                                                    } else {
-                                                        subgroups = LRT_subgroups;
-                                                        maxDelay = d3.max(data, d => d.LRT_TOTAL);
-                                                        color = colorLRT;
-                                                    }
-
-                                                    // 更新 X 轴范围
-                                                    service_delay_x.domain([0, maxDelay]);
-                                                    service_delay_xAxis.transition().duration(1000)
-                                                        .call(d3.axisBottom(service_delay_x).ticks(5).tickFormat(d3.format("d")));  // 使用整数刻度
-
-                                                    // 堆叠数据
-                                                    const service_delay_stackedData = d3.stack()
-                                                        .keys(subgroups)
-                                                        (data);
-
-                                                    // 绘制堆叠条形图
-                                                    const service_delay_bars = service_delay_svg.selectAll("g.layer")
-                                                        .data(service_delay_stackedData, d => d.key);
-
-                                                    const service_delay_barsEnter = service_delay_bars.enter().append("g")
-                                                        .attr("class", "layer")
-                                                        .attr("fill", d => color(d.key));
-
-                                                    service_delay_barsEnter.selectAll("rect")
-                                                        .data(d => d)
-                                                        .enter().append("rect")
-                                                        .attr("y", d => service_delay_y(d.data.Year))
-                                                        .attr("x", d => service_delay_x(d[0]))  // 左边界
-                                                        .attr("width", d => service_delay_x(d[1]) - service_delay_x(d[0]))  // 使用宽度表示值
-                                                        .attr("height", service_delay_y.bandwidth())  // 条形高度
-                                                        .attr("stroke", "grey")
-                                                        .attr("class", "bar") // 为每个柱子添加 class 以便控制透明度
-                                                        .on("mouseover", service_delay_mouseover)
-                                                        .on("mousemove", service_delay_mousemove)
-                                                        .on("mouseleave", service_delay_mouseleave);
-
-                                                    service_delay_bars.exit().remove();
-                                                }
-
-                                                // 初始化为 MRT 图表
-                                                updateChart("MRT");
-
-                                                // 监听下拉菜单变化，切换 MRT 和 LRT 图表
-                                                d3.select("#LrtMrtSelect").on("change", function () {
-                                                    const selectedChart = d3.select(this).property("value");
-                                                    updateChart(selectedChart);
-                                                });
-                                            });
-
-                                        </script>
+                                        <div class="col-md-3">
+                                            <select id="LrtMrtSelect" class="form-select form-select-sm">
+                                                <option value="MRT">MRT Delays</option>
+                                                <option value="LRT">LRT Delays</option>
+                                            </select>
+                                        </div> -->
                                     </div>
+                                    <!-- <div id="Service_Delay"></div> -->
+
+                                    <div>
+                                    <svg width="800" height="500" id="Service_Delay">
+                                        <g></g>
+                                    </svg>
+                                    <script>
+                                        var data = {
+                                          "name": "",
+                                          "children": 
+                                          [
+                                            {
+                                              "name": "2020",
+                                              "children": 
+                                              [
+                                                {
+                                                    "name": "MRT",
+                                                    "children": 
+                                                    [
+                                                        {
+                                                            "name": "NSL",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "name": "EWL",
+                                                            "value": 2
+                                                        },
+                                                        {
+                                                            "name": "NEL",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "name": "CCL",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "name": "DTL",
+                                                            "value": 1
+                                                        }
+                                                    ]
+                                                }
+                                                ,{
+                                                    "name": "LRT",
+                                                    "children": 
+                                                    [
+                                                        {
+                                                            "name": "BP",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "name": "SP",
+                                                            "value": 4
+                                                        }
+                                                    ]            
+                                                }
+                                              ]
+                                            },
+                                            {
+                                            "name": "2021",
+                                              "children": 
+                                              [
+                                                {
+                                                    "name": "MRT",
+                                                    "children": 
+                                                    [
+                                                        {
+                                                            "name": "NSL",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "name": "NEL",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "name": "CCL",
+                                                            "value": 1
+                                                        }
+                                                    ]
+                                                }
+                                                ,{
+                                                    "name": "LRT",
+                                                    "children": 
+                                                    [
+                                                        {
+                                                            "name": "BP",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "name": "SP",
+                                                            "value": 3
+                                                        }
+                                                    ]            
+                                                }
+                                              ]
+                                            },
+                                            {
+                                            "name": "2022",
+                                              "children": 
+                                              [
+                                                {
+                                                    "name": "MRT",
+                                                    "children": 
+                                                    [
+                                                        {
+                                                            "name": "NSL",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "name": "EWL",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "name": "NEL",
+                                                            "value": 2
+                                                        },
+                                                        {
+                                                            "name": "CCL",
+                                                            "value": 2
+                                                        },
+                                                        {
+                                                            "name": "DTL",
+                                                            "value": 1
+                                                        }
+                                                    ]
+                                                }
+                                                ,{
+                                                    "name": "LRT",
+                                                    "children": 
+                                                    [
+                                                        {
+                                                            "name": "BP",
+                                                            "value": 1
+                                                        },
+                                                        {
+                                                            "name": "SP",
+                                                            "value": 1
+                                                        }
+                                                    ]            
+                                                }
+                                              ]
+                                            },
+                                            {
+                                            "name": "2023",
+                                              "children": 
+                                              [
+                                                {
+                                                    "name": "MRT",
+                                                    "children": 
+                                                    [
+                                                        {
+                                                            "name": "NSL",
+                                                            "value": 3
+                                                        },
+                                                        {
+                                                            "name": "CCL",
+                                                            "value": 2
+                                                        },
+                                                    ]
+                                                }
+                                                ,{
+                                                    "name": "LRT",
+                                                    "children": 
+                                                    [
+                                                        {
+                                                            "name": "BP",
+                                                            "value": 3
+                                                        }
+                                                    ]            
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        };
+                                        
+                                        var treemapLayout = d3.treemap()
+                                          .size([800, 500])
+                                          .paddingOuter(20);
+                                        
+                                        var rootNode = d3.hierarchy(data)
+                                        
+                                        rootNode.sum(function(d) {
+                                          return d.value;
+                                        });
+                                        
+                                        treemapLayout(rootNode);
+                                        
+                                        var nodes = d3.select('#Service_Delay')
+                                          .selectAll('g')
+                                          .data(rootNode.descendants())
+                                          .enter()
+                                          .append('g')
+                                          .attr('transform', function(d) {return 'translate(' + [d.x0, d.y0] + ')'})
+                                        
+                                        nodes
+                                          .append('rect')
+                                          .attr('width', function(d) { return d.x1 - d.x0; })
+                                          .attr('height', function(d) { return d.y1 - d.y0; })
+                                        
+                                        nodes
+                                          .append('text')
+                                          .attr('dx', 4)
+                                          .attr('dy', 14)
+                                          .text(function(d) {
+                                            if (d.data.value)
+                                                return d.data.name + ": " + d.data.value;
+                                            else
+                                                return d.data.name
+                                          })
+                                        
+                                    </script>
+                                    </div>
+                                    <div>
+                                        <p style="position: relative; left: 300px;"><b style="color:#8B5C4B">
+                                            Rail Service Delays Hit 35 Times</b></p>
+                                    </div>
+                                    <!-- <script>
+                                        const service_delay_margin = { top: 20, right: 30, bottom: 40, left: 50 },
+                                            service_delay_width = 800 - service_delay_margin.left - service_delay_margin.right,
+                                            service_delay_height = 400 - service_delay_margin.top - service_delay_margin.bottom;
+
+                                        const service_delay_svg = d3.select("#Service_Delay")
+                                            .append("svg")
+                                            .attr("width", service_delay_width + service_delay_margin.left + service_delay_margin.right)
+                                            .attr("height", service_delay_height + service_delay_margin.top + service_delay_margin.bottom)
+                                            .append("g")
+                                            .attr("transform", `translate(${service_delay_margin.left},${service_delay_margin.top})`);
+
+                                        // 读取 CSV 数据
+                                        d3.csv("data/No_of_Service_Delays.csv").then(function (data) {
+
+                                            // MRT 和 LRT 的子组
+                                            const MRT_subgroups = ["NSL", "EWL", "NEL", "CCL", "DTL"];
+                                            const LRT_subgroups = ["BPLRT", "SPLRT"];
+
+                                            // X轴的年份组
+                                            const service_delay_groups = data.map(d => d.Year);
+
+                                            // 初始化 Y 轴（以前的X轴）作为分类轴
+                                            const service_delay_y = d3.scaleBand()
+                                                .domain(service_delay_groups)
+                                                .range([0, service_delay_height])
+                                                .padding([0.4]);
+
+                                            service_delay_svg.append("g")
+                                                .call(d3.axisLeft(service_delay_y).tickSizeOuter(0));
+
+                                            // 初始化 X 轴（以前的Y轴）作为数值轴
+                                            console.log("width=>", service_delay_width);
+                                            const service_delay_x = d3.scaleLinear()
+                                                .range([0, service_delay_width - 100]);
+
+                                            const service_delay_xAxis = service_delay_svg.append("g")
+                                                .attr("transform", `translate(0, ${service_delay_height})`);
+
+                                            // 定义不同的颜色比例尺
+                                            const colorMRT = d3.scaleOrdinal()
+                                                .domain(MRT_subgroups)
+                                                .range(['#d42e12', '#009645', '#9900aa', '#fa9e0d', '#005ec4']); // MRT颜色
+
+                                            const colorLRT = d3.scaleOrdinal()
+                                                .domain(LRT_subgroups)
+                                                .range(['#8c564b', '#e377c2']); // LRT颜色
+
+                                            // 在 SVG 内创建 tooltip 作为文本元素
+                                            const tooltipGroup = service_delay_svg.append("g")
+                                                .style("display", "none");  // 初始时隐藏
+
+                                            const tooltipRect = tooltipGroup.append('rect')
+                                                .attr("class", "tooltip-rect")
+                                                .attr("width", 80)
+                                                .attr("height", 45)
+                                                .attr("rx", 10) // 设置圆角
+                                                .attr("ry", 10)
+                                                .attr("fill", "lightsteelblue") // 背景色
+                                                .attr("stroke", "lightsteelblue") // 边框颜色
+                                                .attr("stroke-width", 1)
+                                                .attr("opacity", 0.9); // 设置透明度
+
+                                            const tooltipText = tooltipGroup.append('text')
+                                                .attr("class", "tooltip-text")
+                                                .attr("x", 10)
+                                                .attr("y", 20)
+                                                .attr("font-size", "12px")
+                                                .attr("fill", "black")
+                                                .attr("font-family", "Arial");
+
+                                            // 鼠标悬停事件处理程序
+                                            const service_delay_mouseover = function (event, d) {
+                                                const subgroupName = d3.select(this.parentNode).datum().key;
+                                                const subgroupValue = d.data[subgroupName];
+                                                tooltipGroup.style("display", null);  // 显示 tooltip
+
+                                                tooltipText.text(`Line: ${subgroupName}`)
+                                                    .append("tspan")
+                                                    .attr("x", 10)
+                                                    .attr("dy", "1.2em")
+                                                    .text(`Delays: ${subgroupValue}`);
+
+                                                tooltipGroup.raise();
+
+                                                // 鼠标悬停时，高亮当前条形柱，其他条形柱透明度降低
+                                                d3.selectAll("#Service_Delay .bar").style("opacity", 0.3); // 降低所有柱子的透明度
+                                                d3.select(this).style("opacity", 1); // 高亮当前悬停的柱子
+                                            }
+
+                                            // 鼠标移动事件处理程序
+                                            const service_delay_mousemove = function (event) {
+                                                const svgPosition = service_delay_svg.node().getBoundingClientRect();
+                                                const absoluteX = svgPosition.left + window.pageXOffset;
+                                                const absoluteY = svgPosition.top + window.pageYOffset;
+
+                                                tooltipGroup
+                                                    .attr("transform", `translate(${event.pageX - absoluteX - 20}, ${event.pageY - absoluteY - 20})`);
+                                            }
+
+                                            // 鼠标离开事件处理程序
+                                            const service_delay_mouseleave = function () {
+                                                tooltipGroup.style("display", "none");  // 隐藏 tooltip
+                                                d3.selectAll("#Service_Delay .bar").style("opacity", 0.8); // 恢复默认的透明度
+                                            }
+
+                                            // 更新图表函数
+                                            function updateChart(selectedChart) {
+                                                let subgroups, maxDelay;
+                                                if (selectedChart === "MRT") {
+                                                    subgroups = MRT_subgroups;
+                                                    maxDelay = d3.max(data, d => d.MRT_TOTAL);
+                                                    color = colorMRT; // 使用 MRT 颜色组
+                                                } else {
+                                                    subgroups = LRT_subgroups;
+                                                    maxDelay = d3.max(data, d => d.LRT_TOTAL);
+                                                    color = colorLRT;
+                                                }
+
+                                                // 更新 X 轴范围
+                                                service_delay_x.domain([0, maxDelay]);
+                                                service_delay_xAxis.transition().duration(1000)
+                                                    .call(d3.axisBottom(service_delay_x).ticks(5).tickFormat(d3.format("d")));  // 使用整数刻度
+
+                                                // 堆叠数据
+                                                const service_delay_stackedData = d3.stack()
+                                                    .keys(subgroups)
+                                                    (data);
+
+                                                // 绘制堆叠条形图
+                                                const service_delay_bars = service_delay_svg.selectAll("g.layer")
+                                                    .data(service_delay_stackedData, d => d.key);
+
+                                                const service_delay_barsEnter = service_delay_bars.enter().append("g")
+                                                    .attr("class", "layer")
+                                                    .attr("fill", d => color(d.key));
+
+                                                service_delay_barsEnter.selectAll("rect")
+                                                    .data(d => d)
+                                                    .enter().append("rect")
+                                                    .attr("y", d => service_delay_y(d.data.Year))
+                                                    .attr("x", d => service_delay_x(d[0]))  // 左边界
+                                                    .attr("width", d => service_delay_x(d[1]) - service_delay_x(d[0]))  // 使用宽度表示值
+                                                    .attr("height", service_delay_y.bandwidth())  // 条形高度
+                                                    .attr("stroke", "grey")
+                                                    .attr("class", "bar") // 为每个柱子添加 class 以便控制透明度
+                                                    .on("mouseover", service_delay_mouseover)
+                                                    .on("mousemove", service_delay_mousemove)
+                                                    .on("mouseleave", service_delay_mouseleave);
+
+                                                service_delay_bars.exit().remove();
+                                            }
+
+                                            // 初始化为 MRT 图表
+                                            updateChart("MRT");
+
+                                            // 监听下拉菜单变化，切换 MRT 和 LRT 图表
+                                            d3.select("#LrtMrtSelect").on("change", function () {
+                                                const selectedChart = d3.select(this).property("value");
+                                                updateChart(selectedChart);
+                                            });
+                                        });
+
+                                    </script> -->
                                 </div>
                             </div>
                         </div>
@@ -1737,137 +2141,6 @@
         </section><!-- /Tabs Section -->
 
         <!-- Services 2 Section -->
-        <!-- <section id="services-2" class="services-2 section">
-
-            <div class="container">
-                <div class="row align-items-center justify-content-between">
-                    <div class="col-lg-7 mb-5 mb-lg-0 order-lg-2" data-aos="fade-up" data-aos-delay="400">
-                        <div class="swiper init-swiper">
-                            <script type="application/json" class="swiper-config">
-                {
-                  "loop": true,
-                  "speed": 600,
-                  "autoplay": {
-                    "delay": 5000000
-                  },
-                  "slidesPerView": "auto",
-                  "pagination": {
-                    "el": ".swiper-pagination",
-                    "type": "bullets",
-                    "clickable": true
-                  },
-                  "breakpoints": {
-                    "320": {
-                      "slidesPerView": 1,
-                      "spaceBetween": 40
-                    },
-                    "1200": {
-                      "slidesPerView": 1,
-                      "spaceBetween": 1
-                    }
-                  }
-                }
-              </script>
-                                </div>
-                                <div class="swiper-slide">
-                                    <img src="assets/img/img_h_7.jpg" alt="Image" class="img-fluid">
-                                </div>
-                                <div class="swiper-slide">
-                                    <img src="assets/img/img_h_8.jpg" alt="Image" class="img-fluid">
-                                </div>
-                            </div>
-                            <div class="swiper-pagination"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 order-lg-1">
-                        <h1 class="mb-1" data-aos="fade-up">
-                            BEHIND THE DELAYS
-                        </h1>
-                        <h4 class="mb-3" data-aos="fade-up">
-                            Challenges in the transport system
-                        </h4>
-                        <p data-aos="fade-up">
-                            Despite the exceptional system,
-                            the greatest challenge that would cripple the transport system is the presence of service delays.
-                            The biggest disruption till date is the incident on 25 September 2024 where a faulty train
-                            damaged
-                            the tracks on the East-West Line, leading to a 6-day disruption.
-                            This is the longest service disruption in Singapore’s MRT history
-                            and is estimated to have affected more than 800,000 people.
-                        </p>
-                    </div>
-                </div>
-                <div class="row justify-content-center" data-aos="fade-up">
-                    <div class="col-md-6 col-lg-4">
-                        <span class="content-subtitle">Our Services</span>
-                        <h2 class="content-title">
-                            Far far away, behind the word mountains, far from the countries
-                            Vokalia
-                        </h2>
-                        <p class="lead">
-                            Far far away, behind the word mountains, far from the countries
-                            Vokalia and Consonantia, there live the blind texts.
-                        </p>
-                        <p class="mb-5">
-                            Separated they live in Bookmarksgrove right at the coast of the
-                            Semantics, a large language ocean.
-                        </p>
-                        <p>
-                            <a href="#" class="btn btn-get-started">Get Started</a>
-                        </p>
-                    </div>
-                    <div class="col-md-6 col-lg-6 ps-lg-5">
-                        <div class="row">
-                            <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                <div class="services-item" data-aos="fade-up" data-aos-delay="">
-                                    <div class="services-icon">
-                                        <i class="bi bi-search"></i>
-                                    </div>
-                                    <div>
-                                        <h3>Square</h3>
-                                        <p>Separated they live in Bookmarksgrove right at the coast</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                <div class="services-item" data-aos="fade-up" data-aos-delay="100">
-                                    <div class="services-icon">
-                                        <i class="bi bi-command"></i>
-                                    </div>
-                                    <div>
-                                        <h3>Technology</h3>
-                                        <p>Separated they live in Bookmarksgrove right at the coast</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                <div class="services-item" data-aos="fade-up" data-aos-delay="200">
-                                    <div class="services-icon">
-                                        <i class="bi bi-grid"></i>
-                                    </div>
-                                    <div>
-                                        <h3>Brilliant Ideas</h3>
-                                        <p>Separated they live in Bookmarksgrove right at the coast</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-6 col-sm-6 col-md-6 col-lg-6">
-                                <div class="services-item" data-aos="fade-up" data-aos-delay="300">
-                                    <div class="services-icon">
-                                        <i class="bi bi-globe"></i>
-                                    </div>
-                                    <div>
-                                        <h3>Blueprint</h3>
-                                        <p>Separated they live in Bookmarksgrove right at the coast</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section> -->
         <!-- /Services 2 Section -->
 
         <!-- Pricing Section -->
@@ -2137,7 +2410,7 @@
                             <div class="swiper-slide">
                                 <!-- <img src="media/mrt-swiper1.png" alt="Image" class="img-fluid">
                                      -->
-                                <iframe width="840" height="473"
+                                <iframe width="728" height="410"
                                     src="https://www.youtube.com/embed/3aKaM2Sui4k?si=Bz0BysVg7nM9oPSl"
                                     title="YouTube video player" frameborder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
