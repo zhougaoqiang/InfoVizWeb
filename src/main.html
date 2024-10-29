@@ -967,36 +967,6 @@
                                                 rail_length_tooltipBackground.style("opacity", 0);
                                             }
 
-                                            // 动态更新函数，用于更新选择的线条
-                                            function update(selectedLine) {
-                                                // 更新 y 轴比例
-                                                rail_length_y.domain([0, d3.max(data, d => d[selectedLine])]);
-
-                                                // 重新生成线条
-                                                rail_length_lineGenerator.y(d => rail_length_y(d[selectedLine]));
-
-                                                // 应用过渡效果更新线条
-                                                rail_length_line
-                                                    .datum(data)
-                                                    .transition()  // 添加过渡
-                                                    .duration(1000) // 设置过渡持续时间
-                                                    .attr("d", rail_length_lineGenerator);
-
-                                                // 更新 y 轴
-                                                rail_length_g.select(".y-axis")  // 使用正确的类名更新 y 轴
-                                                    .transition()
-                                                    .duration(1000)
-                                                    .call(d3.axisLeft(rail_length_y).ticks(5));
-                                            }
-
-                                            // 绑定选择事件，控制线条的显示
-                                            d3.select("#lineSelect").on("change", function () {
-                                                const selectedLine = d3.select(this).property("value");
-                                                g_currentSelectedLine = selectedLine;
-                                                console.log(g_currentSelectedLine);
-                                                // 更新线条数据和过渡效果
-                                                update(selectedLine);
-                                            });
                                         });
 
                                     </script>
