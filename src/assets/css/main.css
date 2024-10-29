@@ -620,7 +620,7 @@ h6 {
   right: 15px;
   bottom: 15px;
   z-index: 99999;
-  background-color: var(--accent-color);
+  background-color: var(--infoviz-color-spicy-mix);
   width: 40px;
   height: 40px;
   border-radius: 4px;
@@ -629,13 +629,8 @@ h6 {
 
 .scroll-top i {
   font-size: 24px;
-  color: var(--contrast-color);
+  color: var(--infoviz-color-luster-white);
   line-height: 0;
-}
-
-.scroll-top:hover {
-  background-color: color-mix(in srgb, var(--accent-color), transparent 20%);
-  color: var(--contrast-color);
 }
 
 .scroll-top.active {
