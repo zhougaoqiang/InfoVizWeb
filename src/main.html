@@ -143,6 +143,7 @@
             opacity: 0.6;
             stroke: white;
         }
+
         #Service_Delay text {
             font-family: "Helvetica Neue", Helvetica, sans-serif;
             fill: #F4F1EC;
@@ -959,26 +960,11 @@
                             <div class="swiper-wrapper">
                                 <div class="swiper-slide">
 
-                                    <!-- <img src="assets/img/img_h_2.jpg" alt="Image" class="img-fluid"> -->
-                                    <div class="row align-items-center">
-                                        <div class="col-md-1"></div>
-                                        <div class="col-md-2">
-                                            <label for="lineSelect">Select rail type:</label>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <select id="lineSelect" class="form-select form-select-sm">
-                                                <option value="Total_KM">Total Rail Length</option>
-                                                <option value="MRT_KM">MRT Rail Length</option>
-                                                <option value="LRT_KM">LRT Rail Length</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
                                     <svg id="Rail_Length_Chart" width="860" height="500"></svg>
                                     <script>
                                         // 设置图表的宽度和高度
                                         const rail_length_svg = d3.select("#Rail_Length_Chart");
-                                        const rail_length_margin = { top: 50, right: 130, bottom: 50, left: 70 };
+                                        const rail_length_margin = { top: 20, right: 130, bottom: 50, left: 70 };
                                         const rail_length_width = rail_length_svg.attr("width") - rail_length_margin.left - rail_length_margin.right;
                                         const rail_length_height = rail_length_svg.attr("height") - rail_length_margin.top - rail_length_margin.bottom;
 
@@ -1016,17 +1002,66 @@
 
                                             // 定义折线生成器函数
                                             const rail_length_lineGenerator = d3.line()
-                                                .x(d => rail_length_x(d.year))
-                                                .y(d => rail_length_y(d.Total_KM)); // 默认显示总铁路长度
+                                                .x(d => rail_length_x(d.year));
 
-                                            // 初始化线条
-                                            let rail_length_line = rail_length_g.append("path")
+                                            const lineColors = {
+                                                "LRT_KM": "#8B5C4B",
+                                                "MRT_KM": "#415441",
+                                                "Total_KM": "#A4B2A7"
+                                            }
+
+                                            // Generate line for Total_KM
+                                            rail_length_lineGenerator.y(d => rail_length_y(d.Total_KM));
+                                            rail_length_g.append("path")
                                                 .datum(data)
-                                                .attr("class", "line rail")
+                                                .attr("class", "line")
                                                 .attr("d", rail_length_lineGenerator)
-                                                .style("stroke", "#8B5C4B")
+                                                .style("stroke", lineColors["Total_KM"])
                                                 .style("stroke-width", 3)
                                                 .style("fill", "none");
+
+                                            // Generate line for MRT_KM
+                                            rail_length_lineGenerator.y(d => rail_length_y(d.MRT_KM));
+                                            rail_length_g.append("path")
+                                                .datum(data)
+                                                .attr("class", "line")
+                                                .attr("d", rail_length_lineGenerator)
+                                                .style("stroke", lineColors["MRT_KM"])
+                                                .style("stroke-width", 3)
+                                                .style("fill", "none");
+
+                                            // Generate line for LRT_KM
+                                            rail_length_lineGenerator.y(d => rail_length_y(d.LRT_KM));
+                                            rail_length_g.append("path")
+                                                .datum(data)
+                                                .attr("class", "line")
+                                                .attr("d", rail_length_lineGenerator)
+                                                .style("stroke", lineColors["LRT_KM"])
+                                                .style("stroke-width", 3)
+                                                .style("fill", "none");
+
+
+                                            const hoverLine = rail_length_g.append("line")
+                                                .style("stroke", "#999")
+                                                .style("stroke-width", 1)
+                                                .style("stroke-dasharray", "4")
+                                                .style("opacity", 0);
+
+                                            const focusCircles = ["Total_KM", "MRT_KM", "LRT_KM"].map((lineType, i) => (
+                                                rail_length_g.append("circle")
+                                                    .style("fill", lineColors[lineType])
+                                                    .attr("r", 5)
+                                                    .style("opacity", 0)
+                                            ));
+
+                                            // 初始化线条
+                                            //  let rail_length_line = rail_length_g.append("path")
+                                            //    .datum(data)
+                                            //    .attr("class", "line rail")
+                                            //    .attr("d", rail_length_lineGenerator)
+                                            //    .style("stroke", "#8B5C4B")
+                                            //    .style("stroke-width", 3)
+                                            //    .style("fill", "none");
 
                                             // 添加标签
                                             rail_length_svg.append("text")
@@ -1037,19 +1072,19 @@
                                                 .style("text-anchor", "middle")
                                                 .text("Length of rail (in KM)");
 
-                                            var rail_length_focus = rail_length_g.append('g')
-                                                .append('circle')
-                                                .style('fill', '#8B5C48')
-                                                .style('stroke', '#8B5C48')
-                                                .attr('r', 5)
-                                                .style("opacity", 0)
+                                            // var rail_length_focus = rail_length_g.append('g')
+                                            //    .append('circle')
+                                            //    .style('fill', '#8B5C48')
+                                            //    .style('stroke', '#8B5C48')
+                                            //    .attr('r', 5)
+                                            //    .style("opacity", 0)
 
                                             var rail_length_tooltipBackground = rail_length_g
                                                 .append('g')
                                                 .append('rect')
                                                 .attr("class", "tooltip-rect")
                                                 .attr("width", 180)
-                                                .attr("height", 80)
+                                                .attr("height", 130)
                                                 .attr("rx", 10) //圆角
                                                 .attr("ry", 10)
                                                 .attr("fill", "#C6B2A0")
@@ -1074,7 +1109,9 @@
                                                 .on('mouseout', mouseout);
 
                                             function mouseover() {
-                                                rail_length_focus.style("opacity", 1);
+                                                hoverLine.style("opacity", 1);
+                                                focusCircles.forEach(circle => circle.style("opacity", 1));
+                                                //rail_length_focus.style("opacity", 1);
                                                 rail_length_focusText.style("opacity", 1);
                                             }
 
@@ -1085,51 +1122,47 @@
                                                     return Math.abs(d.year - rail_x0);
                                                 });
 
-                                                console.log(rail_length_closestData);
+                                                hoverLine
+                                                    .attr("x1", rail_length_x(rail_length_closestData.year))
+                                                    .attr("x2", rail_length_x(rail_length_closestData.year))
+                                                    .attr("y1", 0)
+                                                    .attr("y2", rail_length_height);
 
-                                                var rail_length_y_value = 0;
-                                                var rail_actual_length = 0;
-                                                if (g_currentSelectedLine === "Total_KM") {
-                                                    rail_actual_length = rail_length_closestData.Total_KM;
-                                                    rail_length_y_value = rail_length_y(rail_length_closestData.Total_KM);
-                                                }
-                                                else if (g_currentSelectedLine === "MRT_KM") {
-                                                    rail_actual_length = rail_length_closestData.MRT_KM;
-                                                    rail_length_y_value = rail_length_y(rail_length_closestData.MRT_KM);
-                                                }
-                                                else if (g_currentSelectedLine === "LRT_KM") {
-                                                    rail_actual_length = rail_length_closestData.LRT_KM;
-                                                    rail_length_y_value = rail_length_y(rail_length_closestData.LRT_KM);
-                                                }
-                                                else {
-                                                    rail_actual_length = rail_length_closestData.Total_KM;
-                                                    rail_length_y_value = rail_length_y(rail_length_closestData.Total_KM);
-                                                }
-                                                console.log("rail_length_y_value=>", rail_length_y_value)
-                                                if (rail_length_closestData) {
-                                                    rail_length_focus
+                                                focusCircles.forEach((circle, i) => {
+                                                    const lineType = ["Total_KM", "MRT_KM", "LRT_KM"][i];
+                                                    circle
                                                         .attr("cx", rail_length_x(rail_length_closestData.year))
-                                                        .attr("cy", rail_length_y_value);
-                                                }
+                                                        .attr("cy", rail_length_y(rail_length_closestData[lineType]));
+                                                });
 
                                                 // 定义 tooltip 文字内容
                                                 console.log("rail_length_closestData.year = ", rail_length_closestData.year);
                                                 var rail_length_yearText = "Year: " + rail_length_closestData.year;
-                                                var rail_lengthText = "Length: " + rail_actual_length;
+                                                var total_lengthText = "Total: " + rail_length_closestData.Total_KM;
+                                                var mrt_lengthText = "MRT: " + rail_length_closestData.MRT_KM;
+                                                var lrt_lengthText = "LRT: " + rail_length_closestData.LRT_KM;
 
                                                 // 更新 tooltip 文本
                                                 rail_length_focusText
                                                     .attr("x", rail_length_x(rail_length_closestData.year) + 15)
-                                                    .attr("y", rail_length_y_value - 5)
+                                                    .attr("y", rail_length_pointer[1] - 5)
                                                     .html(null)  // 清空之前的文本
                                                     .append("tspan")
                                                     .attr("x", rail_length_x(rail_length_closestData.year) + 15)
-                                                    .attr("y", rail_length_y_value - 5)
+                                                    .attr("y", rail_length_pointer[1] - 5)
                                                     .text(rail_length_yearText)
                                                     .append("tspan")
                                                     .attr("x", rail_length_x(rail_length_closestData.year) + 15)
-                                                    .attr("y", rail_length_y_value + 15)
-                                                    .text(rail_lengthText);
+                                                    .attr("y", rail_length_pointer[1] + 15)
+                                                    .text(total_lengthText)
+                                                    .append("tspan")
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_pointer[1] + 35)
+                                                    .text(mrt_lengthText)
+                                                    .append("tspan")
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_pointer[1] + 55)
+                                                    .text(lrt_lengthText);
 
                                                 // 估计 tooltip 文本的宽度和高度
                                                 var rail_length_bbox = rail_length_focusText.node().getBBox();
@@ -1145,7 +1178,9 @@
 
 
                                             function mouseout() {
-                                                rail_length_focus.style("opacity", 0);
+                                                hoverLine.style("opacity", 0);
+                                                focusCircles.forEach(circle => circle.style("opacity", 0));
+                                                // rail_length_focus.style("opacity", 0);
                                                 rail_length_focusText.style("opacity", 0);
                                                 rail_length_tooltipBackground.style("opacity", 0);
                                             }
@@ -1760,217 +1795,217 @@
                                     <!-- <div id="Service_Delay"></div> -->
 
                                     <div>
-                                    <svg width="800" height="500" id="Service_Delay">
-                                        <g></g>
-                                    </svg>
-                                    <script>
-                                        var data = {
-                                          "name": "",
-                                          "children": 
-                                          [
-                                            {
-                                              "name": "2020",
-                                              "children": 
-                                              [
-                                                {
-                                                    "name": "MRT",
-                                                    "children": 
+                                        <svg width="800" height="500" id="Service_Delay">
+                                            <g></g>
+                                        </svg>
+                                        <script>
+                                            var data = {
+                                                "name": "",
+                                                "children":
                                                     [
                                                         {
-                                                            "name": "NSL",
-                                                            "value": 1
+                                                            "name": "2020",
+                                                            "children":
+                                                                [
+                                                                    {
+                                                                        "name": "MRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "NSL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "EWL",
+                                                                                    "value": 2
+                                                                                },
+                                                                                {
+                                                                                    "name": "NEL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "CCL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "DTL",
+                                                                                    "value": 1
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                    , {
+                                                                        "name": "LRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "BP",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "SP",
+                                                                                    "value": 4
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                ]
                                                         },
                                                         {
-                                                            "name": "EWL",
-                                                            "value": 2
+                                                            "name": "2021",
+                                                            "children":
+                                                                [
+                                                                    {
+                                                                        "name": "MRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "NSL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "NEL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "CCL",
+                                                                                    "value": 1
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                    , {
+                                                                        "name": "LRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "BP",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "SP",
+                                                                                    "value": 3
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                ]
                                                         },
                                                         {
-                                                            "name": "NEL",
-                                                            "value": 1
+                                                            "name": "2022",
+                                                            "children":
+                                                                [
+                                                                    {
+                                                                        "name": "MRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "NSL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "EWL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "NEL",
+                                                                                    "value": 2
+                                                                                },
+                                                                                {
+                                                                                    "name": "CCL",
+                                                                                    "value": 2
+                                                                                },
+                                                                                {
+                                                                                    "name": "DTL",
+                                                                                    "value": 1
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                    , {
+                                                                        "name": "LRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "BP",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "SP",
+                                                                                    "value": 1
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                ]
                                                         },
                                                         {
-                                                            "name": "CCL",
-                                                            "value": 1
-                                                        },
-                                                        {
-                                                            "name": "DTL",
-                                                            "value": 1
+                                                            "name": "2023",
+                                                            "children":
+                                                                [
+                                                                    {
+                                                                        "name": "MRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "NSL",
+                                                                                    "value": 3
+                                                                                },
+                                                                                {
+                                                                                    "name": "CCL",
+                                                                                    "value": 2
+                                                                                },
+                                                                            ]
+                                                                    }
+                                                                    , {
+                                                                        "name": "LRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "BP",
+                                                                                    "value": 3
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                ]
                                                         }
                                                     ]
-                                                }
-                                                ,{
-                                                    "name": "LRT",
-                                                    "children": 
-                                                    [
-                                                        {
-                                                            "name": "BP",
-                                                            "value": 1
-                                                        },
-                                                        {
-                                                            "name": "SP",
-                                                            "value": 4
-                                                        }
-                                                    ]            
-                                                }
-                                              ]
-                                            },
-                                            {
-                                            "name": "2021",
-                                              "children": 
-                                              [
-                                                {
-                                                    "name": "MRT",
-                                                    "children": 
-                                                    [
-                                                        {
-                                                            "name": "NSL",
-                                                            "value": 1
-                                                        },
-                                                        {
-                                                            "name": "NEL",
-                                                            "value": 1
-                                                        },
-                                                        {
-                                                            "name": "CCL",
-                                                            "value": 1
-                                                        }
-                                                    ]
-                                                }
-                                                ,{
-                                                    "name": "LRT",
-                                                    "children": 
-                                                    [
-                                                        {
-                                                            "name": "BP",
-                                                            "value": 1
-                                                        },
-                                                        {
-                                                            "name": "SP",
-                                                            "value": 3
-                                                        }
-                                                    ]            
-                                                }
-                                              ]
-                                            },
-                                            {
-                                            "name": "2022",
-                                              "children": 
-                                              [
-                                                {
-                                                    "name": "MRT",
-                                                    "children": 
-                                                    [
-                                                        {
-                                                            "name": "NSL",
-                                                            "value": 1
-                                                        },
-                                                        {
-                                                            "name": "EWL",
-                                                            "value": 1
-                                                        },
-                                                        {
-                                                            "name": "NEL",
-                                                            "value": 2
-                                                        },
-                                                        {
-                                                            "name": "CCL",
-                                                            "value": 2
-                                                        },
-                                                        {
-                                                            "name": "DTL",
-                                                            "value": 1
-                                                        }
-                                                    ]
-                                                }
-                                                ,{
-                                                    "name": "LRT",
-                                                    "children": 
-                                                    [
-                                                        {
-                                                            "name": "BP",
-                                                            "value": 1
-                                                        },
-                                                        {
-                                                            "name": "SP",
-                                                            "value": 1
-                                                        }
-                                                    ]            
-                                                }
-                                              ]
-                                            },
-                                            {
-                                            "name": "2023",
-                                              "children": 
-                                              [
-                                                {
-                                                    "name": "MRT",
-                                                    "children": 
-                                                    [
-                                                        {
-                                                            "name": "NSL",
-                                                            "value": 3
-                                                        },
-                                                        {
-                                                            "name": "CCL",
-                                                            "value": 2
-                                                        },
-                                                    ]
-                                                }
-                                                ,{
-                                                    "name": "LRT",
-                                                    "children": 
-                                                    [
-                                                        {
-                                                            "name": "BP",
-                                                            "value": 3
-                                                        }
-                                                    ]            
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        };
-                                        
-                                        var treemapLayout = d3.treemap()
-                                          .size([800, 500])
-                                          .paddingOuter(20);
-                                        
-                                        var rootNode = d3.hierarchy(data)
-                                        
-                                        rootNode.sum(function(d) {
-                                          return d.value;
-                                        });
-                                        
-                                        treemapLayout(rootNode);
-                                        
-                                        var nodes = d3.select('#Service_Delay')
-                                          .selectAll('g')
-                                          .data(rootNode.descendants())
-                                          .enter()
-                                          .append('g')
-                                          .attr('transform', function(d) {return 'translate(' + [d.x0, d.y0] + ')'})
-                                        
-                                        nodes
-                                          .append('rect')
-                                          .attr('width', function(d) { return d.x1 - d.x0; })
-                                          .attr('height', function(d) { return d.y1 - d.y0; })
-                                        
-                                        nodes
-                                          .append('text')
-                                          .attr('dx', 4)
-                                          .attr('dy', 14)
-                                          .text(function(d) {
-                                            if (d.data.value)
-                                                return d.data.name + ": " + d.data.value;
-                                            else
-                                                return d.data.name
-                                          })
-                                        
-                                    </script>
+                                            };
+
+                                            var treemapLayout = d3.treemap()
+                                                .size([800, 500])
+                                                .paddingOuter(20);
+
+                                            var rootNode = d3.hierarchy(data)
+
+                                            rootNode.sum(function (d) {
+                                                return d.value;
+                                            });
+
+                                            treemapLayout(rootNode);
+
+                                            var nodes = d3.select('#Service_Delay')
+                                                .selectAll('g')
+                                                .data(rootNode.descendants())
+                                                .enter()
+                                                .append('g')
+                                                .attr('transform', function (d) { return 'translate(' + [d.x0, d.y0] + ')' })
+
+                                            nodes
+                                                .append('rect')
+                                                .attr('width', function (d) { return d.x1 - d.x0; })
+                                                .attr('height', function (d) { return d.y1 - d.y0; })
+
+                                            nodes
+                                                .append('text')
+                                                .attr('dx', 4)
+                                                .attr('dy', 14)
+                                                .text(function (d) {
+                                                    if (d.data.value)
+                                                        return d.data.name + ": " + d.data.value;
+                                                    else
+                                                        return d.data.name
+                                                })
+
+                                        </script>
                                     </div>
                                     <div>
                                         <p style="position: relative; left: 300px;"><b style="color:#8B5C4B">
-                                            Rail Service Delays Hit 35 Times</b></p>
+                                                Rail Service Delays Hit 35 Times</b></p>
                                     </div>
                                     <!-- <script>
                                         const service_delay_margin = { top: 20, right: 30, bottom: 40, left: 50 },

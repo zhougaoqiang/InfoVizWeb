@@ -9,40 +9,17 @@
     <link rel="stylesheet" href="css/railLength.css">
 </head>
 <body>
-    <h2>Singapore Rail System Evolution (1990-2023)</h2>
-
-    <!-- Multi-selection buttons for toggling the lines -->
-    <!-- <div>
-        <label><input type="checkbox" id="toggleRail" checked> Show Total Rail Length</label>
-        <label><input type="checkbox" id="toggleMRT" checked> Show MRT Length</label>
-        <label><input type="checkbox" id="toggleLRT" checked> Show LRT Length</label>
-    </div> -->
-
-    <!-- Single-selection button for toggling the lines -->
-    <div>
-        <label for="lineSelect">Select Line to Display:</label>
-        <select id="lineSelect">
-            <option value="rail">Total Rail Length</option>
-            <option value="mrt">MRT Length</option>
-            <option value="lrt">LRT Length</option>
-        </select>
-    </div>
-
-    <svg id="chart" width="800" height="500"></svg>
-
+    <svg id="Rail_Length_Chart" width="860" height="500"></svg>
     <script>
-        // 设置图表的宽度和高度
-        const svg = d3.select("#chart");
-        const margin = { top: 50, right: 50, bottom: 50, left: 70 };
-        const width = svg.attr("width") - margin.left - margin.right;
-        const height = svg.attr("height") - margin.top - margin.bottom;
+        const rail_length_svg = d3.select("#Rail_Length_Chart");
+        const rail_length_margin = { top: 50, right: 130, bottom: 50, left: 70 };
+        const rail_length_width = rail_length_svg.attr("width") - rail_length_margin.left - rail_length_margin.right;
+        const rail_length_height = rail_length_svg.attr("height") - rail_length_margin.top - rail_length_margin.bottom;
 
-        const g = svg.append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
+        const rail_length_g = rail_length_svg.append("g")
+            .attr("transform", `translate(${rail_length_margin.left},${rail_length_margin.top})`);
 
-        // 加载 CSV 文件
         d3.csv("data/Rail-length.csv").then(data => {
-            // 将数据中的 year 字段转换为数字
             data.forEach(d => {
                 d.year = +d.year;
                 d.Total_KM = +d.Total_KM;
@@ -50,94 +27,107 @@
                 d.LRT_KM = +d.LRT_KM;
             });
 
-            // 定义比例尺
-            const x = d3.scaleLinear()
+            const rail_length_x = d3.scaleLinear()
                 .domain(d3.extent(data, d => d.year))
-                .range([0, width]);
+                .range([0, rail_length_width]);
 
-            const y = d3.scaleLinear()
-                .domain([0, d3.max(data, d => d.Total_KM)]).nice()
-                .range([height, 0]);
+            const rail_length_y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.Total_KM) + 20]).nice()
+                .range([rail_length_height, 0]);
 
-            // 定义坐标轴
-            g.append("g")
-                .attr("transform", `translate(0,${height})`)
-                .call(d3.axisBottom(x).tickFormat(d3.format("d"))); // 按年份格式化为整数
+            rail_length_g.append("g")
+                .attr("transform", `translate(0,${rail_length_height})`)
+                .call(d3.axisBottom(rail_length_x).tickFormat(d3.format("d")));
 
-            g.append("g")
-                .call(d3.axisLeft(y));
+            rail_length_g.append("g")
+                .attr("class", "y-axis")
+                .call(d3.axisLeft(rail_length_y).ticks(5));
 
-            // 定义折线生成器函数
-            const railLine = d3.line()
-                .x(d => x(d.year))
-                .y(d => y(d.Total_KM));
+            const lineGenerator = d3.line()
+                .x(d => rail_length_x(d.year));
 
-            const mrtLine = d3.line()
-                .x(d => x(d.year))
-                .y(d => y(d.MRT_KM));
+            const lineColors = {
+                "Total_KM": "#8B5C4B",
+                "MRT_KM": "#4A90E2",
+                "LRT_KM": "#50C878"
+            };
 
-            const lrtLine = d3.line()
-                .x(d => x(d.year))
-                .y(d => y(d.LRT_KM));
-
-            // 绘制每条线
-            const railPath = g.append("path")
-                .datum(data)
-                .attr("class", "line rail")
-                .attr("d", railLine);
-
-            const mrtPath = g.append("path")
-                .datum(data)
-                .attr("class", "line mrt")
-                .attr("d", mrtLine);
-
-            const lrtPath = g.append("path")
-                .datum(data)
-                .attr("class", "line lrt")
-                .attr("d", lrtLine);
-
-            // 添加标签
-            svg.append("text")
-                .attr("x", width / 2 + margin.left)
-                .attr("y", height + margin.top + 40)
-                .attr("class", "axis-label")
-                .style("text-anchor", "middle")
-                .text("Year");
-
-            svg.append("text")
-                .attr("x", -height / 2)
-                .attr("y", margin.left / 3)
-                .attr("class", "axis-label")
-                .attr("transform", "rotate(-90)")
-                .style("text-anchor", "middle")
-                .text("Length (Kilometres)");
-
-            // 绑定复选框事件，控制线条的显示和隐藏
-            /* d3.select("#toggleRail").on("change", function() {
-                const isChecked = d3.select(this).property("checked");
-                railPath.style("display", isChecked ? "block" : "none");
+            ["Total_KM", "MRT_KM", "LRT_KM"].forEach(lineType => {
+                lineGenerator.y(d => rail_length_y(d[lineType]));
+                rail_length_g.append("path")
+                    .datum(data)
+                    .attr("class", "line")
+                    .attr("d", lineGenerator)
+                    .style("stroke", lineColors[lineType])
+                    .style("stroke-width", 3)
+                    .style("fill", "none");
             });
 
-            d3.select("#toggleMRT").on("change", function() {
-                const isChecked = d3.select(this).property("checked");
-                mrtPath.style("display", isChecked ? "block" : "none");
-            });
+            const hoverLine = rail_length_g.append("line")
+                .style("stroke", "#999")
+                .style("stroke-width", 1)
+                .style("stroke-dasharray", "4")
+                .style("opacity", 0);
 
-            d3.select("#toggleLRT").on("change", function() {
-                const isChecked = d3.select(this).property("checked");
-                lrtPath.style("display", isChecked ? "block" : "none");
-            }); */
+            const focusCircles = ["Total_KM", "MRT_KM", "LRT_KM"].map((lineType, i) => (
+                rail_length_g.append("circle")
+                    .style("fill", lineColors[lineType])
+                    .attr("r", 5)
+                    .style("opacity", 0)
+            ));
 
-                        // 绑定选择事件，控制线条的显示
-            d3.select("#lineSelect").on("change", function() {
-                const selectedLine = d3.select(this).property("value");
+            const tooltip = rail_length_g.append("text")
+                .style("opacity", 0)
+                .attr("text-anchor", "left")
+                .attr("alignment-baseline", "middle");
 
-                // 根据选择的值控制线条的显示和隐藏
-                railPath.style("display", selectedLine === "rail" ? "block" : "none");
-                mrtPath.style("display", selectedLine === "mrt" ? "block" : "none");
-                lrtPath.style("display", selectedLine === "lrt" ? "block" : "none");
-            });
+            rail_length_g.append('rect')
+                .style("fill", "none")
+                .style("pointer-events", "all")
+                .attr('width', rail_length_width)
+                .attr('height', rail_length_height)
+                .on('mouseover', mouseover)
+                .on('mousemove', mousemove)
+                .on('mouseout', mouseout);
 
+            function mouseover() {
+                hoverLine.style("opacity", 1);
+                focusCircles.forEach(circle => circle.style("opacity", 1));
+                tooltip.style("opacity", 1);
+            }
+
+            function mousemove(event) {
+                const pointer = d3.pointer(event);
+                const x0 = rail_length_x.invert(pointer[0]);
+                const closestData = d3.least(data, d => Math.abs(d.year - x0));
+
+                hoverLine
+                    .attr("x1", rail_length_x(closestData.year))
+                    .attr("x2", rail_length_x(closestData.year))
+                    .attr("y1", 0)
+                    .attr("y2", rail_length_height);
+
+                focusCircles.forEach((circle, i) => {
+                    const lineType = ["Total_KM", "MRT_KM", "LRT_KM"][i];
+                    circle
+                        .attr("cx", rail_length_x(closestData.year))
+                        .attr("cy", rail_length_y(closestData[lineType]));
+                });
+
+                tooltip
+                    .attr("x", rail_length_x(closestData.year) + 10)
+                    .attr("y", rail_length_y(closestData.Total_KM) - 20)
+                    .html(`Year: ${closestData.year}
+                           Total: ${closestData.Total_KM} KM
+                           MRT: ${closestData.MRT_KM} KM
+                           LRT: ${closestData.LRT_KM} KM`);
+            }
+
+            function mouseout() {
+                hoverLine.style("opacity", 0);
+                focusCircles.forEach(circle => circle.style("opacity", 0));
+                tooltip.style("opacity", 0);
+            }
         });
     </script>
 </body>
