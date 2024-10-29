@@ -15,8 +15,10 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+
     <!-- Vendor CSS Files -->
     <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -739,30 +741,20 @@
               </script>
                             <div class="swiper-wrapper">
                                 <div class="swiper-slide">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-1"></div>
-                                        <div class="col-md-2">
-                                            <label for="lineSelect">Select rail type:</label>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <select id="lineSelect" class="form-select form-select-sm">
-                                                <option value="Total_KM">Total Rail Length</option>
-                                                <option value="MRT_KM">MRT Rail Length</option>
-                                                <option value="LRT_KM">LRT Rail Length</option>
-                                            </select>
-                                        </div>
-                                    </div>
 
                                     <svg id="Rail_Length_Chart" width="860" height="500"></svg>
                                     <script>
+                                        // 设置图表的宽度和高度
                                         const rail_length_svg = d3.select("#Rail_Length_Chart");
-                                        const rail_length_margin = { top: 50, right: 130, bottom: 50, left: 70 };
+                                        const rail_length_margin = { top: 20, right: 130, bottom: 50, left: 70 };
                                         const rail_length_width = rail_length_svg.attr("width") - rail_length_margin.left - rail_length_margin.right;
                                         const rail_length_height = rail_length_svg.attr("height") - rail_length_margin.top - rail_length_margin.bottom;
+
                                         const rail_length_g = rail_length_svg.append("g")
                                             .attr("transform", `translate(${rail_length_margin.left},${rail_length_margin.top})`);
 
                                         var g_currentSelectedLine;
+                                        // 加载 CSV 文件
                                         d3.csv("assets/data/Rail-length.csv").then(data => {
                                             // 将数据中的 year 字段转换为数字
                                             data.forEach(d => {
@@ -792,17 +784,66 @@
 
                                             // 定义折线生成器函数
                                             const rail_length_lineGenerator = d3.line()
-                                                .x(d => rail_length_x(d.year))
-                                                .y(d => rail_length_y(d.Total_KM)); // 默认显示总铁路长度
+                                                .x(d => rail_length_x(d.year));
 
-                                            // 初始化线条
-                                            let rail_length_line = rail_length_g.append("path")
+                                            const lineColors = {
+                                                "LRT_KM": "#8B5C4B",
+                                                "MRT_KM": "#415441",
+                                                "Total_KM": "#A4B2A7"
+                                            }
+
+                                            // Generate line for Total_KM
+                                            rail_length_lineGenerator.y(d => rail_length_y(d.Total_KM));
+                                            rail_length_g.append("path")
                                                 .datum(data)
-                                                .attr("class", "line rail")
+                                                .attr("class", "line")
                                                 .attr("d", rail_length_lineGenerator)
-                                                .style("stroke", "#8B5C4B")
+                                                .style("stroke", lineColors["Total_KM"])
                                                 .style("stroke-width", 3)
                                                 .style("fill", "none");
+
+                                            // Generate line for MRT_KM
+                                            rail_length_lineGenerator.y(d => rail_length_y(d.MRT_KM));
+                                            rail_length_g.append("path")
+                                                .datum(data)
+                                                .attr("class", "line")
+                                                .attr("d", rail_length_lineGenerator)
+                                                .style("stroke", lineColors["MRT_KM"])
+                                                .style("stroke-width", 3)
+                                                .style("fill", "none");
+
+                                            // Generate line for LRT_KM
+                                            rail_length_lineGenerator.y(d => rail_length_y(d.LRT_KM));
+                                            rail_length_g.append("path")
+                                                .datum(data)
+                                                .attr("class", "line")
+                                                .attr("d", rail_length_lineGenerator)
+                                                .style("stroke", lineColors["LRT_KM"])
+                                                .style("stroke-width", 3)
+                                                .style("fill", "none");
+
+
+                                            const hoverLine = rail_length_g.append("line")
+                                                .style("stroke", "#999")
+                                                .style("stroke-width", 1)
+                                                .style("stroke-dasharray", "4")
+                                                .style("opacity", 0);
+
+                                            const focusCircles = ["Total_KM", "MRT_KM", "LRT_KM"].map((lineType, i) => (
+                                                rail_length_g.append("circle")
+                                                    .style("fill", lineColors[lineType])
+                                                    .attr("r", 5)
+                                                    .style("opacity", 0)
+                                            ));
+
+                                            // 初始化线条
+                                            //  let rail_length_line = rail_length_g.append("path")
+                                            //    .datum(data)
+                                            //    .attr("class", "line rail")
+                                            //    .attr("d", rail_length_lineGenerator)
+                                            //    .style("stroke", "#8B5C4B")
+                                            //    .style("stroke-width", 3)
+                                            //    .style("fill", "none");
 
                                             // 添加标签
                                             rail_length_svg.append("text")
@@ -813,19 +854,19 @@
                                                 .style("text-anchor", "middle")
                                                 .text("Length of rail (in KM)");
 
-                                            var rail_length_focus = rail_length_g.append('g')
-                                                .append('circle')
-                                                .style('fill', '#8B5C48')
-                                                .style('stroke', '#8B5C48')
-                                                .attr('r', 5)
-                                                .style("opacity", 0)
+                                            // var rail_length_focus = rail_length_g.append('g')
+                                            //    .append('circle')
+                                            //    .style('fill', '#8B5C48')
+                                            //    .style('stroke', '#8B5C48')
+                                            //    .attr('r', 5)
+                                            //    .style("opacity", 0)
 
                                             var rail_length_tooltipBackground = rail_length_g
                                                 .append('g')
                                                 .append('rect')
                                                 .attr("class", "tooltip-rect")
                                                 .attr("width", 180)
-                                                .attr("height", 80)
+                                                .attr("height", 130)
                                                 .attr("rx", 10) //圆角
                                                 .attr("ry", 10)
                                                 .attr("fill", "#C6B2A0")
@@ -850,7 +891,9 @@
                                                 .on('mouseout', mouseout);
 
                                             function mouseover() {
-                                                rail_length_focus.style("opacity", 1);
+                                                hoverLine.style("opacity", 1);
+                                                focusCircles.forEach(circle => circle.style("opacity", 1));
+                                                //rail_length_focus.style("opacity", 1);
                                                 rail_length_focusText.style("opacity", 1);
                                             }
 
@@ -861,51 +904,47 @@
                                                     return Math.abs(d.year - rail_x0);
                                                 });
 
-                                                console.log(rail_length_closestData);
+                                                hoverLine
+                                                    .attr("x1", rail_length_x(rail_length_closestData.year))
+                                                    .attr("x2", rail_length_x(rail_length_closestData.year))
+                                                    .attr("y1", 0)
+                                                    .attr("y2", rail_length_height);
 
-                                                var rail_length_y_value = 0;
-                                                var rail_actual_length = 0;
-                                                if (g_currentSelectedLine === "Total_KM") {
-                                                    rail_actual_length = rail_length_closestData.Total_KM;
-                                                    rail_length_y_value = rail_length_y(rail_length_closestData.Total_KM);
-                                                }
-                                                else if (g_currentSelectedLine === "MRT_KM") {
-                                                    rail_actual_length = rail_length_closestData.MRT_KM;
-                                                    rail_length_y_value = rail_length_y(rail_length_closestData.MRT_KM);
-                                                }
-                                                else if (g_currentSelectedLine === "LRT_KM") {
-                                                    rail_actual_length = rail_length_closestData.LRT_KM;
-                                                    rail_length_y_value = rail_length_y(rail_length_closestData.LRT_KM);
-                                                }
-                                                else {
-                                                    rail_actual_length = rail_length_closestData.Total_KM;
-                                                    rail_length_y_value = rail_length_y(rail_length_closestData.Total_KM);
-                                                }
-                                                console.log("rail_length_y_value=>", rail_length_y_value)
-                                                if (rail_length_closestData) {
-                                                    rail_length_focus
+                                                focusCircles.forEach((circle, i) => {
+                                                    const lineType = ["Total_KM", "MRT_KM", "LRT_KM"][i];
+                                                    circle
                                                         .attr("cx", rail_length_x(rail_length_closestData.year))
-                                                        .attr("cy", rail_length_y_value);
-                                                }
+                                                        .attr("cy", rail_length_y(rail_length_closestData[lineType]));
+                                                });
 
                                                 // 定义 tooltip 文字内容
                                                 console.log("rail_length_closestData.year = ", rail_length_closestData.year);
                                                 var rail_length_yearText = "Year: " + rail_length_closestData.year;
-                                                var rail_lengthText = "Length: " + rail_actual_length;
+                                                var total_lengthText = "Total: " + rail_length_closestData.Total_KM;
+                                                var mrt_lengthText = "MRT: " + rail_length_closestData.MRT_KM;
+                                                var lrt_lengthText = "LRT: " + rail_length_closestData.LRT_KM;
 
                                                 // 更新 tooltip 文本
                                                 rail_length_focusText
                                                     .attr("x", rail_length_x(rail_length_closestData.year) + 15)
-                                                    .attr("y", rail_length_y_value - 5)
+                                                    .attr("y", rail_length_pointer[1] - 5)
                                                     .html(null)  // 清空之前的文本
                                                     .append("tspan")
                                                     .attr("x", rail_length_x(rail_length_closestData.year) + 15)
-                                                    .attr("y", rail_length_y_value - 5)
+                                                    .attr("y", rail_length_pointer[1] - 5)
                                                     .text(rail_length_yearText)
                                                     .append("tspan")
                                                     .attr("x", rail_length_x(rail_length_closestData.year) + 15)
-                                                    .attr("y", rail_length_y_value + 15)
-                                                    .text(rail_lengthText);
+                                                    .attr("y", rail_length_pointer[1] + 15)
+                                                    .text(total_lengthText)
+                                                    .append("tspan")
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_pointer[1] + 35)
+                                                    .text(mrt_lengthText)
+                                                    .append("tspan")
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_pointer[1] + 55)
+                                                    .text(lrt_lengthText);
 
                                                 // 估计 tooltip 文本的宽度和高度
                                                 var rail_length_bbox = rail_length_focusText.node().getBBox();
@@ -921,7 +960,9 @@
 
 
                                             function mouseout() {
-                                                rail_length_focus.style("opacity", 0);
+                                                hoverLine.style("opacity", 0);
+                                                focusCircles.forEach(circle => circle.style("opacity", 0));
+                                                // rail_length_focus.style("opacity", 0);
                                                 rail_length_focusText.style("opacity", 0);
                                                 rail_length_tooltipBackground.style("opacity", 0);
                                             }
