@@ -890,6 +890,34 @@
                                                 .on('mousemove', mousemove)
                                                 .on('mouseout', mouseout);
 
+                                            const rail_length_legendData = [
+                                                { label: "Total Rail Length", color: lineColors["Total_KM"] },
+                                                { label: "MRT Rail Length", color: lineColors["MRT_KM"] },
+                                                { label: "LRT Rail Length", color: lineColors["LRT_KM"] }
+                                            ];
+                                            const rail_length_legend = rail_length_svg.append("g")
+                                                .attr("transform", `translate(${rail_length_margin.left + 20}, ${rail_length_margin.top})`);
+
+                                                rail_length_legendData.forEach((d, i) => {
+                                                const rail_length_legendItem = rail_length_legend.append("g")
+                                                    .attr("transform", `translate(0, ${i * 25})`); // 纵向间距为 25
+
+                                                // 添加颜色矩形
+                                                rail_length_legendItem.append("rect")
+                                                    .attr("width", 15)
+                                                    .attr("height", 15)
+                                                    .attr("fill", d.color);
+
+                                                // 添加文本标签
+                                                rail_length_legendItem.append("text")
+                                                    .attr("x", 20) // 与矩形的横向间距
+                                                    .attr("y", 10) // 使文字与矩形对齐
+                                                    .text(d.label)
+                                                    .style("font-size", "15px")
+                                                    .style("alignment-baseline", "middle");
+                                            });
+
+
                                             function mouseover() {
                                                 hoverLine.style("opacity", 1);
                                                 focusCircles.forEach(circle => circle.style("opacity", 1));
