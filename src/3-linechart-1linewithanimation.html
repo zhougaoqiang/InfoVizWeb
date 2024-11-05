@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<body>
+    <div id="linechart_simple_2lines"></div>
+    <label for="line-select">Select Line:</label>
+    <select id="line-select">
+        <option value="MRT Km">MRT Km</option>
+        <option value="LRT Km">LRT Km</option>
+        <option value="Total km">Total Km</option>
+    </select>
+
+    <script>
+        const g_area_width = 600;
+        const g_area_height = 400;
+        const g_chartMargin = { top: 30, right: 30, bottom: 30, left: 60 };
+        const g_chart_width = g_area_width - (g_chartMargin.left + g_chartMargin.right);
+        const g_chart_height = g_area_height - (g_chartMargin.top + g_chartMargin.bottom);
+
+        var g_svg = d3.select("#linechart_simple_2lines")
+            .append("svg")
+            .attr("width", g_area_width)
+            .attr("height", g_area_height)
+            .append("g")
+            .attr("transform", `translate(${g_chartMargin.left}, ${g_chartMargin.top})`);
+
+        d3.csv("data/Rail-Operated.csv").then(function (data) {
+            data.forEach(function (d) {
+                d.Year = +d.Year;
+                d.MRT_Km_Operated = +d.MRT_Km_Operated;
+                d.LRT_Km_Operated = +d.LRT_Km_Operated;
+                d.Total = d.MRT_Km_Operated + d.LRT_Km_Operated;
+            });
+
+            // Define multiLineData for selection
+            var g_multiLineData = [
+                { name: "MRT Km", color: "steelblue", values: data.map(d => ({ year: d.Year, km: d.MRT_Km_Operated })) },
+                { name: "LRT Km", color: "orange", values: data.map(d => ({ year: d.Year, km: d.LRT_Km_Operated })) },
+                { name: "Total km", color: "red", values: data.map(d => ({ year: d.Year, km: d.Total })) }
+            ];
+
+            var g_scaleLinear_X = d3.scaleLinear()
+                .domain(d3.extent(data, function (d) { return d.Year }))
+                .range([0, g_chart_width]);
+            g_svg.append("g")
+                .attr("transform", `translate(0, ${g_chart_height})`)
+                .call(d3.axisBottom(g_scaleLinear_X).tickFormat(d3.format("d")));
+
+            var g_scaleLinear_Y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.Total)])
+                .range([g_chart_height, 0]);
+            var yAxis = g_svg.append("g").attr("class", "y-axis")
+                .call(d3.axisLeft(g_scaleLinear_Y).ticks(10, "s"));
+
+            g_svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", g_chart_width / 2)
+                .attr("y", g_chart_height + g_chartMargin.top)
+                .text("Year")
+                .style("font-size", "14px")
+                .style("fill", "darkgray");
+
+            g_svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", -g_chart_height / 2)
+                .attr("y", -g_chartMargin.left / 2 - 15)
+                .text("Rail length")
+                .attr("transform", "rotate(-90)")
+                .style("font-size", "14px")
+                .style("fill", "darkgray");
+
+            var g_lineGenerator = d3.line()
+                .x(d => g_scaleLinear_X(d.year))
+                .y(d => g_scaleLinear_Y(d.km));
+
+            // Create initial line with MRT Km data
+            var g_linePath = g_svg.append("path")
+                .datum(g_multiLineData[0].values)
+                .attr("fill", "none")
+                .attr("stroke", g_multiLineData[0].color)
+                .attr("stroke-width", 2)
+                .attr("class", "line")
+                .attr("d", g_lineGenerator);
+
+            // Update function for switching lines with animation
+            function update(selectedLineName) {
+                var selectedLineData = g_multiLineData.find(line => line.name === selectedLineName);
+
+                // Update Y-Axis domain based on selected line's data
+                g_scaleLinear_Y.domain([0, d3.max(selectedLineData.values, d => d.km)]);
+                yAxis.transition()
+                    .duration(1000)
+                    .call(d3.axisLeft(g_scaleLinear_Y).ticks(10, "s"));
+
+                // Update line color and data with transition
+                g_linePath
+                    .datum(selectedLineData.values)
+                    .transition()
+                    .duration(1000)
+                    .attr("stroke", selectedLineData.color)
+                    .attr("d", g_lineGenerator.y(d => g_scaleLinear_Y(d.km)));
+            }
+
+            // Event listener for dropdown selection
+            d3.select("#line-select").on("change", function (event) {
+                var selectedLine = event.target.value;
+                update(selectedLine);
+            });
+        });
+    </script>
+</body>

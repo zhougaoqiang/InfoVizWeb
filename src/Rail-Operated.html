@@ -62,6 +62,7 @@
         .attr("d", d3.line()
           .x(function(d) { return x(d.Year); })
           .y(function(d) { return y(d.MRT_Km_Operated); })
+          .curve(d3.curveCatmullRom) //将直直的折线变成平滑过度的曲线。
         );
 
       // Add the LRT line
@@ -73,6 +74,7 @@
         .attr("d", d3.line()
           .x(function(d) { return x(d.Year); })
           .y(function(d) { return y(d.LRT_Km_Operated); })
+          .curve(d3.curveCatmullRom)
         );
 
       // Add points for MRT with interaction

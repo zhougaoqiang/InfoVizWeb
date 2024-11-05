@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<body>
+    <div id="linechart_simple_2lines"></div>
+    <script>
+        const g_area_width = 600;
+        const g_area_height = 400;
+        const g_chartMargin = { top: 30, right: 30, bottom: 30, left: 60 };
+        const g_chart_width = g_area_width - (g_chartMargin.left + g_chartMargin.right);
+        const g_chart_height = g_area_height - (g_chartMargin.top + g_chartMargin.bottom);
+
+        var g_svg = d3.select("#linechart_simple_2lines")
+            .append("svg") //always the first thing need to do
+            .attr("width", g_area_width)
+            .attr("height", g_area_height)
+            .append("g") // "g" is a group, or consider as a "container", allow user to add more elements in this contrainer
+            .attr("transform", `translate(${g_chartMargin.left}, ${g_chartMargin.top})`);
+        /*
+        other elements able to add:
+        "rect" => <rect x="10" y="10" width="100" height="50" fill="blue" />
+        "circle" => <circle cx="50" cy="50" r="40" fill="green" />
+        "ellipse" => <ellipse cx="100" cy="50" rx="50" ry="30" fill="purple" />
+        "line" =>  <line x1="10" y1="10" x2="100" y2="100" stroke="black" />
+        "polyline" => <polyline points="0,40 40,40 40,80 80,80" stroke="black" fill="none" />
+        "polygon" => <polygon points="60,20 100,40 100,80 60,100 20,80 20,40" fill="orange" />
+        "path" => <path d="M10 10 H 90 V 90 H 10 L 10 10" fill="none" stroke="black" />
+        "text" => <text x="10" y="20" fill="black">Hello, SVG!</text>
+        advanced: "a", "linearGradient", "defs", "filter", "mask" etc, should not in exam. 
+        */
+
+        d3.csv("data/Rail-Operated.csv").then(function (data) {
+
+            // Step 1: Format data and create multi-line data structure
+            data.forEach(function (d) {
+                d.Year = +d.Year;  // Convert year to number
+                d.MRT_Km_Operated = +d.MRT_Km_Operated;  // Convert to number
+                d.LRT_Km_Operated = +d.LRT_Km_Operated;  // Convert to number
+                d.Total = d.MRT_Km_Operated + d.LRT_Km_Operated;
+            });
+
+            // add lines info here
+            var g_multiLineData = [
+                { name: "MRT Km", color: "steelblue", values: data.map(d => ({ year: d.Year, km: d.MRT_Km_Operated })) },
+                { name: "LRT Km", color: "orange", values: data.map(d => ({ year: d.Year, km: d.LRT_Km_Operated })) },
+                { name: "Total km", color: "red", values: data.map(d => ( {year: d.Year, km: d.Total }))}
+            ];
+
+            // Step 2: Draw X-Axis
+            var g_scaleLinear_X = d3.scaleLinear()
+                .domain(d3.extent(data, function (d) { return d.Year }))
+                .range([0, g_chart_width]);
+
+            g_svg.append("g")
+                .attr("transform", `translate(0, ${g_chart_height})`)
+                .call(d3.axisBottom(g_scaleLinear_X).tickFormat(d3.format("d"))); // add scale
+
+            // Step 3: Draw Y-Axis
+            var g_scaleLinear_Y = d3.scaleLinear()
+                .domain([0, d3.max(g_multiLineData, line => d3.max(line.values, d => d.km))])
+                .range([g_chart_height, 0]);
+
+            g_svg.append("g")
+                .call(d3.axisLeft(g_scaleLinear_Y).ticks(5, "s")); //add scale
+
+            // Step 4: Add X and Y axis labels
+            g_svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", g_chart_width / 2)
+                .attr("y", g_chart_height + g_chartMargin.top)
+                .text("Year")
+                .style("font-size", "14px")
+                .style("fill", "darkgray");
+
+            g_svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", -g_chart_height / 2)
+                .attr("y", -g_chartMargin.left / 2 - 15)
+                .text("Rail length")
+                .attr("transform", "rotate(-90)")
+                .style("font-size", "14px")
+                .style("fill", "darkgray");
+
+            // Step 5: Draw multiple lines
+            g_multiLineData.forEach(function (lineData) {
+                g_svg.append("path")
+                    .datum(lineData.values)
+                    .attr("fill", "none")
+                    .attr("stroke", lineData.color)
+                    .attr("stroke-width", 2)
+                    .attr("d", d3.line()
+                        .x(function (d) { return g_scaleLinear_X(d.year); })
+                        .y(function (d) { return g_scaleLinear_Y(d.km); })
+                        //.curve(d3.curveCatmullRom) // 使用平滑曲线
+                    );
+            });
+
+            // Step 6: Add legend dynamically
+            var g_legend = g_svg.append("g")
+                .attr("transform", `translate(20, 20)`); // 图例位置
+
+            g_multiLineData.forEach(function (lineData, index) {
+                g_legend.append("rect")
+                    .attr("x", 0)
+                    .attr("y", index * 20)
+                    .attr("width", 10)
+                    .attr("height", 10)
+                    .style("fill", lineData.color);
+
+                g_legend.append("text")
+                    .attr("x", 20)
+                    .attr("y", index * 20 + 6)
+                    .text(lineData.name)
+                    .style("alignment-baseline", "middle")
+                    .style("font-size", "12px")
+                    .style("fill", "black");
+            });
+        });
+
+    </script>
+</body>

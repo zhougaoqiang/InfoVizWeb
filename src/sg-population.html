@@ -81,8 +81,9 @@
         .attr("d", d3.line()
           .x(function (d) { return population_x(d.year) })
           .y(function (d) { return population_y(d.Population) })
+          .curve(d3.curveCatmullRom)
         )
-        .attr("clip-path", "url(#clip)");  // Add the clip-path here
+        .attr("clip-path", "url(#clip)");  // Add the clip-path here -->
 
       // Create the circle that travels along the curve of chart
       var population_focus = population_svg

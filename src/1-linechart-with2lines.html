@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<body>
+    <div id="linechart_simple_2lines"></div>
+    <script>
+        const g_area_width = 600;
+        const g_area_height = 400;
+        const g_chartMargin = { top: 30, right: 30, bottom: 30, left: 60 };
+        const g_chart_width = g_area_width - (g_chartMargin.left + g_chartMargin.right);
+        const g_chart_height = g_area_height - (g_chartMargin.top + g_chartMargin.bottom);
+
+        var g_svg = d3.select("#linechart_simple_2lines")
+            .append("svg") //always the first thing need to do
+            .attr("width", g_area_width)
+            .attr("height", g_area_height)
+            .append("g") // "g" is a group, or consider as a "container", allow user to add more elements in this contrainer
+            .attr("transform", `translate(${g_chartMargin.left}, ${g_chartMargin.top})`);
+        /*
+        other elements able to add:
+        "rect" => <rect x="10" y="10" width="100" height="50" fill="blue" />
+        "circle" => <circle cx="50" cy="50" r="40" fill="green" />
+        "ellipse" => <ellipse cx="100" cy="50" rx="50" ry="30" fill="purple" />
+        "line" =>  <line x1="10" y1="10" x2="100" y2="100" stroke="black" />
+        "polyline" => <polyline points="0,40 40,40 40,80 80,80" stroke="black" fill="none" />
+        "polygon" => <polygon points="60,20 100,40 100,80 60,100 20,80 20,40" fill="orange" />
+        "path" => <path d="M10 10 H 90 V 90 H 10 L 10 10" fill="none" stroke="black" />
+        "text" => <text x="10" y="20" fill="black">Hello, SVG!</text>
+        advanced: "a", "linearGradient", "defs", "filter", "mask" etc, should not in exam. 
+        */
+
+        d3.csv("data/Rail-Operated.csv").then(function (data) {
+
+            //step 1: format data
+            data.forEach(function (d) {
+                d.Year = +d.Year;  // Convert year to number
+                d.MRT_Km_Operated = +d.MRT_Km_Operated;  // Convert to number
+                d.LRT_Km_Operated = +d.LRT_Km_Operated;  // Convert to number
+            })
+
+            //step 2: draw X-AXIS
+            var g_scaleLinear_X = d3.scaleLinear()
+                .domain(d3.extent(data, function (d) { return d.Year }))
+                .range([0, g_chart_width]);
+            g_svg.append("g")
+                .attr("transform", `translate(0, ${g_chart_height})`)
+                .call(d3.axisBottom(g_scaleLinear_X).tickFormat(d3.format("d"))); // add scale
+
+
+            //step 3: draw Y-AXIS
+            var g_scaleLinear_Y = d3.scaleLinear()
+                //.domain([0, d3.max(data, d => d.MRT_Km_Operated)]) //if 1 line only.
+                .domain([0, d3.max(data, function (d) { return Math.max(d.MRT_Km_Operated, d.LRT_Km_Operated); })])
+                .range([g_chart_height, 0]);
+            g_svg.append("g")
+                .call(d3.axisLeft(g_scaleLinear_Y).ticks(10, "s")); //add scale
+
+            // step 4: add X axis lable
+            g_svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", g_chart_width / 2)
+                .attr("y", g_chart_height + g_chartMargin.top)
+                .text("Year")
+                .style("font-size", "14px") // 设置字体大小
+                .style("fill", "darkgray"); // 设置文字颜色
+
+            // step 5: add Y axis lable
+            g_svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", -g_chart_height / 2)       //TODO:
+                .attr("y", -g_chartMargin.left / 2 - 15) //TODO:
+                .text("Rail length")
+                .attr("transform", "rotate(-90)")
+                .style("font-size", "14px") // 设置字体大小
+                .style("fill", "darkgray"); // 设置文字颜色;
+
+            // step 6: add legend
+            var g_legend = g_svg.append("g")
+                .attr("transform", `translate(20, 20)`); // 选择图例位置
+
+            g_legend.append("rect")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", 10)
+                .attr("height", 10)
+                .style("fill", "steelblue");
+
+            g_legend.append("text")
+                .attr("x", 20)
+                .attr("y", 5)
+                .text("MRT Km")
+                .style("alignment-baseline", "middle")
+                .style("font-size", "12px") // 设置图例字体大小
+                .style("fill", "black"); // 图例文字颜色;
+
+            g_legend.append("rect")
+                .attr("x", 0)
+                .attr("y", 15)
+                .attr("width", 10)
+                .attr("height", 10)
+                .style("fill", "orange");
+
+            g_legend.append("text")
+                .attr("x", 20)
+                .attr("y", 20)
+                .text("LRT Km")
+                .style("alignment-baseline", "middle")
+                .style("font-size", "12px") // 设置图例字体大小
+                .style("fill", "black"); // 图例文字颜色
+
+            //final step : draw lines.
+            g_svg.append("path")
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 2) // 设置线条宽度
+                .attr("stroke-dasharray", "5,5") // 设置虚线样式
+                .attr("d", d3.line()
+                    .x(function (d) { return g_scaleLinear_X(d.Year); })
+                    .y(function (d) { return g_scaleLinear_Y(d.MRT_Km_Operated) })//put the line data
+                    .curve(d3.curveCatmullRom) //将直直的折线变成平滑过度的曲线。
+                    //.curve(d3.curveBasis)
+                );
+
+            g_svg.append("path")
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", "orange")
+                .attr("stroke-width", 2)
+                .attr("stroke-linecap", "round") // 设置线条端点为圆形, seems useless
+                .attr("d", d3.line()
+                    .x(function (d) { return g_scaleLinear_X(d.Year); })
+                    .y(function (d) { return g_scaleLinear_Y(d.LRT_Km_Operated) }) //put line data
+                    .curve(d3.curveCatmullRom) //将直直的折线变成平滑过度的曲线。
+                    //.curve(d3.curveCardinal)
+                );
+        })
+    </script>
+</body>
