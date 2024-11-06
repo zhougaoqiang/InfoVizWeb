@@ -3,76 +3,91 @@
 
 <head>
     <style>
+        /* 设置扇形图的文字和路径样式 */
         .arc text {
-            font: 10px sans-serif;
-            text-anchor: middle;
+            font: 10px sans-serif; /* 文字字体和大小 */
+            text-anchor: middle; /* 文字对齐方式 */
         }
 
         .arc path {
-            stroke: #fff;
+            stroke: #fff; /* 扇形间的白色边框 */
         }
 
         .title {
-            fill: teal;
-            font-weight: bold;
+            fill: teal; /* 标题文字颜色 */
+            font-weight: bold; /* 标题字体加粗 */
         }
     </style>
+    <!-- 加载 D3.js 库 -->
     <script src="https://d3js.org/d3.v4.min.js"></script>
 </head>
 
 <body>
+    <!-- 定义 SVG 画布，用于绘制扇形图 -->
     <svg width="500" height="400"></svg>
     <script>
 
+        // 获取 SVG 画布的宽度和高度，并计算圆的半径
         var svg = d3.select("svg"),
             width = svg.attr("width"),
             height = svg.attr("height"),
-            radius = Math.min(width, height) / 2;
+            radius = Math.min(width, height) / 2; // 半径取宽高中的最小值除以2
 
+        // 创建一个分组元素 <g>，以图表中心为基准平移
         var g = svg.append("g")
             .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
+        // 定义颜色比例尺，用于为每个扇形分配颜色
         var color = d3.scaleOrdinal(['#4daf4a', '#377eb8', '#ff7f00', '#984ea3', '#e41a1c']);
 
+        // 创建饼图生成器，使用数据的 percent 值来计算每个扇形的角度
         var pie = d3.pie().value(function (d) {
             return d.percent;
         });
 
+        // 创建弧生成器，用于计算每个扇形的路径
         var path = d3.arc()
-            .outerRadius(radius - 35)
-            .innerRadius(0);
+            .outerRadius(radius - 35) // 外半径，决定扇形的大小
+            .innerRadius(0); // 内半径为0，即绘制实心扇形
 
+        // 创建标签弧生成器，用于放置标签的位置
         var label = d3.arc()
-            .outerRadius(radius)
-            .innerRadius(radius - 110);
+            .outerRadius(radius) // 标签位置的外半径
+            .innerRadius(radius - 110); // 标签位置的内半径
 
+        // 读取数据并生成扇形图
         d3.csv("data/PieChartData.csv", function (error, data) {
             if (error) {
-                throw error;
+                throw error; // 处理数据加载错误
             }
+            
+            // 绑定数据并为每个数据项创建一个分组元素 <g>
             var arc = g.selectAll(".edit")
-                .data(pie(data))
+                .data(pie(data)) // 使用 pie 生成器处理数据
                 .enter().append("g")
-                .attr("class", "edit");
+                .attr("class", "edit"); // 添加类名 edit，方便样式和操作
 
+            // 为每个分组元素添加路径，用于绘制扇形
             arc.append("path")
-                .attr("d", path)
-                .attr("fill", function (d) { return color(d.data.browser); });
+                .attr("d", path) // 根据 path 生成器计算路径
+                .attr("fill", function (d) { return color(d.data.browser); }); // 使用颜色比例尺为每个扇形填充颜色
 
-            console.log(arc)
+            console.log(arc); // 控制台输出 arc 数据，调试用
 
+            // 为每个分组元素添加文本标签，显示浏览器名称
             arc.append("text")
                 .attr("transform", function (d) {
-                    return "translate(" + label.centroid(d) + ")";
+                    return "translate(" + label.centroid(d) + ")"; // 根据标签位置生成器计算标签位置
                 })
-                .text(function (d) { return d.data.browser; });
+                .text(function (d) { return d.data.browser; }); // 显示浏览器名称
         });
 
+        // 添加图表标题
         svg.append("g")
-            .attr("transform", "translate(" + (width / 2 - 120) + "," + 20 + ")")
+            .attr("transform", "translate(" + (width / 2 - 120) + "," + 20 + ")") // 将标题移动到画布上方
             .append("text")
-            .text("Browser use statistics - Jan 2019")
-            .attr("class", "title")
+            .text("Browser use statistics - Jan 2019") // 标题内容
+            .attr("class", "title"); // 设置标题样式
     </script>
 </body>
 

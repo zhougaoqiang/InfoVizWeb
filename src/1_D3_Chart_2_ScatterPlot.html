@@ -8,49 +8,59 @@
 <div id="div_graph_id"></div>
 <script>
 
-  // set the dimensions and margins of the graph
+  // Set the dimensions and margins of the graph
   var margin = { top: 10, right: 30, bottom: 30, left: 60 },
-    width = 460 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    width = 460 - margin.left - margin.right,  // Graph width minus margins
+    height = 400 - margin.top - margin.bottom; // Graph height minus margins
 
-  // append the svg object to the body of the page
+  // Append the svg object to the div with id 'div_graph_id'
   var svg = d3.select("#div_graph_id")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform",
-      "translate(" + margin.left + "," + margin.top + ")");
+    .attr("width", width + margin.left + margin.right)  // Set the overall width
+    .attr("height", height + margin.top + margin.bottom) // Set the overall height
+    .append("g")  // Append a group element to contain the chart elements
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); // Move group to apply margins
 
-  //Read the data
+  // Read the data from the CSV file
   d3.csv("data/ScatterPlotData.csv", function (data) {
 
-    // Add X axis
+    // Add X axis with a linear scale from 0 to 4000
     var x = d3.scaleLinear()
-      .domain([0, 4000])
-      .range([0, width]);
+      .domain([0, 4000])  // Input domain
+      .range([0, width]); // Output range (graph width)
     svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
+      .attr("transform", "translate(0," + height + ")") // Move X axis to the bottom
+      .call(d3.axisBottom(x)); // Render the X axis
 
-    // Add Y axis
+    // Add Y axis with a linear scale from 0 to 500,000
     var y = d3.scaleLinear()
-      .domain([0, 500000])
-      .range([height, 0]);
+      .domain([0, 500000])  // Input domain
+      .range([height, 0]); // Output range (graph height)
     svg.append("g")
-      .call(d3.axisLeft(y));
+      .call(d3.axisLeft(y)); // Render the Y axis on the left side
 
-    // Add dots
+    // Add dots to represent data points
     svg.append('g')
-      .selectAll("circle")
-      .data(data)
-      .enter()
+      .selectAll("circle")  // Select all circles (none initially)
+      .data(data)  // Bind data to the selection
+      .enter()  // For each data point, append a new circle
       .append("circle")
-      .attr("cx", function (d) { return x(d.GrLivArea); })
-      .attr("cy", function (d) { return y(d.SalePrice); })
-      .attr("r", 1.5)
-      .style("fill", "#69b3a2")
+      .attr("cx", function (d) { return x(d.GrLivArea); })  // Set x position based on GrLivArea
+      .attr("cy", function (d) { return y(d.SalePrice); })  // Set y position based on SalePrice
+      .attr("r", 1.5)  // Set radius of each circle
+      .style("fill", "#69b3a2")  // Set color of each circle
 
-  })
+      /*
+      .selectAll("circle") 的作用
+      创建空选择集：.selectAll("circle") 会选择当前图表中所有的 <circle> 元素。在图表首次绘制时，实际上没有任何 <circle> 元素，所以这是一个空选择集。
+      数据绑定和 enter：调用 .data(data) 绑定数据，然后通过 .enter() 选择尚未在 DOM 中存在的数据元素。这种“数据驱动”方式告诉 D3，哪些数据点需要新建元素（在这里是 <circle>），从而生成散点图中的数据点。
+      */
+
+      /*
+      1. cx 和 cy 是 <circle> 专用的属性
+        cx：表示圆心的 x 坐标，即 <circle> 元素的水平位置。
+        cy：表示圆心的 y 坐标，即 <circle> 元素的垂直位置。
+      */
+  });
 
 </script>

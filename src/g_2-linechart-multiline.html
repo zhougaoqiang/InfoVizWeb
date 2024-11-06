@@ -49,7 +49,7 @@
 
             // Step 2: Draw X-Axis
             var g_scaleLinear_X = d3.scaleLinear()
-                .domain(d3.extent(data, function (d) { return d.Year }))
+                .domain(d3.extent(data, function (d) { return d.Year })) //extent => return [min, max]
                 .range([0, g_chart_width]);
 
             g_svg.append("g")

@@ -58,9 +58,15 @@
 
       // Add the valueline path.
       svg.append("path")
-        .data([data])
+        //.data([data])
+        .datum(data)
         .attr("class", "line")
         .attr("d", valueline);
+
+        /*
+        多个 vs 单个：.data() 绑定多个数据项（数组），.datum() 绑定单个数据项。
+        选择集：.data() 创建一个选择集，.datum() 不会创建新的选择集。
+        */
 
       // Add the X Axis
       svg.append("g")

@@ -3,70 +3,81 @@
 
 <head>
     <style>
+        /* 样式设置 */
         .bar {
-            fill: steelblue;
+            fill: steelblue; /* 设置柱状图的颜色为钢蓝色 */
         }
     </style>
+    <!-- 加载 d3.js 库 -->
     <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
 
 <body>
+    <!-- 定义 SVG 画布 -->
     <svg width="600" height="500"></svg>
     <script>
-
+        // 选择 SVG 元素并设置图表的宽度和高度
         var svg = d3.select("svg"),
-            margin = 200,
-            width = svg.attr("width") - margin,
-            height = svg.attr("height") - margin
+            margin = 200,  // 设置边距
+            width = svg.attr("width") - margin,  // 计算图表的实际宽度
+            height = svg.attr("height") - margin;  // 计算图表的实际高度
 
+        // 添加图表标题文本
         svg.append("text")
-            .attr("transform", "translate(100,0)")
-            .attr("x", 50)
-            .attr("y", 50)
-            .attr("font-size", "24px")
-            .text("ABC Foods Stock Price")
+            .attr("transform", "translate(100,0)")  // 设置文本的平移位置
+            .attr("x", 50)  // x 坐标
+            .attr("y", 50)  // y 坐标
+            .attr("font-size", "24px")  // 字体大小
+            .text("ABC Foods Stock Price");  // 设置标题内容
 
-        var xScale = d3.scaleBand().range([0, width]).padding(0.4),
-            yScale = d3.scaleLinear().range([height, 0]);
+        // 定义 x 轴和 y 轴的比例尺
+        var xScale = d3.scaleBand().range([0, width]).padding(0.4),  // x 轴使用 band scale 并设置填充
+            yScale = d3.scaleLinear().range([height, 0]);  // y 轴使用线性比例尺
 
+        // 创建一个包含图表内容的分组元素 <g>，应用平移变换设置边距
         var g = svg.append("g")
             .attr("transform", "translate(" + 100 + "," + 100 + ")");
 
+        // 从 CSV 文件读取数据
         d3.csv("data/ABC.csv", function (data) {
 
-
+            // 设置 x 轴比例尺的输入域，映射到每个年份数据
             xScale.domain(data.map(function (d) { return d.year; }));
+            // 设置 y 轴比例尺的输入域，最大值为数据中的最大值
             yScale.domain([0, d3.max(data, function (d) { return d.value; })]);
 
+            // 绘制 x 轴
             g.append("g")
-                .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(xScale))
-                .append("text")
-                .attr("y", height - 250)
-                .attr("x", width - 100)
-                .attr("text-anchor", "end")
-                .attr("stroke", "black")
-                .text("Year");
+                .attr("transform", "translate(0," + height + ")")  // 将 x 轴移动到底部
+                .call(d3.axisBottom(xScale))  // 调用 x 轴生成器
+                .append("text")  // 添加 x 轴的标签
+                .attr("y", height - 250)  // y 坐标位置
+                .attr("x", width - 100)  // x 坐标位置
+                .attr("text-anchor", "end")  // 文本对齐方式
+                .attr("stroke", "black")  // 设置文本颜色
+                .text("Year");  // 文本内容为 "Year"
 
+            // 绘制 y 轴
             g.append("g")
-                .call(d3.axisLeft(yScale).tickFormat(function (d) {
-                    return "$" + d;})
-                .ticks(10))
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", "-5.1em")
-                .attr("text-anchor", "end")
-                .attr("stroke", "black")
-                .text("Stock Price");
+                .call(d3.axisLeft(yScale).tickFormat(function (d) { return "$" + d; })  // y 轴刻度前加上 "$"
+                .ticks(10))  // 设置 y 轴刻度数量
+                .append("text")  // 添加 y 轴的标签
+                .attr("transform", "rotate(-90)")  // 旋转文本 -90 度
+                .attr("y", 6)  // y 坐标位置
+                .attr("dy", "-5.1em")  // 设置文本偏移
+                .attr("text-anchor", "end")  // 文本对齐方式
+                .attr("stroke", "black")  // 设置文本颜色
+                .text("Stock Price");  // 文本内容为 "Stock Price"
 
-            g.selectAll(".bar")
-                .data(data)
-                .enter().append("rect")
-                .attr("class", "bar")
-                .attr("x", function (d) { return xScale(d.year); })
-                .attr("y", function (d) { return yScale(d.value); })
-                .attr("width", xScale.bandwidth())
-                .attr("height", function (d) { return height - yScale(d.value); });
+            // 绘制柱状图的每个矩形条（柱子）
+            g.selectAll(".bar")  // 选择所有 bar 类的元素（初始为空）
+                .data(data)  // 绑定数据
+                .enter().append("rect")  // 为每个数据项添加一个 <rect> 元素
+                .attr("class", "bar")  // 添加类名 bar 以应用样式
+                .attr("x", function (d) { return xScale(d.year); })  // 设置矩形条的 x 坐标
+                .attr("y", function (d) { return yScale(d.value); })  // 设置矩形条的 y 坐标
+                .attr("width", xScale.bandwidth())  // 设置矩形条的宽度
+                .attr("height", function (d) { return height - yScale(d.value); });  // 设置矩形条的高度
         });
     </script>
 </body>
