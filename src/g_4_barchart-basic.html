@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+
+<head>
+    <style>
+        /* 样式设置 */
+        .bar {
+            fill: steelblue;
+            /* 设置柱状图的颜色为钢蓝色 */
+        }
+    </style>
+    <!-- 加载 d3.js 库 -->
+</head>
+
+<body>
+    <div id="my_dataviz"></div>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script>
+        // set the dimensions and margins of the graph
+        const g_area_margin = { top: 30, right: 30, bottom: 70, left: 60 };
+        const g_chart_width = 660 - g_area_margin.left - g_area_margin.right;
+        const g_chart_height = 400 - g_area_margin.top - g_area_margin.bottom;
+
+        // append the svg object to the body of the page
+        const g_svg = d3.select("#my_dataviz")
+            .append("svg")
+            .attr("width", g_chart_width + g_area_margin.left + g_area_margin.right)
+            .attr("height", g_chart_height + g_area_margin.top + g_area_margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${g_area_margin.left},${g_area_margin.top})`);
+
+        // 添加图表标题文本
+        g_svg.append("text")
+            .attr("transform", "translate(100,0)")  // 设置文本的平移位置
+            .attr("x", 50)  // x 坐标
+            .attr("y", 50)  // y 坐标
+            .attr("font-size", "24px")  // 字体大小
+            .text("ABC Foods Stock Price");  // 设置标题内容
+
+        // 从 CSV 文件读取数据
+        d3.csv("data/brand.csv", function (data) {
+            data.forEach(d => {
+                d.Population = +d.Population;  // Convert population values to numbers
+            });
+
+
+            //if need sort data,use below functions
+            data.sort(function(b, a) {
+                return b.Population - a.Population; // Ascending
+                // return a.Population - b.Population: //descending
+            });
+
+            var g_xScale = d3.scaleBand().range([0, g_chart_width]).padding(0.4); // x 轴使用 band scale 并设置填充
+            var g_yScale = d3.scaleLinear().range([g_chart_height, 0]);  // y 轴使用线性比例尺
+            // 设置 x 轴比例尺的输入域，映射到每个年份数据
+            g_xScale.domain(data.map(function (d) { return d.Brand; }));
+            // 设置 y 轴比例尺的输入域，最大值为数据中的最大值
+            var maxY = d3.max(data, function (d) { return d.Population; });
+            console.log("max y value = ", maxY);
+            g_yScale.domain([0, d3.max(data, function (d) { return d.Population; })]);
+            // X axis
+            g_svg.append("g")
+                .attr("transform", `translate(0, ${g_chart_height})`)
+                .call(d3.axisBottom(g_xScale))
+                .selectAll("text")
+                .attr("transform", "translate(-10,0)rotate(-45)")
+                .style("text-anchor", "end");
+
+            // Add Y axis
+            g_svg.append("g")
+                .call(d3.axisLeft(g_yScale));
+
+            // Bars
+            // 绘制柱状图的每个矩形条（柱子）
+            g_svg.selectAll(".bar")  // 选择所有 bar 类的元素（初始为空）
+                .data(data)  // 绑定数据
+                .enter().append("rect")  // 为每个数据项添加一个 <rect> 元素
+                .attr("class", "bar")  // 添加类名 bar 以应用样式
+                .attr("x", function (d) { return g_xScale(d.Brand); })  // 设置矩形条的 x 坐标
+                .attr("y", function (d) { return g_yScale(d.Population); })  // 设置矩形条的 y 坐标
+                .attr("width", g_xScale.bandwidth())  // 设置矩形条的宽度
+                .attr("height", function (d) { return g_chart_height - g_yScale(d.Population); });  // 设置矩形条的高度
+
+        });
+    </script>
+</body>
+
+</html>

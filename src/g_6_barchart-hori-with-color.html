@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+
+<head>
+    <style>
+        .legend {
+            font-size: 10px; /* Make font size smaller for compactness */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="my_dataviz"></div>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script>
+        const g_area_margin = { top: 30, right: 30, bottom: 70, left: 200 }; // Increase left margin for legend space
+        const g_chart_width = 860 - g_area_margin.left - g_area_margin.right;
+        const g_chart_height = 500 - g_area_margin.top - g_area_margin.bottom;
+
+        const g_svg = d3.select("#my_dataviz")
+            .append("svg")
+            .attr("width", g_chart_width + g_area_margin.left + g_area_margin.right)
+            .attr("height", g_chart_height + g_area_margin.top + g_area_margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${g_area_margin.left},${g_area_margin.top})`);
+
+        g_svg.append("text")
+            .attr("transform", "translate(100,0)")
+            .attr("x", 50)
+            .attr("y", 50)
+            .attr("font-size", "24px")
+            .text("ABC Foods Stock Price");
+
+        d3.csv("data/brand.csv", function (data) {
+            data.forEach(d => {
+                d.Population = +d.Population;
+            });
+
+            data.sort(function(b, a) {
+                return b.Population - a.Population;
+            });
+
+            var g_yScale = d3.scaleBand().range([0, g_chart_height]).padding(0.4); // Use for brands
+            var g_xScale = d3.scaleLinear().range([0, g_chart_width]); // Use for population values
+            g_yScale.domain(data.map(function (d) { return d.Brand; }));
+            g_xScale.domain([0, 100 + d3.max(data, function (d) { return d.Population; })]);
+
+            const colorScale = d3.scaleSequential(d3.interpolateRainbow)
+                .domain([0, data.length]);
+
+            // Draw X-axis at the bottom, now representing the data values
+            g_svg.append("g")
+                .attr("transform", `translate(0, ${g_chart_height})`)
+                .call(d3.axisBottom(g_xScale));
+
+            // Draw Y-axis on the left, now representing the brands
+            g_svg.append("g")
+                .call(d3.axisLeft(g_yScale));
+
+            // Draw horizontal bars
+            g_svg.selectAll(".bar")
+                .data(data)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("y", function (d) { return g_yScale(d.Brand); })
+                .attr("x", 2)
+                .attr("height", g_yScale.bandwidth())
+                .attr("width", function (d) { return g_xScale(d.Population); })
+                .attr("fill", function (d, i) { return colorScale(i); })
+                .attr("stroke", function (d, i) { return colorScale(i); })
+                .attr("stroke-width", 1);
+
+            // Create two-column legend on the left side
+            const legend = g_svg.selectAll(".legend")
+                .data(data)
+                .enter().append("g")
+                .attr("class", "legend")
+                .attr("transform", function(d, i) {
+                    const xOffset = Math.floor(i / 20) * 70; // Change column every 20 items
+                    const yOffset = (i % 20) * 20; // Compact spacing for rows
+                    return `translate(${xOffset}, ${yOffset})`;
+                });
+
+            legend.append("rect")
+                .attr("x", -200) // Offset from Y-axis
+                .attr("y", 0)
+                .attr("width", 15)
+                .attr("height", 15)
+                .style("fill", function(d, i) { return colorScale(i); });
+
+            legend.append("text")
+                .attr("x", -180) // Offset text to the right of the color box
+                .attr("y", 10)   // Center text vertically with the color box
+                .text(function(d) { return d.Brand; });
+        });
+    </script>
+</body>
+
+</html>
