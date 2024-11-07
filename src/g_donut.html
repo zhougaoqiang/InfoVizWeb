@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Donut Chart Example</title>
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<style>
+  text {
+    font-family: sans-serif;
+    font-size: 10px; /* Reduced font size for labels */
+  }
+</style>
+</head>
+<body>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<script>
+
+// Set the dimensions and margins of the graph
+const width = 500,
+      height = 500,
+      margin = 120;
+
+// The radius of the pieplot is half the width or half the height (smallest one). Subtract a bit of margin.
+const radius = Math.min(width, height) / 2 - margin;
+
+// Append the SVG object to the div called 'my_dataviz'
+const svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", `translate(${width/2},${height/2})`);
+
+// Load the data from CSV file
+d3.csv("data/PieChartData.csv").then(function(data) {
+  
+
+  data.sort(function(b, a) {
+                return b.percent - a.percent;
+            });
+
+
+  // Set the color scale
+  const color = d3.scaleOrdinal()
+    .domain(data.map(d => d.browser))
+    .range(d3.schemeCategory10);
+
+  // Compute the position of each group on the pie:
+  const pie = d3.pie()
+    .sort(null) // Do not sort group by size
+    .value(d => d.percent);
+  const data_ready = pie(data);
+
+  // The arc generator
+  const arc = d3.arc()
+    .innerRadius(radius * 0.4)         // This is the size of the donut hole,if set to 0, means it is pie chart
+    .outerRadius(radius * 0.8);
+
+  // Another arc that won't be drawn. Just for labels positioning
+  const outerArc = d3.arc()
+    .innerRadius(radius)  // Increased distance for label lines
+    .outerRadius(radius*1.1); // Increased distance for label lines
+
+  // Build the pie chart: Each part of the pie is a path that we build using the arc function.
+  svg
+    .selectAll('allSlices')
+    .data(data_ready)
+    .join('path')
+      .attr('d', arc)
+      .attr('fill', d => color(d.data.browser))
+      .attr("stroke", "white")
+      .style("stroke-width", "2px")
+      .style("opacity", 0.7);
+
+  // Add the polylines between chart and labels
+  svg
+    .selectAll('allPolylines')
+    .data(data_ready)
+    .join('polyline')
+      .attr("stroke", "black")
+      .style("fill", "none")
+      .attr("stroke-width", 1)
+      .attr('points', function(d) {
+        const posA = arc.centroid(d); // Line insertion in the slice
+        const posB = outerArc.centroid(d); // Line break
+        const posC = outerArc.centroid(d); // Label position
+        const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+        posC[0] = radius * 1.2 * (midangle < Math.PI ? 1 : -1); // Increased label distance from center
+        return [posA, posB, posC];
+      });
+
+  // Add the labels
+  svg
+    .selectAll('allLabels')
+    .data(data_ready)
+    .join('text')
+      .text(d => `${d.data.browser} (${d.data.percent}%)`)
+      .attr('transform', function(d) {
+        const pos = outerArc.centroid(d);
+        const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+        pos[0] = radius * 1.25 * (midangle < Math.PI ? 1 : -1); // Further position labels to prevent overlap
+        return `translate(${pos})`;
+      })
+      .style('text-anchor', function(d) {
+        const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+        return (midangle < Math.PI ? 'start' : 'end');
+      })
+      .style("font-size", "10px"); // Reduced font size
+
+});
+
+</script>
+</body>
+</html>
