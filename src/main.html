@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>SINGAPORE TRANSIT TRIUMPH</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/css/main.css" rel="stylesheet">
+
+    <style>
+        .line {
+            fill: none;
+            stroke: steelblue;
+            stroke-width: 2;
+        }
+
+        .line.rail {
+            stroke: steelblue;
+        }
+
+        .line.mrt {
+            stroke: green;
+        }
+
+        .line.lrt {
+            stroke: orange;
+        }
+
+        .axis-label {
+            font-size: 12px;
+        }
+
+        #public-transport-ridership text {
+            font-size: 16px;
+            font-family: Open Sans, sans-serif;
+        }
+
+        #public-transport-ridership text.title {
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        #public-transport-ridership text.subTitle {
+            font-weight: 500;
+            fill: #777777;
+        }
+
+        #public-transport-ridership text.caption {
+            font-weight: 400;
+            font-size: 14px;
+            fill: #777777;
+        }
+
+        #public-transport-ridership text.label {
+            font-weight: 600;
+        }
+
+        #public-transport-ridership text.valueLabel {
+            font-weight: 300;
+        }
+
+        #public-transport-ridership text.yearText {
+            font-size: 64px;
+            font-weight: 700;
+            opacity: 0.25;
+        }
+
+        #public-transport-ridership .tick text {
+            fill: #777777;
+        }
+
+        #public-transport-ridership .xAxis .tick:nth-child(2) text {
+            text-anchor: start;
+        }
+
+        #public-transport-ridership .tick line {
+            shape-rendering: CrispEdges;
+            stroke: #dddddd;
+        }
+
+        #public-transport-ridership .tick line.origin {
+            stroke: #aaaaaa;
+        }
+
+        #public-transport-ridership path.domain {
+            display: none;
+        }
+
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            width: 120px;
+            height: auto;
+            padding: 5px;
+            font: 12px sans-serif;
+            background: #C6B2A0;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .legend-text {
+            /* 移除下划线 */
+            text-decoration: none;
+        }
+
+        #Service_Delay rect {
+            fill: #8B5C4B;
+            opacity: 0.6;
+            stroke: white;
+        }
+
+        #Service_Delay text {
+            font-family: "Helvetica Neue", Helvetica, sans-serif;
+            fill: #F4F1EC;
+            font-size: 13px;
+        }
+    </style>
+
+</head>
+
+<body class="index-page">
+
+    <header id="header" class="header d-flex align-items-center sticky-top">
+        <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+
+            <div class="logo-container d-flex flex-column align-items-center">
+                <a href="index.html" class="logo align-items-center">
+                    <h1 class="sitename"><b>SINGAPORE TRANSIT TRIUMPH</b></h1>
+                    <h6>A Journey through Excellence</h4>
+                </a>
+            </div>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="#about">Overview</a></li>
+                    <li><a href="#about-2">Our History</a></li>
+                    <li><a href="#blog-posts1">Key Trends</a></li>
+                    <li><a href="#about-3">Our Future</a></li>
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+
+        </div>
+    </header>
+
+
+    <main class="main">
+        <section id="about" class="about section">
+
+            <div class="container">
+                <div class="row align-items-center justify-content-between">
+                    <div class="col-lg-7 mb-5 mb-lg-0 order-lg-2" data-aos="fade-up" data-aos-delay="400">
+                        <div class="swiper init-swiper">
+                            <script type="application/json" class="swiper-config">
+                {
+                  "loop": true,
+                  "speed": 600,
+                  "autoplay": {
+                    "delay": 5000
+                  },
+                  "slidesPerView": "auto",
+                  "pagination": {
+                    "el": ".swiper-pagination",
+                    "type": "bullets",
+                    "clickable": true
+                  },
+                  "breakpoints": {
+                    "320": {
+                      "slidesPerView": 1,
+                      "spaceBetween": 40
+                    },
+                    "1200": {
+                      "slidesPerView": 1,
+                      "spaceBetween": 1
+                    }
+                  }
+                }
+              </script>
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide">
+                                    <img src="assets/media/mrt-swiper1.png" alt="Image" class="img-fluid">
+                                </div>
+                                <div class="swiper-slide">
+                                    <img src="assets/media/lrt-swiper2.png" alt="Image" class="img-fluid">
+                                </div>
+                                <div class="swiper-slide">
+                                    <img src="assets/media/bus-swiper3.png" alt="Image" class="img-fluid">
+                                </div>
+                                <div class="swiper-slide">
+                                    <img src="assets/media/taxi-swiper4.png" alt="Image" class="img-fluid">
+                                </div>
+                            </div>
+                            <div class="swiper-pagination"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 order-lg-1">
+                        <h1 class="mb-1" data-aos="fade-up">
+                            OUR PUBLIC TRANSPORT
+                        </h1>
+                        <h4 class="mb-4">
+                            A model for the world
+                        </h4>
+                        <p data-aos="fade-up">
+                            Based on the Urban Mobility Index Ranking 2023 by Oliver Wyman Forum, Singapore’s public
+                            transport system was ranked <b style="color:#415441">third place</b>, just behind Hong Kong
+                            and
+                            Zurich. Find out how Singapore evolved and established a world-class public transport
+                            system.
+                        </p>
+                        <p class="mt-5" data-aos="fade-up">
+                            <a href="#about-2" class="btn btn-get-started">Start Discovering</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about-2" class="about section light-background">
+
+            <div class="container">
+                <div class="content">
+                    <div class="row justify-content-center">
+                        <!-- <div class="col-sm-12 col-md-5 col-lg-4 col-xl-4 order-lg-2 offset-xl-1 mb-4"> -->
+                        <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4 order-lg-2 offset-xl-1 mb-4">
+                            <div class="img-wrap text-center text-md-left" data-aos="fade-up" data-aos-delay="100">
+                                <div class="img">
+                                    <img src="assets/media/history.png" alt="circle image" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <div class="offset-md-0 offset-lg-1 col-sm-12 col-md-5 col-lg-5 col-xl-4" data-aos="fade-up"> -->
+                        <div class="offset-md-0 offset-lg-1 col-sm-12 col-md-7 col-lg-5 col-xl-4" data-aos="fade-up">
+                            <div class="px-3">
+                                <h1 class="about">TRACKS OVER TIME</h1>
+                                <h4 class="about mb-4">
+                                    Our public transport history
+                                </h4>
+                                <p class="about">
+                                    The efficiency of Singapore’s public transport system primarily emerged
+                                    from the need to allow large number of people to travel within the limited land
+                                    space.
+                                    Singapore started with buses as the primary mode of public transport in the 1950s.
+                                    The rail system was proposed and launched in 1980s to serve the rapidly growing
+                                    population and ease traffic congestion.
+                                </p>
+                                <p class="about">
+                                    In May 2019, the Land Transport Authority released the
+                                    <a
+                                        href="https://www.lta.gov.sg/content/ltagov/en/who_we_are/our_work/land_transport_master_plan_2040.html"><b
+                                            style="color:#415441">Land Transport Master Plan 2040</b></a>
+                                    that aims to transform the nation into a 45 minute city and 20 minute town by
+                                    2040.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section><!-- /About 2 Section -->
+
+        <section id="blog-posts" class="blog-posts section">
+            <!-- Section Title -->
+            <div class="container section-title" data-aos="fade-up">
+                <h1>JORUNEY THROUGH DECADES</h1>
+                <h4>The evolution of the public transport system</h4>
+            </div><!-- End Section Title -->
+            <div class="container">
+
+                <div class="row gy-4">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="post-entry" data-aos="fade-up" data-aos-delay="100">
+                            <a href="#" class="thumb d-block"><img src="assets/media/evolution-1.png" alt="Image"
+                                    class="img-fluid rounded"></a>
+
+                            <div class="post-content">
+                                <h3><a href="#">1960s</a></h3>
+                                <p>
+                                    A 1963 report from the United Nations Development Program (UNDP) suggested
+                                    Singapore should invest in monorail or subway systems as it will suit the city
+                                    landscape and is a cost-effective option.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="post-entry" data-aos="fade-up" data-aos-delay="200">
+                            <a href="#" class="thumb d-block"><img src="assets/media/evolution-2.jpg" alt="Image"
+                                    class="img-fluid rounded"></a>
+                            <div class="post-content">
+                                <h3><a href="#">1970s</a></h3>
+                                <p>
+                                    The Urban Redevelopment Authority (URA) proposed a concept plan in 1971 which
+                                    included a rail system to serve as connections between the city center and satellite
+                                    towns.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4">
+                        <div class="post-entry" data-aos="fade-up" data-aos-delay="300">
+                            <a href="#" class="thumb d-block"><img src="assets/media/evolution-3.png" alt="Image"
+                                    class="img-fluid rounded"></a>
+
+                            <div class="post-content">
+                                <h3><a href="#">2000s</a></h3>
+                                <p>
+                                    By the early 2000s, Singapore’s urban public transport infrastructure has
+                                    transformed and
+                                    became a pioneering example of a ‘transport metropolis’ in the world.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section id="stats" class="stats section light-background">
+            <div class="container">
+                <div class="row gy-4 justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="images-overlap">
+                            <div id="sg_population"></div>
+
+                            <script src="https://d3js.org/d3.v7.min.js"></script>
+                            <script>
+                                // set the dimensions and margins of the graph
+                                var population_margin = { top: 30, right: 180, bottom: 30, left: 50 };  // Adjust margins to add more space
+                                // var margin = {top: 130, right: 150, bottom: 130, left: 130},
+                                var population_width = 700 - population_margin.left - population_margin.right;
+                                var population_height = 400 - population_margin.top - population_margin.bottom;
+
+                                // append the svg object to the body of the page
+                                var population_svg = d3.select("#sg_population")
+                                    .append("svg")
+                                    .attr("width", population_width + population_margin.left + population_margin.right)
+                                    .attr("height", population_height + population_margin.top + population_margin.bottom)
+                                    .append("g")
+                                    .attr("transform", "translate(" + population_margin.left + "," + population_margin.top + ")");
+
+                                // Read the data
+                                d3.csv('assets/data/sg_population.csv').then(function (data) {
+
+                                    // Parse the data
+                                    var parseYear = d3.timeParse("%Y");
+
+                                    data.forEach(function (d) {
+                                        d.year = parseYear(d.year);
+                                        d.Population = +d.Population;
+                                    });
+
+                                    // Add X axis --> use time scale now
+                                    var population_x = d3.scaleTime()
+                                        .domain(d3.extent(data, function (d) { return d.year; }))
+                                        .range([0, population_width]);
+
+                                    population_svg.append("g")
+                                        .attr("transform", "translate(0," + population_height + ")")
+                                        .call(d3.axisBottom(population_x).ticks(5).tickFormat(d3.timeFormat("%Y"))) // Reduce number of ticks to 6 on X axis
+                                        .call(g => g.selectAll(".tick").filter(function (d) {
+                                            return d >= d3.max(data, d => d.year);  // Only filter the tick where the value equals the max year
+                                        }).remove());
+
+                                    // Add Y axis
+                                    var population_y = d3.scaleLinear()
+                                        // .domain([0, d3.max(data, function(d) { return +d.Population; })])
+                                        .domain([0, 7000000])
+                                        .range([population_height, 0]);
+
+                                    population_svg.append("g")
+                                        .call(d3.axisLeft(population_y).ticks(7, 's')) // Reduce number of ticks to 6 on Y axis
+                                        .call(g => g.selectAll(".tick").filter(function (d) {
+                                            return d >= d3.max(data, d => d.Population);  // Only filter the tick where the value equals the max population
+                                        }).remove());
+
+                                    population_svg.append("defs").append("clipPath")
+                                        .attr("id", "clip")
+                                        .append("rect")
+                                        .attr("width", population_width)
+                                        .attr("height", population_height)
+                                        .attr("x", 0)
+                                        .attr("y", 0);
+
+                                    population_svg.append("text")
+                                        .attr("x", -population_height / 2)
+                                        .attr("y", -population_margin.left + 20)
+                                        .attr("class", "axis-label")
+                                        .attr("transform", "rotate(-90)")
+                                        .style("text-anchor", "middle")
+                                        .text("Number of people(in millions)");
+
+                                    // Add the line
+                                    population_svg.append("path")
+                                        .datum(data)
+                                        .attr("class", "line")
+                                        .attr("d", d3.line()
+                                            .x(function (d) { return population_x(d.year) })
+                                            .y(function (d) { return population_y(d.Population) })
+                                        )
+                                        .attr("clip-path", "url(#clip)")
+                                        .style("stroke", "#8B5C48")  // Set the color of the line
+                                        .style("stroke-width", 3); // Optional
+                                    ;  // Add the clip-path here
+
+                                    // Create the circle that travels along the curve of chart
+                                    var population_focus = population_svg
+                                        .append('g')
+                                        .append('circle')
+                                        .style("fill", "#8B5C48")
+                                        .style("stroke", "#8B5C48")
+                                        .attr('r', 5)
+                                        .style("opacity", 0);
+
+                                    var population_tooltipBackground = population_svg
+                                        .append('g')
+                                        .append('rect')
+                                        .attr("class", "tooltip-rect")
+                                        .attr("width", 180)
+                                        .attr("height", 80)
+                                        .attr("rx", 10) // 设置圆角
+                                        .attr("ry", 10)
+                                        .attr("fill", "#C6B2A0") // 背景色
+                                        .attr("stroke", "#C6B2A0") // 边框颜色
+                                        .attr("stroke-width", 1)
+                                        .attr("opacity", 0); // 设置透明度
+
+                                    // Create the text that travels along the curve of chart
+                                    var population_focusText = population_svg
+                                        .append('g')
+                                        .append('text')
+                                        .style("opacity", 0)
+                                        .attr("text-anchor", "left")
+                                        .attr("alignment-baseline", "middle");
+
+                                    // Create a rect on top of the svg area: this rectangle captures mouse position
+                                    population_svg
+                                        .append('rect')
+                                        .style("fill", "none")
+                                        .style("pointer-events", "all")
+                                        .attr('width', population_width)
+                                        .attr('height', population_height)
+                                        .on('mouseover', mouseover)
+                                        .on('mousemove', mousemove)
+                                        .on('mouseout', mouseout);
+
+                                    // What happens when the mouse moves -> show the annotations at the right positions.
+                                    function mouseover() {
+                                        population_focus.style("opacity", 1);
+                                        population_focusText.style("opacity", 1);
+                                    }
+
+                                    function mousemove(event) {
+                                        var pointer = d3.pointer(event);
+                                        var x0 = population_x.invert(pointer[0]);
+
+                                        var closestData = d3.least(data, function (d) {
+                                            return Math.abs(d.year - x0);
+                                        });
+
+                                        if (closestData) {
+                                            // 更新圆圈位置
+                                            population_focus
+                                                .attr("cx", population_x(closestData.year))
+                                                .attr("cy", population_y(closestData.Population));
+
+                                            // 定义 tooltip 文字内容
+                                            var yearText = "Year: " + d3.timeFormat("%Y")(closestData.year);
+                                            var populationText = "Population: " + closestData.Population;
+
+                                            // 更新 tooltip 文本
+                                            population_focusText
+                                                .attr("x", population_x(closestData.year) + 15)
+                                                .attr("y", population_y(closestData.Population) - 5)
+                                                .html(null)  // 清空之前的文本
+                                                .append("tspan")
+                                                .attr("x", population_x(closestData.year) + 15)
+                                                .attr("y", population_y(closestData.Population) - 5)
+                                                .text(yearText)
+                                                .append("tspan")
+                                                .attr("x", population_x(closestData.year) + 15)
+                                                .attr("y", population_y(closestData.Population) + 15)
+                                                .text(populationText);
+
+                                            // 估计 tooltip 文本的宽度和高度
+                                            var bbox = population_focusText.node().getBBox();
+
+                                            // 更新 tooltip 背景矩形的位置和大小
+                                            population_tooltipBackground
+                                                .attr("x", bbox.x - 5)
+                                                .attr("y", bbox.y - 5)
+                                                .attr("width", bbox.width + 10)
+                                                .attr("height", bbox.height + 10)
+                                                .style("opacity", 1);  // 显示矩形
+                                        }
+                                    }
+
+                                    function mouseout() {
+                                        population_focus.style("opacity", 0);
+                                        population_focusText.style("opacity", 0);
+                                        population_tooltipBackground.style("opacity", 0);  // 隐藏背景矩形
+
+                                    }
+                                });
+
+
+                            </script>
+                            <p style="position: relative; left: 120px;"><b style="color:#8B5C4B">Singapore Population
+                                    Reaches 6 Million</b></p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 ps-lg-5">
+                        <h1 class="about" style="color:#415441">RIDE THE WAVE</h1>
+                        <h4 class="about mb-4" style="color:#415441">Meeting the rising demands</h2>
+                            <p class="about">
+                                Singapore’s strategic location attracted an influx of foreign human capital over the
+                                years
+                                and is now known to be Asia’s most densely populated country. To cater for this
+                                population growth,
+                                there is a strong pressure to ensure an efficient public transport system that
+                                can move millions of passengers
+                            </p>
+                            <div class="row mb-5 count-numbers">
+                                <div class="col-4 counter" data-aos="fade-up" data-aos-delay="100">
+                                    <span data-purecounter-separator="true" data-purecounter-start="0"
+                                        data-purecounter-end="6" data-purecounter-duration="1"
+                                        class="purecounter number"></span>
+                                    <span class="d-block">MRT lines</span>
+                                </div>
+                                <div class="col-4 counter" data-aos="fade-up" data-aos-delay="200">
+                                    <span data-purecounter-separator="true" data-purecounter-start="0"
+                                        data-purecounter-end="140" data-purecounter-duration="1"
+                                        class="purecounter number"></span>
+                                    <span class="d-block">MRT stations</span>
+                                </div>
+                                <div class="col-4 counter" data-aos="fade-up" data-aos-delay="300">
+                                    <span data-purecounter-separator="true" data-purecounter-start="0"
+                                        data-purecounter-end="397" data-purecounter-duration="1"
+                                        class="purecounter number"></span>
+                                    <span class="d-block">Bus routes</span>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="blog-posts1" class="blog-posts section">
+            <div class="container">
+
+                <div class="container section-title" data-aos="fade-right">
+                    <h1>AT A GLANCE</h1>
+                    <h4>Industry insights to public transport</h4>
+                </div>
+                <div class="row justify-content-center" data-aos="fade-right">
+                    <div class="col-md-6 col-lg-4 ">
+                        <img src="assets/media/mrtstation.jpg" alt="student" class="img-fluid img-1"
+                            data-aos="fade-right">
+                    </div>
+                    <div class="col-md-6 col-lg-6 ps-lg-5">
+                        <div class="row mb-3">
+                            <p class="about">
+                                2.5 million commuters depend on Singapore's public transport system daily to get to
+                                their workplaces.
+                                Public transport is not only essential for our daily
+                                lives but also serves as a key enabler of economic
+                                activities and environmental sustainability for our city
+                                state.
+                            </p>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-6 col-sm-6 col-md-6 col-lg-6 mb-3 mt-3">
+                                <div class="services-item" data-aos="fade-left" data-aos-delay="">
+                                    <div class="services-icon">
+                                        <!-- <i class="bi bi-search"></i> -->
+                                    </div>
+                                    <div>
+                                        <h3 style="color:#8B5C4B; font-size: 2.0rem;">7 in 10</h3>
+                                        <p>households are within a 10-minute walk from a train station</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-sm-6 col-md-6 col-lg-6 mb-3 mt-3">
+                                <div class="services-item" data-aos="fade-left" data-aos-delay="100">
+                                    <div class="services-icon">
+                                    </div>
+                                    <div>
+                                        <h3 style="color:#8B5C4B; font-size: 2.0rem;">90%</h3>
+                                        <p>of carbon footprint is reduced by taking public transport</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-6 col-md-6 col-lg-6 mt-3 mb-3">
+                                <div class="services-item" data-aos="fade-left" data-aos-delay="200">
+                                    <div class="services-icon">
+                                    </div>
+                                    <div>
+                                        <h3 style="color:#8B5C4B; font-size: 2.0rem;">1.7% - 2.2%</h3>
+                                        <p>share of monthly household income is spent on public transport</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6 col-sm-6 col-md-6 col-lg-6 mt-3 mb-3">
+                                <div class="services-item" data-aos="fade-left" data-aos-delay="300">
+                                    <div class="services-icon">
+                                    </div>
+                                    <div>
+                                        <h3 style="color:#8B5C4B; font-size: 2.0rem;"> >$2 billion</h3>
+                                        <p>worth of annual operating subsidy is allocated to public transport</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+        </section>
+
+        <section id="tabs" class="tabs section light-background">
+
+            <div class="container">
+                <div class="container section-title" data-aos="fade-up">
+                    <h1>GROWTH ON TRACK</h1>
+                    <h4>Key trends in network expansion and ridership</h4>
+                </div>
+                <div class="row gap-x-lg-4 justify-content-between">
+                    <div class="col-lg-4 js-custom-dots">
+                        <a href="#" class="service-item link horizontal d-flex active" data-aos="fade-left"
+                            data-aos-delay="0">
+                            <div class="service-icon color-1 mb-4">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                            </div>
+
+                            <div class="service-contents">
+                                <h3>Rail Network Length Reaches 258.5 KM</h3>
+                                <p>
+                                    MRT and LRT rail network expansions from 1990 to 2023
+                                </p>
+                            </div>
+                        </a>
+
+                        <a href="#" class="service-item link horizontal d-flex" data-aos="fade-left"
+                            data-aos-delay="100">
+                            <div class="service-icon color-2 mb-4">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                            </div>
+                            <div class="service-contents">
+                                <h3>Ridership Numbers Rises to 4.2 Million</h3>
+                                <p>
+                                    Public transport ridership across buses, trains, and taxis from 1995 to 2023
+                                </p>
+                            </div>
+                        </a>
+
+                        <a href="#" class="service-item link horizontal d-flex" data-aos="fade-left"
+                            data-aos-delay="200">
+                            <div class="service-icon color-3 mb-4">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                            </div>
+                            <div class="service-contents">
+                                <h3>Public Motor Vehicle Grows To 118K</h3>
+                                <p>
+                                    Buses, taxis and private hire cars population from 1990 to 2024
+                                </p>
+                            </div>
+                        </a>
+
+                        <a href="#" class="service-item link horizontal d-flex" data-aos="fade-left"
+                            data-aos-delay="300">
+                            <div class="service-icon color-3 mb-4">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                            </div>
+                            <div class="service-contents">
+                                <h3>Rail Service Delays Hit 35 Times</h3>
+                                <p>
+                                    MRT and LRT service delays more than 30 min from 2020 to 2023
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="swiper init-swiper-tabs">
+                            <script type="application/json" class="swiper-config">
+                {
+                  "loop": true,
+                  "speed": 600,
+                  "autoHeight": true,
+                  "autoplay": {
+                    "delay": 500000
+                  },
+                  "slidesPerView": "auto",
+                  "pagination": {
+                    "el": ".swiper-pagination",
+                    "type": "bullets",
+                    "clickable": true
+                  },
+                  "breakpoints": {
+                    "320": {
+                      "slidesPerView": 1,
+                      "spaceBetween": 40
+                    },
+                    "1200": {
+                      "slidesPerView": 1,
+                      "spaceBetween": 1
+                    }
+                  }
+                }
+              </script>
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide">
+
+                                    <svg id="Rail_Length_Chart" width="860" height="500"></svg>
+                                    <script>
+                                        // 设置图表的宽度和高度
+                                        const rail_length_svg = d3.select("#Rail_Length_Chart");
+                                        const rail_length_margin = { top: 20, right: 130, bottom: 50, left: 70 };
+                                        const rail_length_width = rail_length_svg.attr("width") - rail_length_margin.left - rail_length_margin.right;
+                                        const rail_length_height = rail_length_svg.attr("height") - rail_length_margin.top - rail_length_margin.bottom;
+
+                                        const rail_length_g = rail_length_svg.append("g")
+                                            .attr("transform", `translate(${rail_length_margin.left},${rail_length_margin.top})`);
+
+                                        var g_currentSelectedLine;
+                                        // 加载 CSV 文件
+                                        d3.csv("assets/data/Rail-length.csv").then(data => {
+                                            // 将数据中的 year 字段转换为数字
+                                            data.forEach(d => {
+                                                d.year = +d.year;
+                                                d.Total_KM = +d.Total_KM;
+                                                d.MRT_KM = +d.MRT_KM;
+                                                d.LRT_KM = +d.LRT_KM;
+                                            });
+
+                                            // 定义比例尺
+                                            const rail_length_x = d3.scaleLinear()
+                                                .domain(d3.extent(data, d => d.year))
+                                                .range([0, rail_length_width]);
+
+                                            const rail_length_y = d3.scaleLinear()
+                                                .domain([0, d3.max(data, d => d.Total_KM) + 20]).nice()
+                                                .range([rail_length_height, 0]);
+
+                                            // 定义坐标轴
+                                            rail_length_g.append("g")
+                                                .attr("transform", `translate(0,${rail_length_height})`)
+                                                .call(d3.axisBottom(rail_length_x).tickFormat(d3.format("d"))); // 按年份格式化为整数
+
+                                            rail_length_g.append("g")
+                                                .attr("class", "y-axis")  // 为 Y 轴添加类
+                                                .call(d3.axisLeft(rail_length_y).ticks(5));
+
+                                            // 定义折线生成器函数
+                                            const rail_length_lineGenerator = d3.line()
+                                                .x(d => rail_length_x(d.year));
+
+                                            const lineColors = {
+                                                "LRT_KM": "#8B5C4B",
+                                                "MRT_KM": "#415441",
+                                                "Total_KM": "#A4B2A7"
+                                            }
+
+                                            // Generate line for Total_KM
+                                            rail_length_lineGenerator.y(d => rail_length_y(d.Total_KM));
+                                            rail_length_g.append("path")
+                                                .datum(data)
+                                                .attr("class", "line")
+                                                .attr("d", rail_length_lineGenerator)
+                                                .style("stroke", lineColors["Total_KM"])
+                                                .style("stroke-width", 3)
+                                                .style("fill", "none");
+
+                                            // Generate line for MRT_KM
+                                            rail_length_lineGenerator.y(d => rail_length_y(d.MRT_KM));
+                                            rail_length_g.append("path")
+                                                .datum(data)
+                                                .attr("class", "line")
+                                                .attr("d", rail_length_lineGenerator)
+                                                .style("stroke", lineColors["MRT_KM"])
+                                                .style("stroke-width", 3)
+                                                .style("fill", "none");
+
+                                            // Generate line for LRT_KM
+                                            rail_length_lineGenerator.y(d => rail_length_y(d.LRT_KM));
+                                            rail_length_g.append("path")
+                                                .datum(data)
+                                                .attr("class", "line")
+                                                .attr("d", rail_length_lineGenerator)
+                                                .style("stroke", lineColors["LRT_KM"])
+                                                .style("stroke-width", 3)
+                                                .style("fill", "none");
+
+
+                                            const hoverLine = rail_length_g.append("line")
+                                                .style("stroke", "#999")
+                                                .style("stroke-width", 1)
+                                                .style("stroke-dasharray", "4")
+                                                .style("opacity", 0);
+
+                                            const focusCircles = ["Total_KM", "MRT_KM", "LRT_KM"].map((lineType, i) => (
+                                                rail_length_g.append("circle")
+                                                    .style("fill", lineColors[lineType])
+                                                    .attr("r", 5)
+                                                    .style("opacity", 0)
+                                            ));
+
+                                            // 初始化线条
+                                            //  let rail_length_line = rail_length_g.append("path")
+                                            //    .datum(data)
+                                            //    .attr("class", "line rail")
+                                            //    .attr("d", rail_length_lineGenerator)
+                                            //    .style("stroke", "#8B5C4B")
+                                            //    .style("stroke-width", 3)
+                                            //    .style("fill", "none");
+
+                                            // 添加标签
+                                            rail_length_svg.append("text")
+                                                .attr("x", -rail_length_height / 2)
+                                                .attr("y", rail_length_margin.left / 3)
+                                                .attr("class", "axis-label")
+                                                .attr("transform", "rotate(-90)")
+                                                .style("text-anchor", "middle")
+                                                .text("Length of rail (in KM)");
+
+                                            // var rail_length_focus = rail_length_g.append('g')
+                                            //    .append('circle')
+                                            //    .style('fill', '#8B5C48')
+                                            //    .style('stroke', '#8B5C48')
+                                            //    .attr('r', 5)
+                                            //    .style("opacity", 0)
+
+                                            var rail_length_tooltipBackground = rail_length_g
+                                                .append('g')
+                                                .append('rect')
+                                                .attr("class", "tooltip-rect")
+                                                .attr("width", 180)
+                                                .attr("height", 130)
+                                                .attr("rx", 10) //圆角
+                                                .attr("ry", 10)
+                                                .attr("fill", "#C6B2A0")
+                                                .attr("stroke", "#C6B2A0")
+                                                .attr("stroke-width", 1)
+                                                .attr("opacity", 0)
+
+                                            var rail_length_focusText = rail_length_g
+                                                .append('g')
+                                                .append('text')
+                                                .style('opacity', 0)
+                                                .attr('text-anchor', "left")
+                                                .attr("alignment-baseline", "middle");
+
+                                            rail_length_g.append('rect')
+                                                .style("fill", "none")
+                                                .style("pointer-events", "all")
+                                                .attr('width', rail_length_width)
+                                                .attr('height', rail_length_height)
+                                                .on('mouseover', mouseover)
+                                                .on('mousemove', mousemove)
+                                                .on('mouseout', mouseout);
+
+                                            const rail_length_legendData = [
+                                                { label: "Total Rail Length", color: lineColors["Total_KM"] },
+                                                { label: "MRT Rail Length", color: lineColors["MRT_KM"] },
+                                                { label: "LRT Rail Length", color: lineColors["LRT_KM"] }
+                                            ];
+                                            const rail_length_legend = rail_length_svg.append("g")
+                                                .attr("transform", `translate(${rail_length_margin.left + 20}, ${rail_length_margin.top})`);
+
+                                                rail_length_legendData.forEach((d, i) => {
+                                                const rail_length_legendItem = rail_length_legend.append("g")
+                                                    .attr("transform", `translate(0, ${i * 25})`); // 纵向间距为 25
+
+                                                // 添加颜色矩形
+                                                rail_length_legendItem.append("rect")
+                                                    .attr("width", 15)
+                                                    .attr("height", 15)
+                                                    .attr("fill", d.color);
+
+                                                // 添加文本标签
+                                                rail_length_legendItem.append("text")
+                                                    .attr("x", 20) // 与矩形的横向间距
+                                                    .attr("y", 10) // 使文字与矩形对齐
+                                                    .text(d.label)
+                                                    .style("font-size", "15px")
+                                                    .style("alignment-baseline", "middle");
+                                            });
+
+
+                                            function mouseover() {
+                                                hoverLine.style("opacity", 1);
+                                                focusCircles.forEach(circle => circle.style("opacity", 1));
+                                                //rail_length_focus.style("opacity", 1);
+                                                rail_length_focusText.style("opacity", 1);
+                                            }
+
+                                            function mousemove(event) {
+                                                var rail_length_pointer = d3.pointer(event);
+                                                var rail_x0 = rail_length_x.invert(rail_length_pointer[0]);
+                                                var rail_length_closestData = d3.least(data, function (d) {
+                                                    return Math.abs(d.year - rail_x0);
+                                                });
+
+                                                hoverLine
+                                                    .attr("x1", rail_length_x(rail_length_closestData.year))
+                                                    .attr("x2", rail_length_x(rail_length_closestData.year))
+                                                    .attr("y1", 0)
+                                                    .attr("y2", rail_length_height);
+
+                                                focusCircles.forEach((circle, i) => {
+                                                    const lineType = ["Total_KM", "MRT_KM", "LRT_KM"][i];
+                                                    circle
+                                                        .attr("cx", rail_length_x(rail_length_closestData.year))
+                                                        .attr("cy", rail_length_y(rail_length_closestData[lineType]));
+                                                });
+
+                                                // 定义 tooltip 文字内容
+                                                console.log("rail_length_closestData.year = ", rail_length_closestData.year);
+                                                var rail_length_yearText = "Year: " + rail_length_closestData.year;
+                                                var total_lengthText = "Total: " + rail_length_closestData.Total_KM;
+                                                var mrt_lengthText = "MRT: " + rail_length_closestData.MRT_KM;
+                                                var lrt_lengthText = "LRT: " + rail_length_closestData.LRT_KM;
+
+                                                // 更新 tooltip 文本
+                                                rail_length_focusText
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_pointer[1] - 5)
+                                                    .html(null)  // 清空之前的文本
+                                                    .append("tspan")
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_pointer[1] - 5)
+                                                    .text(rail_length_yearText)
+                                                    .append("tspan")
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_pointer[1] + 15)
+                                                    .text(total_lengthText)
+                                                    .append("tspan")
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_pointer[1] + 35)
+                                                    .text(mrt_lengthText)
+                                                    .append("tspan")
+                                                    .attr("x", rail_length_x(rail_length_closestData.year) + 15)
+                                                    .attr("y", rail_length_pointer[1] + 55)
+                                                    .text(lrt_lengthText);
+
+                                                // 估计 tooltip 文本的宽度和高度
+                                                var rail_length_bbox = rail_length_focusText.node().getBBox();
+
+                                                // 更新 tooltip 背景矩形的位置和大小
+                                                rail_length_tooltipBackground
+                                                    .attr("x", rail_length_bbox.x - 5)
+                                                    .attr("y", rail_length_bbox.y - 5)
+                                                    .attr("width", rail_length_bbox.width + 10)
+                                                    .attr("height", rail_length_bbox.height + 10)
+                                                    .style("opacity", 1);  // 显示矩形
+                                            }
+
+
+                                            function mouseout() {
+                                                hoverLine.style("opacity", 0);
+                                                focusCircles.forEach(circle => circle.style("opacity", 0));
+                                                // rail_length_focus.style("opacity", 0);
+                                                rail_length_focusText.style("opacity", 0);
+                                                rail_length_tooltipBackground.style("opacity", 0);
+                                            }
+
+                                        });
+
+                                    </script>
+
+                                    <div>
+                                        <p style="position: relative; left: 300px;"><b style="color:#8B5C4B">
+                                                Rail Network Length Reaches 258.5 KM</b></p>
+                                    </div>
+                                </div>
+
+                                <div class="swiper-slide">
+                                    <div id="public-transport-ridership">
+                                    </div>
+                                    <script>
+                                        var height = 500;
+                                        var width = 860;
+                                        var svg = d3.select("#public-transport-ridership").append("svg") // 在网页上添加一个SVG元素，用于绘制图表
+                                            .attr("width", width) // 设置SVG的宽度
+                                            .attr("height", height); // 设置SVG的高度
+
+                                        var tickDuration = 1000; // 动画时长（以毫秒为单位）
+                                        var top_n = 4; // 只显示前4
+                                        let ticker; // 用于存储动画引用
+
+                                        var g_labelOffset = 5;
+                                        var g_valueOffset = 15;
+                                        var g_valueYOffset = 35;
+                                        var g_rightMargin = 80;
+                                        var g_imageYOffset = -90;
+                                        var g_imageWidth = 150;
+                                        var g_imageHeight = 150;
+
+                                        var yearFontColor = "#C6B2A0"
+
+                                        const margin = {
+                                            top: 80, // 图表顶部的空白区域
+                                            right: g_rightMargin,
+                                            bottom: 5,
+                                            left: 0
+                                        };
+
+                                        const colorMapping = {
+                                            "MRT": "#8B5C4B",
+                                            "Bus": "#415441",
+                                            "LRT": "#C6B2A0",
+                                            "P2P": "#A4B2A7",
+                                            "default": "#1F1F1F" // 默认颜色，紫色
+                                        };
+
+                                        let barPadding = (height - (margin.bottom + margin.top)) / (top_n * 5); // 柱状图的间距
+                                        // 设置副标题
+                                        let subTitle = svg.append("text")
+                                            .attr("class", "subTitle") // 给副标题添加类
+                                            .attr("y", 35) // 设置Y轴的位置
+                                            .html("Ridership Population"); // 副标题内容
+
+                                        let Year = 1995; // 起始年份
+
+                                        // 读取CSV数据
+                                        d3.csv('assets/data/public-transport-ridership.csv').then(function (data) {
+                                            data.forEach(d => {// 转换数据类型
+
+                                                d.Ridership = +d.Ridership; // 品牌价值
+                                                d.Last_Ridership = +d.Last_Ridership; // 上一年的品牌价值
+                                                d.Ridership = isNaN(d.Ridership) ? 0 : d.Ridership; // 检查是否为数值
+                                                d.Year = +d.Year; // 年份
+                                            });
+
+                                            // 过滤数据，选择对应年份的前n个品牌，并按价值排序
+                                            let yearSlice = data.filter(d => d.Year == Year && !isNaN(d.Ridership))
+                                                .sort((a, b) => b.Ridership - a.Ridership)
+                                                .slice(0, top_n);
+
+                                            // 给每个品牌添加排名
+                                            yearSlice.forEach((d, i) => d.Rank = i);
+
+                                            // 定义X轴的比例尺（从0到最大品牌价值）
+                                            let x = d3.scaleLinear()
+                                                .domain([0, d3.max(yearSlice, d => d.Ridership)]) // X轴的数据范围
+                                                .range([margin.left, width - margin.right - 65]); // X轴的像素范围
+
+                                            // 定义Y轴的比例尺（用于控制品牌的显示顺序）
+                                            let y = d3.scaleLinear()
+                                                .domain([top_n, 0]) // Y轴的范围（从最高排名到最低排名）
+                                                .range([height - margin.bottom, margin.top]); // Y轴的像素范围
+
+                                            // 设置X轴
+                                            let xAxis = d3.axisTop()
+                                                .scale(x) // 绑定X轴的比例尺
+                                                .ticks(width > 500 ? 5 : 2) // 设置X轴的刻度数量
+                                                .tickSize(-(height - margin.top - margin.bottom)) // X轴刻度线长度
+                                                .tickFormat(d => d3.format(',')(d)); // X轴刻度的格式化
+
+                                            // 在图表上添加X轴
+                                            svg.append('g')
+                                                .attr('class', 'axis xAxis') // 给X轴添加类
+                                                .attr('transform', `translate(0, ${margin.top})`) // 移动X轴到正确位置
+                                                .call(xAxis) // 渲染X轴
+                                                .selectAll('.tick line')
+                                                .classed('origin', d => d == 0); // 给刻度线添加样式
+
+                                            // 绘制柱状图
+                                            svg.selectAll('rect.bar')
+                                                .data(yearSlice, d => d.Type) // 绑定数据
+                                                .enter()
+                                                .append('rect') // 创建矩形元素
+                                                .attr('class', 'bar') // 添加类名
+                                                .attr('x', x(0) + 1) // 设置矩形X轴的位置
+                                                .attr('width', d => x(d.Ridership) - x(0) - 1) // 设置矩形的宽度，基于品牌价值
+                                                .attr('y', d => y(d.Rank) + 5) // 设置矩形Y轴的位置，基于排名
+                                                .attr('height', y(1) - y(0) - barPadding) // 设置矩形的高度
+                                                // .style('fill', d => d.colour); // 设置矩形的颜色
+                                                .style('fill', d => colorMapping[d.Type] || colorMapping["default"])
+
+                                            //    svg.selectAll('text.label')
+                                            //       .data(yearSlice, d => d.Type) // 绑定数据
+                                            //       .enter()
+                                            //       .append('text') // 添加文本元素
+                                            //       .attr('class', 'label') // 添加类名
+                                            //     //   .attr('x', d => x(d.Ridership) - 8) // orignal: 设置文本X轴的位置
+                                            //       .attr('x', d => x(d.Ridership) + g_labelOffset)
+                                            //       .attr('y', d => y(d.Rank) + 5 + ((y(1) - y(0)) / 2) + 1) // 设置文本Y轴的位置
+                                            //       .style('text-anchor', 'end') // 文本右对齐
+                                            //       .html(d => d.Type); // 文本内容是品牌名称
+
+                                            svg.selectAll('image')
+                                                .data(yearSlice, d => d.Type)
+                                                .enter()
+                                                .append('svg:image')
+                                                .attr('class', 'typeImage')
+                                                .attr('xlink:href', d => {
+                                                    if (d.Type === "MRT")
+                                                        return 'assets/media/mrt.png';
+                                                    else if (d.Type === "Bus")
+                                                        return 'assets/media/bus.png';
+                                                    else if (d.Type === "LRT")
+                                                        return 'assets/media/lrt.png';
+                                                    else if (d.Type === "P2P")
+                                                        return 'assets/media/p2p.png';
+                                                    else
+                                                        return 'default.png';
+                                                })
+                                                .attr('x', d => x(d.Ridership) + g_labelOffset) //设置文本X轴的位置
+                                                .attr('y', d => (d.Rank) + g_imageYOffset) //设置图标的Y轴位置
+                                                .attr('width', g_imageWidth)
+                                                .attr('height', g_imageHeight)
+
+                                            svg.selectAll('text.valueLabel')
+                                                .data(yearSlice, d => d.Type) // 绑定数据
+                                                .enter()
+                                                .append('text') // 添加文本元素
+                                                .attr('class', 'valueLabel') // 添加类名
+                                                .attr('x', d => x(d.Ridership) + g_valueOffset) // 设置文本X轴的位置
+                                                .attr('y', d => y(d.Rank) + ((y(1) - y(0)) / 2) + g_valueYOffset) // 设置文本Y轴的位置
+                                                .text(d => d3.format(',.0f')(d.Last_Ridership)); // 显示品牌的上一年的价值
+
+                                            // 在右下角添加年份文本
+                                            let yearText = svg.append('text')
+                                                .attr('class', 'yearText') // 添加类名
+                                                .attr('x', width - margin.right) // 设置X轴的位置
+                                                .attr('y', height - 25) // 设置Y轴的位置
+                                                .style('text-anchor', 'end') // 文本右对齐
+                                                .html(~~Year) // 显示年份
+                                                .call(halo, 10); // 调用halo函数给年份添加高亮效果
+
+
+                                            function playAnimation() {
+                                                // 更新数据，重新选择前n名品牌
+                                                yearSlice = data.filter(d => d.Year == Year && !isNaN(d.Ridership))
+                                                    .sort((a, b) => b.Ridership - a.Ridership)
+                                                    .slice(0, top_n);
+
+                                                yearSlice.forEach((d, i) => d.Rank = i); // 更新排名
+
+                                                // 更新X轴比例尺
+                                                x.domain([0, d3.max(yearSlice, d => d.Ridership)]);
+
+                                                // 更新X轴
+                                                svg.select('.xAxis')
+                                                    .transition()
+                                                    .duration(tickDuration)
+                                                    .ease(d3.easeLinear)
+                                                    .call(xAxis);
+
+                                                // 更新柱状图
+                                                let bars = svg.selectAll('.bar').data(yearSlice, d => d.Type);
+                                                bars
+                                                    .enter()
+                                                    .append('rect')
+                                                    .attr('class', d => `bar ${d.name.replace(/\s/g, '_')}`) // 更新bar的样式
+                                                    .attr('x', x(0) + 1)
+                                                    .attr('width', d => x(d.Ridership) - x(0) - 1)
+                                                    .attr('y', d => y(top_n + 1) + 5)
+                                                    .attr('height', y(1) - y(0) - barPadding)
+                                                    // .style('fill', d => d.colour)
+                                                    .style('fill', d => colorMapping[d.Type] || colorMapping["default"])
+                                                    .transition()
+                                                    .duration(tickDuration)
+                                                    .ease(d3.easeLinear) //用于控制动画速度的函数。
+                                                    .attr('y', d => y(d.Rank) + 5);
+
+                                                bars.transition()
+                                                    .duration(tickDuration)
+                                                    .ease(d3.easeLinear) //用于控制动画速度的函数。
+                                                    .attr('width', d => x(d.Ridership) - x(0) - 1)
+                                                    .attr('y', d => y(d.Rank) + 5);
+
+                                                bars.exit()
+                                                    .transition()
+                                                    .duration(tickDuration)
+                                                    .ease(d3.easeLinear)
+                                                    .attr('width', d => x(d.Ridership) - x(0) - 1)
+                                                    .attr('y', d => y(top_n + 1) + 5)
+                                                    .remove();
+
+                                                // 更新标签文本
+                                                let images = svg.selectAll('.typeImage').data(yearSlice, d => d.Type);
+                                                images
+                                                    .enter()
+                                                    .append('svg:image')
+                                                    .attr('class', 'image')
+                                                    .attr('x', d => x(d.Ridership) + g_labelOffset)
+                                                    .attr('y', d => y(top_n + 1) + g_imageYOffset + ((y(1) - y(0)) / 2))
+                                                    .style('text-anchor', 'end')
+                                                    .html(d => d.Type)
+                                                    .transition()
+                                                    .duration(tickDuration)
+                                                    .ease(d3.easeLinear)
+                                                    .attr('y', d => y(d.Rank) + g_imageYOffset + ((y(1) - y(0)) / 2) + 1);
+
+                                                images.transition()
+                                                    .duration(tickDuration)
+                                                    .ease(d3.easeLinear)
+                                                    .attr('x', d => x(d.Ridership) + g_labelOffset)
+                                                    .attr('y', d => y(d.Rank) + g_imageYOffset + ((y(1) - y(0)) / 2) + 1);
+
+                                                images.exit()
+                                                    .transition()
+                                                    .duration(tickDuration)
+                                                    .ease(d3.easeLinear)
+                                                    .attr('x', d => x(d.Ridership) + g_labelOffset)
+                                                    .attr('y', d => y(top_n + 1) + g_imageYOffset)
+                                                    .remove();
+
+                                                // 更新数值标签
+                                                let valueLabels = svg.selectAll('.valueLabel').data(yearSlice, d => d.Type);
+                                                valueLabels
+                                                    .enter()
+                                                    .append('text')
+                                                    .attr('class', 'valueLabel')
+                                                    .attr('x', d => x(d.Ridership) + g_valueOffset)
+                                                    .attr('y', d => y(top_n + 1) + 5)
+                                                    .text(d => d3.format(',.0f')(d.Last_Ridership))
+                                                    .transition()
+                                                    .duration(tickDuration)
+                                                    .ease(d3.easeLinear)
+                                                    .attr('y', d => y(d.Rank) + ((y(1) - y(0)) / 2) + g_valueYOffset);
+
+                                                valueLabels.transition()
+                                                    .duration(tickDuration)
+                                                    .ease(d3.easeLinear)
+                                                    .attr('x', d => x(d.Ridership) + g_valueOffset)
+                                                    .attr('y', d => y(d.Rank) + ((y(1) - y(0)) / 2) + g_valueYOffset)
+                                                    .tween("text", function (d) {
+                                                        let i = d3.interpolateRound(d.Last_Ridership, d.Ridership);
+                                                        return function (t) {
+                                                            this.textContent = d3.format(',')(i(t));
+                                                        };
+                                                    });
+
+                                                valueLabels.exit()
+                                                    .transition()
+                                                    .duration(tickDuration)
+                                                    .ease(d3.easeLinear)
+                                                    .attr('x', d => x(d.Ridership) + 5)
+                                                    .attr('y', d => y(top_n + 1) + 5)
+                                                    .remove();
+
+                                                d3.selectAll('.halo-clone').remove();
+                                                // 更新年份
+                                                yearText.html(~~Year).call(halo, 10);
+
+                                                // 逐年更新
+                                                if (Year == 2023)
+                                                    ticker.stop();
+                                                //   Year = d3.format('.1f')((+Year) + 0.1); // 将年份每次加0.1，以实现动画效果
+                                                Year = (+Year) + 1;
+                                            }
+
+                                            // 创建ticker用于动画更新
+                                            ticker = d3.interval(e => {
+                                                playAnimation()
+                                            }, tickDuration); // 设定动画间隔时间
+
+
+                                            d3.select("#restart-btn").on("click", function () {
+                                                ticker.stop(); // 停止当前动画
+                                                Year = 1995; // 将年份重置为初始年份
+                                                ticker = d3.interval(e => {
+                                                    playAnimation()
+                                                }, tickDuration); // 重新启动动画
+                                            });
+                                        });
+
+                                        // halo函数，用于在年份周围添加白色边框效果
+                                        const halo = function (text, strokeWidth) {
+                                            // 克隆节点并插入到当前文本节点前面
+                                            let clone = text.select(function () {
+                                                return this.parentNode.insertBefore(this.cloneNode(true), this);
+                                            });
+
+                                            // 给克隆节点添加一个特定的类以便于后续选择
+                                            clone.classed('halo-clone', true)
+                                                .style('fill', '#FFFFFF')
+                                                .style('stroke', '#FFFFFF')
+                                                .style('stroke-width', strokeWidth)
+                                                .style('stroke-linejoin', 'round')
+                                                .style('opacity', 1);
+                                        }
+
+                                    </script>
+                                    <div class="d-grid gap-2 mt-3">
+                                        <button id="restart-btn" class="btn btn-primary" type="button">
+                                            <i class="bi bi-arrow-repeat"> Watch Ridership Numbers Change Over the
+                                                Years</i></button>
+                                    </div>
+                                </div>
+
+                                <div class="swiper-slide">
+                                    <div id="mv_population"></div>
+                                    <div>
+                                        <p style="position: relative; left: 300px;"><b style="color:#8B5C4B">
+                                                Public Motor Vehicle Grows To 118K</b></p>
+                                    </div>
+                                    <script>
+                                        // 设置图表的宽度和高度
+                                        const mv_pop_margin = { top: 50, right: 130, bottom: 50, left: 70 };
+                                        mv_pop_width = 960 - mv_pop_margin.left - mv_pop_margin.right,
+                                            mv_pop_height = 500 - mv_pop_margin.top - mv_pop_margin.bottom;
+
+                                        const mv_pop_svg = d3.select("#mv_population")
+                                            .append("svg")
+                                            .attr("width", mv_pop_width + mv_pop_margin.left + mv_pop_margin.right)
+                                            .attr("height", mv_pop_height + mv_pop_margin.top + mv_pop_margin.bottom)
+                                            .append("g")
+                                            .attr("transform", `translate(${mv_pop_margin.left},${mv_pop_margin.top})`);
+
+                                        // 读取 CSV 数据
+                                        d3.csv("assets/data/public_motor_vehicle_population.csv").then(function (data) {
+
+                                            // 数据预处理：将年份转换为Date对象，并过滤掉1990年之前的数据
+                                            data = data.filter(d => {
+                                                d.year = d3.timeParse("%Y %b")(d.year);
+                                                return d.year >= new Date(1990, 0, 1); // 过滤1990年后的数据
+                                            });
+
+                                            data.forEach(d => {
+                                                d.Private_Hire_Cars = +d.Private_Hire_Cars;
+                                                d.Taxis = +d.Taxis;
+                                                d.Buses = +d.Buses;
+                                            });
+
+                                            // 列名作为子组，调整顺序以确保 Buses 在最底层
+                                            const mv_pop_keys = ["Buses", "Taxis", "Private_Hire_Cars"];
+
+                                            // 颜色比例尺
+                                            const mv_pop_color = d3.scaleOrdinal()
+                                                .domain(mv_pop_keys)
+                                                .range(["#8B5C4B", "#415441", "#A4B2A7"]);
+
+                                            // 堆叠数据
+                                            const mv_pop_stackedData = d3.stack()
+                                                .keys(mv_pop_keys)
+                                                (data);
+
+                                            // X轴：年份
+                                            const mv_pop_x = d3.scaleTime()
+                                                .domain(d3.extent(data, function (d) { return d.year; }))
+                                                .range([0, mv_pop_width]);
+
+                                            const mv_pop_xAxis = mv_pop_svg.append("g")
+                                                .attr("transform", `translate(0, ${mv_pop_height})`)
+                                                .call(d3.axisBottom(mv_pop_x).ticks(5));
+
+                                            // Y轴：车辆数量
+                                            const mv_pop_y = d3.scaleLinear()
+                                                .domain([0, d3.max(data, d => d.Private_Hire_Cars + d.Taxis + d.Buses)])
+                                                .range([mv_pop_height, 0])
+
+                                            mv_pop_svg.append("g")
+                                                .call(d3.axisLeft(mv_pop_y).ticks(5, "s"));
+
+                                            // 定义面积生成器
+                                            const mv_pop_area = d3.area()
+                                                .x(function (d) { return mv_pop_x(d.data.year); })
+                                                .y0(function (d) { return mv_pop_y(d[0]); })
+                                                .y1(function (d) { return mv_pop_y(d[1]); });
+
+                                            // 设置SVG工具提示，包含背景矩形和文本
+                                            const tooltipGroup = mv_pop_svg.append("g")
+                                                .style("display", "none") // 初始时隐藏
+                                                .style("pointer-events", "none");
+
+                                            const tooltipRect = tooltipGroup.append("rect")
+                                                .attr("class", "tooltip-rect")
+                                                .attr("width", 160)
+                                                .attr("height", 80)
+                                                .attr("rx", 10) // 设置圆角
+                                                .attr("ry", 10)
+                                                .attr("fill", "#C6B2A0") // 背景色
+                                                .attr("stroke", "#C6B2A0") // 边框颜色
+                                                .attr("stroke-width", 1)
+                                                .attr("opacity", 1); // 设置透明度
+
+                                            const tooltipText = tooltipGroup.append("text")
+                                                .attr("class", "tooltip-text")
+                                                .attr("x", 10)
+                                                .attr("y", 20)
+                                                .attr("font-size", "12px")
+                                                .attr("fill", "black")
+                                                .attr("font-family", "Arial");
+
+
+                                            // 鼠标悬停事件处理程序
+                                            const service_delay_mouseover = function (event, d) {
+                                                tooltipGroup.style("display", null);  // 显示 tooltip
+
+                                                // 更新工具提示的位置并确保在最前面
+                                                tooltipGroup.raise();
+                                            };
+
+                                            // 鼠标移动事件处理程序
+                                            const service_delay_mousemove = function (event, d) {
+                                                const mv_pop_year = mv_pop_x.invert(d3.pointer(event, this)[0]);  // 获取年份
+                                                const mv_pop_index = data.findIndex(dt => dt.year.getFullYear() === Math.round(mv_pop_year.getFullYear()));
+                                                const mv_pop_tooltipData = data[mv_pop_index];
+
+                                                // 设置工具提示文本内容
+                                                tooltipText.text(`Year: ${mv_pop_tooltipData.year.getFullYear()}`)
+                                                    .selectAll("tspan").remove();  // 移除之前的 tspan 元素以确保更新内容
+                                                tooltipText.append("tspan")
+                                                    .attr("x", 10)
+                                                    .attr("dy", "1.2em")
+                                                    .text(`Buses: ${mv_pop_tooltipData.Buses}`);
+                                                tooltipText.append("tspan")
+                                                    .attr("x", 10)
+                                                    .attr("dy", "1.2em")
+                                                    .text(`Taxis: ${mv_pop_tooltipData.Taxis}`);
+                                                tooltipText.append("tspan")
+                                                    .attr("x", 10)
+                                                    .attr("dy", "1.2em")
+                                                    .text(`Private Hire Cars: ${mv_pop_tooltipData.Private_Hire_Cars}`);
+
+
+                                                // console.log("x=", event.pageX);
+                                                // console.log("y=", event.pageY);
+                                                const mv_svgPosition = mv_pop_svg.node().getBoundingClientRect();
+                                                const mv_absoluteX = mv_svgPosition.left + window.pageXOffset;
+                                                const mv_absoluteY = mv_svgPosition.top + window.pageYOffset;
+
+                                                console.log("new x=", event.pageX - mv_absoluteX);
+                                                console.log("new y=", event.pageY - mv_absoluteY);
+                                                tooltipGroup
+                                                    .attr("transform", `translate(${event.pageX - mv_absoluteX - 70}, ${event.pageY - mv_absoluteY - 30})`);
+                                                tooltipGroup.raise();
+                                            };
+
+                                            // 鼠标离开事件处理程序
+                                            const service_delay_mouseleave = function () {
+                                                console.log("mouse leave");
+                                                tooltipGroup.style("display", "none");  // 隐藏工具提示
+                                            };
+
+                                            // 显示堆叠区域
+                                            mv_pop_svg.selectAll("mylayers")
+                                                .data(mv_pop_stackedData)
+                                                .enter()
+                                                .append("path")
+                                                .attr("class", function (d) { return "myArea " + d.key })
+                                                .style("fill", function (d) { return mv_pop_color(d.key); })
+                                                .attr("d", mv_pop_area);
+
+                                            // 添加鼠标事件，用于显示SVG工具提示
+                                            mv_pop_svg.selectAll("path")
+                                                .on("mouseover", service_delay_mouseover)
+                                                .on("mousemove", service_delay_mousemove)
+                                                .on("mouseout", service_delay_mouseleave);
+
+                                            // 添加 X 轴标签
+                                            // mv_pop_svg.append("text")
+                                            //     .attr("text-anchor", "end")
+                                            //     .attr("x", mv_pop_width)
+                                            //     .attr("y", mv_pop_height + 40)
+                                            //     .text("Year");
+
+                                            // 添加 Y 轴标签
+                                            mv_pop_svg.append("text")
+                                                .attr("x", -mv_pop_height / 2)
+                                                .attr("y", mv_pop_margin.left / 3 - 55)
+                                                .attr("class", "axis-label")
+                                                .attr("transform", "rotate(-90)")
+                                                .style("text-anchor", "middle")
+                                                .text("Number of Vehicles")
+
+                                            // 调整图例的位置，使其靠近图表左侧
+                                            const mv_pop_size = 20;
+                                            mv_pop_svg.selectAll("myrect")
+                                                .data(mv_pop_keys)
+                                                .enter()
+                                                .append("rect")
+                                                .attr("x", 50)  // 调整 x 坐标，使图例靠左显示
+                                                .attr("y", function (d, i) { return 10 + i * (mv_pop_size + 5) })
+                                                .attr("width", mv_pop_size)
+                                                .attr("height", mv_pop_size)
+                                                .style("fill", function (d) { return mv_pop_color(d) });
+
+                                            mv_pop_svg.selectAll("mylabels")
+                                                .data(mv_pop_keys)
+                                                .enter()
+                                                .append("text")
+                                                .attr("x", 50 + mv_pop_size * 1.2)  // 调整 x 坐标，使图例文字靠左显示
+                                                .attr("y", function (d, i) { return 10 + i * (mv_pop_size + 5) + (mv_pop_size / 2) })
+                                                .attr("class", "legend-text")  // 确保没有下划线
+                                                .style("fill", function (d) { return mv_pop_color(d) })
+                                                .text(function (d) { return d.replace(/_/g, ' ') })  // 移除下划线
+                                                .attr("text-anchor", "left")
+                                                .style("alignment-baseline", "middle");
+                                        });
+
+                                    </script>
+                                </div>
+
+                                <div class="swiper-slide">
+                                    <div class="row align-items-center">
+                                    </div>
+                                    <div>
+                                        <svg width="800" height="500" id="Service_Delay">
+                                            <g></g>
+                                        </svg>
+                                        <script>
+                                            var data = {
+                                                "name": "",
+                                                "children":
+                                                    [
+                                                        {
+                                                            "name": "2020",
+                                                            "children":
+                                                                [
+                                                                    {
+                                                                        "name": "MRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "NSL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "EWL",
+                                                                                    "value": 2
+                                                                                },
+                                                                                {
+                                                                                    "name": "NEL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "CCL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "DTL",
+                                                                                    "value": 1
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                    , {
+                                                                        "name": "LRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "BP",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "SP",
+                                                                                    "value": 4
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                ]
+                                                        },
+                                                        {
+                                                            "name": "2021",
+                                                            "children":
+                                                                [
+                                                                    {
+                                                                        "name": "MRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "NSL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "NEL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "CCL",
+                                                                                    "value": 1
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                    , {
+                                                                        "name": "LRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "BP",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "SP",
+                                                                                    "value": 3
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                ]
+                                                        },
+                                                        {
+                                                            "name": "2022",
+                                                            "children":
+                                                                [
+                                                                    {
+                                                                        "name": "MRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "NSL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "EWL",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "NEL",
+                                                                                    "value": 2
+                                                                                },
+                                                                                {
+                                                                                    "name": "CCL",
+                                                                                    "value": 2
+                                                                                },
+                                                                                {
+                                                                                    "name": "DTL",
+                                                                                    "value": 1
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                    , {
+                                                                        "name": "LRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "BP",
+                                                                                    "value": 1
+                                                                                },
+                                                                                {
+                                                                                    "name": "SP",
+                                                                                    "value": 1
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                ]
+                                                        },
+                                                        {
+                                                            "name": "2023",
+                                                            "children":
+                                                                [
+                                                                    {
+                                                                        "name": "MRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "NSL",
+                                                                                    "value": 3
+                                                                                },
+                                                                                {
+                                                                                    "name": "CCL",
+                                                                                    "value": 2
+                                                                                },
+                                                                            ]
+                                                                    }
+                                                                    , {
+                                                                        "name": "LRT",
+                                                                        "children":
+                                                                            [
+                                                                                {
+                                                                                    "name": "BP",
+                                                                                    "value": 3
+                                                                                }
+                                                                            ]
+                                                                    }
+                                                                ]
+                                                        }
+                                                    ]
+                                            };
+
+                                            var treemapLayout = d3.treemap()
+                                                .size([800, 500])
+                                                .paddingOuter(20);
+
+                                            var rootNode = d3.hierarchy(data)
+
+                                            rootNode.sum(function (d) {
+                                                return d.value;
+                                            });
+
+                                            treemapLayout(rootNode);
+
+                                            var nodes = d3.select('#Service_Delay')
+                                                .selectAll('g')
+                                                .data(rootNode.descendants())
+                                                .enter()
+                                                .append('g')
+                                                .attr('transform', function (d) { return 'translate(' + [d.x0, d.y0] + ')' })
+
+                                            nodes
+                                                .append('rect')
+                                                .attr('width', function (d) { return d.x1 - d.x0; })
+                                                .attr('height', function (d) { return d.y1 - d.y0; })
+
+                                            nodes
+                                                .append('text')
+                                                .attr('dx', 4)
+                                                .attr('dy', 14)
+                                                .text(function (d) {
+                                                    if (d.data.value)
+                                                        return d.data.name + ": " + d.data.value;
+                                                    else
+                                                        return d.data.name
+                                                })
+
+                                        </script>
+                                    </div>
+                                    <div>
+                                        <p style="position: relative; left: 300px;"><b style="color:#8B5C4B">
+                                                Rail Service Delays Hit 35 Times</b></p>
+                                    </div>
+                                    <!-- <script>
+                                        const service_delay_margin = { top: 20, right: 30, bottom: 40, left: 50 },
+                                            service_delay_width = 800 - service_delay_margin.left - service_delay_margin.right,
+                                            service_delay_height = 400 - service_delay_margin.top - service_delay_margin.bottom;
+
+                                        const service_delay_svg = d3.select("#Service_Delay")
+                                            .append("svg")
+                                            .attr("width", service_delay_width + service_delay_margin.left + service_delay_margin.right)
+                                            .attr("height", service_delay_height + service_delay_margin.top + service_delay_margin.bottom)
+                                            .append("g")
+                                            .attr("transform", `translate(${service_delay_margin.left},${service_delay_margin.top})`);
+
+                                        // 读取 CSV 数据
+                                        d3.csv("assets/data/No_of_Service_Delays.csv").then(function (data) {
+
+                                            // MRT 和 LRT 的子组
+                                            const MRT_subgroups = ["NSL", "EWL", "NEL", "CCL", "DTL"];
+                                            const LRT_subgroups = ["BPLRT", "SPLRT"];
+
+                                            // X轴的年份组
+                                            const service_delay_groups = data.map(d => d.Year);
+
+                                            // 初始化 Y 轴（以前的X轴）作为分类轴
+                                            const service_delay_y = d3.scaleBand()
+                                                .domain(service_delay_groups)
+                                                .range([0, service_delay_height])
+                                                .padding([0.4]);
+
+                                            service_delay_svg.append("g")
+                                                .call(d3.axisLeft(service_delay_y).tickSizeOuter(0));
+
+                                            // 初始化 X 轴（以前的Y轴）作为数值轴
+                                            console.log("width=>", service_delay_width);
+                                            const service_delay_x = d3.scaleLinear()
+                                                .range([0, service_delay_width - 100]);
+
+                                            const service_delay_xAxis = service_delay_svg.append("g")
+                                                .attr("transform", `translate(0, ${service_delay_height})`);
+
+                                            // 定义不同的颜色比例尺
+                                            const colorMRT = d3.scaleOrdinal()
+                                                .domain(MRT_subgroups)
+                                                .range(['#d42e12', '#009645', '#9900aa', '#fa9e0d', '#005ec4']); // MRT颜色
+
+                                            const colorLRT = d3.scaleOrdinal()
+                                                .domain(LRT_subgroups)
+                                                .range(['#8c564b', '#e377c2']); // LRT颜色
+
+                                            // 在 SVG 内创建 tooltip 作为文本元素
+                                            const tooltipGroup = service_delay_svg.append("g")
+                                                .style("display", "none");  // 初始时隐藏
+
+                                            const tooltipRect = tooltipGroup.append('rect')
+                                                .attr("class", "tooltip-rect")
+                                                .attr("width", 80)
+                                                .attr("height", 45)
+                                                .attr("rx", 10) // 设置圆角
+                                                .attr("ry", 10)
+                                                .attr("fill", "lightsteelblue") // 背景色
+                                                .attr("stroke", "lightsteelblue") // 边框颜色
+                                                .attr("stroke-width", 1)
+                                                .attr("opacity", 0.9); // 设置透明度
+
+                                            const tooltipText = tooltipGroup.append('text')
+                                                .attr("class", "tooltip-text")
+                                                .attr("x", 10)
+                                                .attr("y", 20)
+                                                .attr("font-size", "12px")
+                                                .attr("fill", "black")
+                                                .attr("font-family", "Arial");
+
+                                            // 鼠标悬停事件处理程序
+                                            const service_delay_mouseover = function (event, d) {
+                                                const subgroupName = d3.select(this.parentNode).datum().key;
+                                                const subgroupValue = d.data[subgroupName];
+                                                tooltipGroup.style("display", null);  // 显示 tooltip
+
+                                                tooltipText.text(`Line: ${subgroupName}`)
+                                                    .append("tspan")
+                                                    .attr("x", 10)
+                                                    .attr("dy", "1.2em")
+                                                    .text(`Delays: ${subgroupValue}`);
+
+                                                tooltipGroup.raise();
+
+                                                // 鼠标悬停时，高亮当前条形柱，其他条形柱透明度降低
+                                                d3.selectAll("#Service_Delay .bar").style("opacity", 0.3); // 降低所有柱子的透明度
+                                                d3.select(this).style("opacity", 1); // 高亮当前悬停的柱子
+                                            }
+
+                                            // 鼠标移动事件处理程序
+                                            const service_delay_mousemove = function (event) {
+                                                const svgPosition = service_delay_svg.node().getBoundingClientRect();
+                                                const absoluteX = svgPosition.left + window.pageXOffset;
+                                                const absoluteY = svgPosition.top + window.pageYOffset;
+
+                                                tooltipGroup
+                                                    .attr("transform", `translate(${event.pageX - absoluteX - 20}, ${event.pageY - absoluteY - 20})`);
+                                            }
+
+                                            // 鼠标离开事件处理程序
+                                            const service_delay_mouseleave = function () {
+                                                tooltipGroup.style("display", "none");  // 隐藏 tooltip
+                                                d3.selectAll("#Service_Delay .bar").style("opacity", 0.8); // 恢复默认的透明度
+                                            }
+
+                                            // 更新图表函数
+                                            function updateChart(selectedChart) {
+                                                let subgroups, maxDelay;
+                                                if (selectedChart === "MRT") {
+                                                    subgroups = MRT_subgroups;
+                                                    maxDelay = d3.max(data, d => d.MRT_TOTAL);
+                                                    color = colorMRT; // 使用 MRT 颜色组
+                                                } else {
+                                                    subgroups = LRT_subgroups;
+                                                    maxDelay = d3.max(data, d => d.LRT_TOTAL);
+                                                    color = colorLRT;
+                                                }
+
+                                                // 更新 X 轴范围
+                                                service_delay_x.domain([0, maxDelay]);
+                                                service_delay_xAxis.transition().duration(1000)
+                                                    .call(d3.axisBottom(service_delay_x).ticks(5).tickFormat(d3.format("d")));  // 使用整数刻度
+
+                                                // 堆叠数据
+                                                const service_delay_stackedData = d3.stack()
+                                                    .keys(subgroups)
+                                                    (data);
+
+                                                // 绘制堆叠条形图
+                                                const service_delay_bars = service_delay_svg.selectAll("g.layer")
+                                                    .data(service_delay_stackedData, d => d.key);
+
+                                                const service_delay_barsEnter = service_delay_bars.enter().append("g")
+                                                    .attr("class", "layer")
+                                                    .attr("fill", d => color(d.key));
+
+                                                service_delay_barsEnter.selectAll("rect")
+                                                    .data(d => d)
+                                                    .enter().append("rect")
+                                                    .attr("y", d => service_delay_y(d.data.Year))
+                                                    .attr("x", d => service_delay_x(d[0]))  // 左边界
+                                                    .attr("width", d => service_delay_x(d[1]) - service_delay_x(d[0]))  // 使用宽度表示值
+                                                    .attr("height", service_delay_y.bandwidth())  // 条形高度
+                                                    .attr("stroke", "grey")
+                                                    .attr("class", "bar") // 为每个柱子添加 class 以便控制透明度
+                                                    .on("mouseover", service_delay_mouseover)
+                                                    .on("mousemove", service_delay_mousemove)
+                                                    .on("mouseleave", service_delay_mouseleave);
+
+                                                service_delay_bars.exit().remove();
+                                            }
+
+                                            // 初始化为 MRT 图表
+                                            updateChart("MRT");
+
+                                            // 监听下拉菜单变化，切换 MRT 和 LRT 图表
+                                            d3.select("#LrtMrtSelect").on("change", function () {
+                                                const selectedChart = d3.select(this).property("value");
+                                                updateChart(selectedChart);
+                                            });
+                                        });
+
+                                    </script> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </section><!-- /Tabs Section -->
+
+        <section id="about-3" class="about section">
+
+            <div class="container">
+                <div class="row align-items-center justify-content-between">
+                    <div class="col-lg-7 mb-5 mb-lg-0 order-lg-2" data-aos="fade-up" data-aos-delay="400">
+                        <div class="swiper init-swiper">
+                            <script type="application/json" class="swiper-config">
+                {
+                  "loop": true,
+                  "speed": 600,
+                  "autoplay": {
+                    "delay": 5000
+                  },
+                  "slidesPerView": "auto",
+                  "pagination": {
+                    "el": ".swiper-pagination",
+                    "type": "bullets",
+                    "clickable": true
+                  },
+                  "breakpoints": {
+                    "320": {
+                      "slidesPerView": 1,
+                      "spaceBetween": 40
+                    },
+                    "1200": {
+                      "slidesPerView": 1,
+                      "spaceBetween": 1
+                    }
+                  }
+                }
+              </script>
+                            <div class="swiper-slide" data-aos="fade-up" data-aos-delay="300">
+                                <iframe width="728" height="410"
+                                    src="https://www.youtube.com/embed/3aKaM2Sui4k?si=Bz0BysVg7nM9oPSl"
+                                    title="YouTube video player" frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+                                </iframe>
+                            </div>
+                            <!-- </div> -->
+                            <div class="swiper-pagination"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 order-lg-1" data-aos="fade-up" data-aos-delay="300">
+                        <!-- <span class="section-subtitle" data-aos="fade-up">Welcome</span> -->
+                        <h1 class="mb-1">
+                            THE ROAD AHEAD
+                        </h1>
+                        <h4 class="mb-4">
+                            What's next for public transport
+                        </h4>
+                        <p data-aos="fade-up">
+                            Land Transport Master Plan 2040 charts Singapore's long-term vision and policies that
+                            envisions
+                            a transport system that is convenient, well-connected and fast. The 3 key pillars include:
+                        </p>
+                        <ul>
+                            <li>20-min Town & 45-min City</li>
+                            <li>Transport for All</li>
+                            <li>Healthy Lives, Safer Journey</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+
+    <div id="preloader"></div>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <!-- Main JS File -->
+    <script src="assets/js/main.js"></script>
+
+</body>
+
+</html>
