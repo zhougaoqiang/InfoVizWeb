@@ -1,117 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Donut Chart Example</title>
-<script src="https://d3js.org/d3.v6.min.js"></script>
-<style>
-  text {
-    font-family: sans-serif;
-    font-size: 10px; /* Reduced font size for labels */
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Donut Chart Example</title>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <style>
+    text {
+      font-family: sans-serif;
+      font-size: 10px;
+      /* 缩小标签字体大小 */
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- Create a div where the graph will take place -->
-<div id="my_dataviz"></div>
+  <!-- 创建一个 div 用于放置图表 -->
+  <div id="my_dataviz"></div>
 
-<script>
+  <script>
 
-// Set the dimensions and margins of the graph
-const width = 500,
+    // 设置图表的宽度、高度和边距
+    const width = 500,
       height = 500,
       margin = 120;
 
-// The radius of the pieplot is half the width or half the height (smallest one). Subtract a bit of margin.
-const radius = Math.min(width, height) / 2 - margin;
+    // 饼图的半径为宽度或高度的一半（取较小值），减去一定的边距
+    const radius = Math.min(width, height) / 2 - margin;
 
-// Append the SVG object to the div called 'my_dataviz'
-const svg = d3.select("#my_dataviz")
-  .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-  .append("g")
-    .attr("transform", `translate(${width/2},${height/2})`);
+    // 将 SVG 对象附加到名为 'my_dataviz' 的 div
+    const svg = d3.select("#my_dataviz")
+      .append("svg")
+      .attr("width", width) // 设置 SVG 的宽度
+      .attr("height", height) // 设置 SVG 的高度
+      .append("g")
+      .attr("transform", `translate(${width / 2},${height / 2})`); // 将图表中心平移到 SVG 中心
 
-// Load the data from CSV file
-d3.csv("data/PieChartData.csv").then(function(data) {
-  
+    // 从 CSV 文件加载数据
+    d3.csv("data/PieChartData.csv").then(function (data) {
 
-  data.sort(function(b, a) {
-                return b.percent - a.percent;
-            });
-
-
-  // Set the color scale
-  const color = d3.scaleOrdinal()
-    .domain(data.map(d => d.browser))
-    .range(d3.schemeCategory10);
-
-  // Compute the position of each group on the pie:
-  const pie = d3.pie()
-    .sort(null) // Do not sort group by size
-    .value(d => d.percent);
-  const data_ready = pie(data);
-
-  // The arc generator
-  const arc = d3.arc()
-    .innerRadius(radius * 0.4)         // This is the size of the donut hole,if set to 0, means it is pie chart
-    .outerRadius(radius * 0.8);
-
-  // Another arc that won't be drawn. Just for labels positioning
-  const outerArc = d3.arc()
-    .innerRadius(radius)  // Increased distance for label lines
-    .outerRadius(radius*1.1); // Increased distance for label lines
-
-  // Build the pie chart: Each part of the pie is a path that we build using the arc function.
-  svg
-    .selectAll('allSlices')
-    .data(data_ready)
-    .join('path')
-      .attr('d', arc)
-      .attr('fill', d => color(d.data.browser))
-      .attr("stroke", "white")
-      .style("stroke-width", "2px")
-      .style("opacity", 0.7);
-
-  // Add the polylines between chart and labels
-  svg
-    .selectAll('allPolylines')
-    .data(data_ready)
-    .join('polyline')
-      .attr("stroke", "black")
-      .style("fill", "none")
-      .attr("stroke-width", 1)
-      .attr('points', function(d) {
-        const posA = arc.centroid(d); // Line insertion in the slice
-        const posB = outerArc.centroid(d); // Line break
-        const posC = outerArc.centroid(d); // Label position
-        const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-        posC[0] = radius * 1.2 * (midangle < Math.PI ? 1 : -1); // Increased label distance from center
-        return [posA, posB, posC];
+      // 对数据进行排序，从小到大排列
+      data.sort(function (b, a) {
+        return b.percent - a.percent;
       });
 
-  // Add the labels
-  svg
-    .selectAll('allLabels')
-    .data(data_ready)
-    .join('text')
-      .text(d => `${d.data.browser} (${d.data.percent}%)`)
-      .attr('transform', function(d) {
-        const pos = outerArc.centroid(d);
-        const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-        pos[0] = radius * 1.25 * (midangle < Math.PI ? 1 : -1); // Further position labels to prevent overlap
-        return `translate(${pos})`;
-      })
-      .style('text-anchor', function(d) {
-        const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-        return (midangle < Math.PI ? 'start' : 'end');
-      })
-      .style("font-size", "10px"); // Reduced font size
+      // 设置颜色比例尺，使用 D3 提供的配色方案 d3.schemeCategory10
+      const color = d3.scaleOrdinal()
+        .domain(data.map(d => d.browser)) // 设置比例尺的域为浏览器名称
+        .range(d3.schemeCategory10);
 
-});
+      // 计算饼图每部分的位置
+      const pie = d3.pie()
+        .sort(null) // 不按大小排序
+        .value(d => d.percent); // 每部分的值为百分比
+      const data_ready = pie(data); // 生成饼图数据
 
-</script>
+      // 定义弧生成器，用于生成每个部分的形状
+      const arc = d3.arc()
+        .innerRadius(radius * 0.4)         // 内半径，定义甜甜圈孔的大小；若设为 0，则为普通饼图
+        .outerRadius(radius * 0.8); // 外半径，定义饼图的半径
+
+      // 定义另一个弧生成器，用于定位标签的线条位置
+      const outerArc = d3.arc()
+        .innerRadius(radius)  // 设置线条的内半径，增大以使标签更远
+        .outerRadius(radius * 1.1); // 设置线条的外半径，增大以使标签更远
+
+      // 构建饼图：每个饼图部分是一个使用 arc 函数生成的路径
+      svg
+        .selectAll('allSlices')
+        .data(data_ready)
+        .join('path')
+        .attr('d', arc) // 使用弧生成器定义路径
+        .attr('fill', d => color(d.data.browser)) // 根据浏览器名称填充颜色
+        .attr("stroke", "white") // 设置路径的边框颜色
+        .style("stroke-width", "2px") // 设置边框宽度
+        .style("opacity", 0.7); // 设置透明度
+
+      // 添加多段线（折线）以连接图表和标签
+      svg
+        .selectAll('allPolylines')
+        .data(data_ready)
+        .join('polyline')
+        .attr("stroke", "black") // 设置线条颜色
+        .style("fill", "none") // 去除填充颜色
+        .attr("stroke-width", 1) // 设置线条宽度
+        .attr('points', function (d) {
+          const posA = arc.centroid(d); // 获取线条在饼图部分的起始位置
+          const posB = outerArc.centroid(d); // 获取线条的拐点位置
+          const posC = outerArc.centroid(d); // 获取线条的结束位置（即标签位置）
+          const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+          posC[0] = radius * 1.2 * (midangle < Math.PI ? 1 : -1); // 根据角度调整标签的位置，以避免重叠
+          return [posA, posB, posC]; // 返回线条的三段位置
+        });
+
+      // 添加标签
+      svg
+        .selectAll('allLabels')
+        .data(data_ready)
+        .join('text')
+        .text(d => `${d.data.browser} (${d.data.percent}%)`) // 显示浏览器名称及百分比
+        .attr('transform', function (d) {
+          const pos = outerArc.centroid(d); // 获取标签的中心位置
+          const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+          pos[0] = radius * 1.25 * (midangle < Math.PI ? 1 : -1); // 根据角度调整标签的位置，以避免重叠
+          return `translate(${pos})`;
+        })
+        .style('text-anchor', function (d) {
+          const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+          return (midangle < Math.PI ? 'start' : 'end'); // 根据角度设置标签的对齐方式
+        })
+        .style("font-size", "10px"); // 缩小字体大小
+
+    });
+
+  </script>
 </body>
+
 </html>

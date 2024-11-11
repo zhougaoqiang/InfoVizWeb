@@ -1,0 +1,339 @@
+在 Tableau 中，**Calculated Field（计算字段）** 是用来基于现有数据创建自定义计算和逻辑的字段。你可以通过编写公式来实现各种操作和分析。以下是 Tableau 中常见的 **Calculated Field 类型** 和 **函数**：
+
+### 1. **算术运算符和数学函数**
+   这些函数用于执行基本的数学计算和数值操作。
+   - **加法（Addition）**: `+`
+   - **减法（Subtraction）**: `-`
+   - **乘法（Multiplication）**: `*`
+   - **除法（Division）**: `/`
+   - **ABS()**: 返回一个数字的绝对值，例如 `ABS(-10)` 返回 `10`。
+   - **ROUND()**: 将一个数字四舍五入到指定的小数位数，例如 `ROUND([Sales], 2)`。
+   - **CEILING()**: 向上取整，例如 `CEILING(3.2)` 返回 `4`。
+   - **FLOOR()**: 向下取整，例如 `FLOOR(3.8)` 返回 `3`。
+   - **SQRT()**: 计算平方根，例如 `SQRT(16)` 返回 `4`。
+
+### 2. **聚合函数**
+   这些函数常用于数据汇总和统计计算。
+   - **SUM()**: 计算字段或维度的总和，例如 `SUM([Sales])`。
+   - **AVG()**: 计算平均值，例如 `AVG([Profit])`。
+   - **MIN()**: 返回最小值，例如 `MIN([Date])`。
+   - **MAX()**: 返回最大值，例如 `MAX([Date])`。
+   - **COUNT()**: 计算非空数据点的数量，例如 `COUNT([Customer ID])`。
+   - **COUNTD()**: 计算唯一值的数量，例如 `COUNTD([Product ID])`。
+
+### 3. **逻辑函数**
+   逻辑函数允许你在数据分析中应用条件。
+   - **IF / ELSEIF / ELSE**: 条件判断，例如：
+     ```tableau
+     IF [Sales] > 1000 THEN "High"
+     ELSEIF [Sales] > 500 THEN "Medium"
+     ELSE "Low"
+     END
+     ```
+   - **IIF()**: 简化版的 IF，只有两个结果，例如 `IIF([Profit] > 0, "Profit", "Loss")`。
+   - **CASE**: 类似于 switch 语句，用于多条件匹配，例如：
+     ```tableau
+     CASE [Region]
+       WHEN "East" THEN 1
+       WHEN "West" THEN 2
+       ELSE 0
+     END
+     ```
+   - **AND / OR**: 逻辑与和逻辑或运算符，例如：
+     ```tableau
+     IF [Sales] > 500 AND [Profit] > 100 THEN "Good"
+     ELSE "Needs Improvement"
+     END
+     ```
+
+### 4. **字符串函数**
+   字符串函数用于处理文本数据。
+   - **LEFT()**: 返回字符串左侧的指定字符数，例如 `LEFT([Product Name], 5)`。
+   - **RIGHT()**: 返回字符串右侧的指定字符数，例如 `RIGHT([Product Name], 3)`。
+   - **MID()**: 提取字符串中间的部分，例如 `MID([Product Name], 3, 5)` 提取从第 3 位开始的 5 个字符。
+   - **LEN()**: 返回字符串的长度，例如 `LEN([Product Name])`。
+   - **TRIM()**: 去除字符串前后的空格，例如 `TRIM([Customer Name])`。
+   - **UPPER() / LOWER()**: 转换为大写或小写，例如 `UPPER([City])`。
+
+### 5. **日期函数**
+   日期函数帮助处理和计算日期值。
+   - **TODAY()**: 返回当前日期。
+   - **NOW()**: 返回当前日期和时间。
+   - **DATEADD()**: 向日期添加指定的时间单位，例如 `DATEADD('day', 5, [Order Date])`。
+   - **DATEDIFF()**: 计算两个日期之间的差异，例如 `DATEDIFF('day', [Start Date], [End Date])`。
+   - **DATETRUNC()**: 截断日期到指定的时间单位，例如 `DATETRUNC('month', [Order Date])` 将日期截断到月份。
+   - **YEAR() / MONTH() / DAY()**: 提取日期的年、月、日部分，例如 `YEAR([Order Date])`。
+
+### 6. **表计算**
+   表计算是一类用于处理和操作计算结果的函数。
+   - **LOOKUP()**: 在行之间查找值，例如 `LOOKUP(SUM([Sales]), -1)` 获取上一行的总销售额。
+   - **RANK()**: 返回数据的排名，例如 `RANK(SUM([Sales]))`。
+   - **WINDOW_SUM()**: 在数据窗口中计算总和，例如 `WINDOW_SUM(SUM([Sales]), -2, 0)` 计算当前行和前两行的总和。
+   - **RUNNING_SUM()**: 计算运行总和，例如 `RUNNING_SUM(SUM([Sales]))`。
+
+### 7. **地理函数**
+   用于地理位置分析的函数。
+   - **DISTANCE()**: 计算两个点之间的地理距离。
+   - **MAKEPOINT()**: 创建地理点，例如 `MAKEPOINT([Latitude], [Longitude])`。
+   - **MAKELINE()**: 创建地理线段，例如 `MAKELINE([Start Point], [End Point])`。
+
+### 8. **类型转换函数**
+   - **INT()**: 将值转换为整数，例如 `INT([Sales])`。
+   - **FLOAT()**: 将值转换为浮点数。
+   - **STR()**: 将值转换为字符串，例如 `STR([Sales])`。
+   - **DATE()**: 将值转换为日期，例如 `DATE([Order Date])`。
+
+这些函数可以组合使用，帮助你创建复杂的计算字段，实现自定义的分析和可视化效果。
+
+
+
+
+#######################################################################################################
+#######################################################################################################
+#######################################################################################################
+#######################################################################################################
+**Calculated Fields** 在 Tableau 中是非常重要的功能，它允许用户通过创建自定义公式，对数据进行处理和计算。Calculated Fields 可以在任何数据源的基础上添加新的字段，帮助用户实现自定义分析和可视化。
+
+### **1. 创建 Calculated Field 的步骤**
+要创建一个 Calculated Field，请按照以下步骤操作：
+1. 在 Tableau 界面中的 **Data Pane** （左侧数据面板），右键单击一个现有的字段或空白处。
+2. 选择 **"Create Calculated Field"**。
+3. 在弹出的窗口中，给这个字段命名，并在文本框中输入你的计算公式。
+4. 完成后，点击 **OK**，新的 Calculated Field 会出现在数据面板中。
+
+### **2. 常见的 Calculated Field 类型和函数**
+
+#### **1. 数学运算**
+你可以使用基本的数学运算符来进行加、减、乘、除等操作：
+- `+` ：加法
+- `-` ：减法
+- `*` ：乘法
+- `/` ：除法
+
+**示例：**
+``` 
+[Sales] * 1.1  // 将销售额增加 10%
+```
+
+#### **2. 聚合函数**
+聚合函数允许你对字段进行汇总，如求和、平均值、计数等。
+
+- `SUM([Field])` ：求和
+- `AVG([Field])` ：求平均
+- `COUNT([Field])` ：计数
+- `MIN([Field])` ：最小值
+- `MAX([Field])` ：最大值
+
+**示例：**
+``` 
+SUM([Profit])  // 计算利润总和
+```
+
+#### **3. 逻辑函数**
+逻辑函数用于创建基于条件的计算。常见的逻辑函数包括 `IF`, `ELSEIF`, `CASE`, `AND`, `OR` 等。
+
+- **IF** 条件语句：
+``` 
+IF [Sales] > 5000 THEN 'High' ELSE 'Low' END  // 如果销售额大于 5000，标记为“高”，否则为“低”
+```
+  
+- **CASE** 语句：
+``` 
+CASE [Region]
+  WHEN 'East' THEN 'E'
+  WHEN 'West' THEN 'W'
+  ELSE 'Other'
+END
+// 根据区域名称返回对应的首字母
+```
+
+- **AND/OR** 条件：
+``` 
+IF [Profit] > 0 AND [Sales] > 1000 THEN 'Profitable' ELSE 'Not Profitable' END
+// 同时满足利润为正且销售额大于 1000 时，返回“盈利”
+```
+
+#### **4. 日期函数**
+日期函数允许你对日期字段进行操作，如计算日期差、提取特定时间单位等。
+
+- **DATEDIFF** ：计算两个日期之间的差异
+``` 
+DATEDIFF('day', [Order Date], TODAY())  // 计算订单日期到今天之间的天数
+```
+
+- **DATEADD** ：在日期字段上加减时间
+``` 
+DATEADD('month', 2, [Order Date])  // 将订单日期增加两个月
+```
+
+- **YEAR, MONTH, DAY** ：提取日期的特定部分
+``` 
+YEAR([Order Date])  // 提取订单日期的年份
+```
+
+#### **5. 字符串函数**
+字符串函数用于处理文本数据，支持拼接、查找、替换等操作。
+
+- **CONCAT** ：拼接字符串
+``` 
+CONCAT([First Name], ' ', [Last Name])  // 拼接名字和姓氏
+```
+
+- **LEFT/RIGHT** ：提取字符串的左边或右边字符
+``` 
+LEFT([Product Name], 3)  // 从产品名称中提取前 3 个字符
+```
+
+- **LEN** ：计算字符串的长度
+``` 
+LEN([Product Name])  // 返回产品名称的字符长度
+```
+
+#### **6. 计算排名**
+你可以通过 Calculated Field 来创建数据的排名，比如用 `RANK()` 函数。
+
+``` 
+RANK(SUM([Sales]))  // 根据销售总额进行排名
+```
+
+#### **7. 空值处理**
+当数据中有空值时，可以使用 `ZN()` 函数将空值替换为 0，或者使用 `ISNULL()` 检测空值。
+
+- **ZN** ：将空值替换为 0
+``` 
+ZN([Discount])  // 如果折扣值为空，则返回 0
+```
+
+- **ISNULL** ：检测空值
+``` 
+IF ISNULL([Discount]) THEN 'No Discount' ELSE 'Discount' END  // 检查折扣字段是否为空
+```
+
+#### **8. 高级函数**
+Tableau 提供了一些更高级的函数用于特定场景：
+- **PREVIOUS_VALUE**：返回上一行的值。
+- **LOOKUP**：用于查看不同行中的值。
+
+**示例：**
+``` 
+LOOKUP(SUM([Sales]), -1)  // 返回前一行的销售额
+```
+
+#### **9. 参数化 Calculated Fields**
+你可以将参数引入到 Calculated Field 中，允许用户交互式地调整计算结果。
+
+**示例：**
+1. 创建一个参数 `Discount Rate`，用于设置折扣率。
+2. 在 Calculated Field 中使用该参数：
+``` 
+[Sales] * (1 - [Discount Rate])  // 根据用户设置的折扣率调整销售额
+```
+
+### **3. Calculated Fields 的优化和调试**
+1. **测试公式**：使用计算字段时，Tableau 会提示公式是否正确。如果有语法错误，Tableau 会显示错误消息。
+2. **优化计算性能**：过多复杂计算可能会影响 Tableau 的性能。可以通过减少表计算、LOD 计算等高消耗计算来优化性能。
+3. **调试和验证**：可以通过将 Calculated Field 放入数据透视表或图表中进行调试，观察它是否返回预期结果。
+
+### **4. 实际应用场景**
+- **分类数据**：你可以基于数值范围、产品类型等创建分类字段，方便进行分段分析。
+- **KPI 计算**：通过 Calculated Field 创建关键绩效指标（KPI），例如利润率、增长率等。
+- **自定义度量**：如果默认数据源中没有你需要的度量，可以通过计算字段创建自定义度量，例如每个客户的平均订单金额。
+
+### **总结**
+Tableau 的 Calculated Fields 是数据分析中的核心工具，允许用户自定义数据处理方式，增强分析的灵活性和深度。通过熟练掌握基本函数和高级计算，用户可以充分利用 Tableau 来执行各种复杂的数据计算和可视化分析。
+
+
+
+
+#######################################################################################################
+#######################################################################################################
+#######################################################################################################
+#######################################################################################################
+#######################################################################################################
+
+In Tableau, **Calculated Fields** are used to create custom calculations and logic based on existing data. You can write formulas to perform various operations and analyses. Here are the common **types of Calculated Fields** and **functions** in Tableau:
+
+### 1. **Arithmetic Operators and Mathematical Functions**
+   These functions are used for basic math calculations and numerical operations:
+   - **Addition**: `+`
+   - **Subtraction**: `-`
+   - **Multiplication**: `*`
+   - **Division**: `/`
+   - **ABS()**: Returns the absolute value of a number, e.g., `ABS(-10)` returns `10`.
+   - **ROUND()**: Rounds a number to the specified number of decimal places, e.g., `ROUND([Sales], 2)`.
+   - **CEILING()**: Rounds a number up, e.g., `CEILING(3.2)` returns `4`.
+   - **FLOOR()**: Rounds a number down, e.g., `FLOOR(3.8)` returns `3`.
+   - **SQRT()**: Calculates the square root, e.g., `SQRT(16)` returns `4`.
+
+### 2. **Aggregate Functions**
+   These functions are commonly used for summarizing and statistical calculations:
+   - **SUM()**: Calculates the total of a field or dimension, e.g., `SUM([Sales])`.
+   - **AVG()**: Computes the average, e.g., `AVG([Profit])`.
+   - **MIN()**: Returns the minimum value, e.g., `MIN([Date])`.
+   - **MAX()**: Returns the maximum value, e.g., `MAX([Date])`.
+   - **COUNT()**: Counts non-null data points, e.g., `COUNT([Customer ID])`.
+   - **COUNTD()**: Counts unique values, e.g., `COUNTD([Product ID])`.
+
+### 3. **Logical Functions**
+   Logical functions allow you to apply conditions in your analysis:
+   - **IF / ELSEIF / ELSE**: Conditional statements, e.g.,
+     ```tableau
+     IF [Sales] > 1000 THEN "High"
+     ELSEIF [Sales] > 500 THEN "Medium"
+     ELSE "Low"
+     END
+     ```
+   - **IIF()**: A simplified IF with two results, e.g., `IIF([Profit] > 0, "Profit", "Loss")`.
+   - **CASE**: Similar to a switch statement for multiple conditions, e.g.,
+     ```tableau
+     CASE [Region]
+       WHEN "East" THEN 1
+       WHEN "West" THEN 2
+       ELSE 0
+     END
+     ```
+   - **AND / OR**: Logical operators, e.g.,
+     ```tableau
+     IF [Sales] > 500 AND [Profit] > 100 THEN "Good"
+     ELSE "Needs Improvement"
+     END
+     ```
+
+### 4. **String Functions**
+   String functions handle text data:
+   - **LEFT()**: Returns the left part of a string, e.g., `LEFT([Product Name], 5)`.
+   - **RIGHT()**: Returns the right part of a string, e.g., `RIGHT([Product Name], 3)`.
+   - **MID()**: Extracts a substring, e.g., `MID([Product Name], 3, 5)` extracts 5 characters starting from position 3.
+   - **LEN()**: Returns the length of a string, e.g., `LEN([Product Name])`.
+   - **TRIM()**: Removes leading and trailing spaces, e.g., `TRIM([Customer Name])`.
+   - **UPPER() / LOWER()**: Converts a string to uppercase or lowercase, e.g., `UPPER([City])`.
+
+### 5. **Date Functions**
+   Date functions help in handling and calculating date values:
+   - **TODAY()**: Returns the current date.
+   - **NOW()**: Returns the current date and time.
+   - **DATEADD()**: Adds a specified time unit to a date, e.g., `DATEADD('day', 5, [Order Date])`.
+   - **DATEDIFF()**: Calculates the difference between two dates, e.g., `DATEDIFF('day', [Start Date], [End Date])`.
+   - **DATETRUNC()**: Truncates a date to a specific time unit, e.g., `DATETRUNC('month', [Order Date])` truncates the date to the start of the month.
+   - **YEAR() / MONTH() / DAY()**: Extracts the year, month, or day part of a date, e.g., `YEAR([Order Date])`.
+
+### 6. **Table Calculations**
+   Table calculations are functions used for advanced calculations across the data:
+   - **LOOKUP()**: Looks up values across rows, e.g., `LOOKUP(SUM([Sales]), -1)` gets the total sales of the previous row.
+   - **RANK()**: Returns the rank of data, e.g., `RANK(SUM([Sales]))`.
+   - **WINDOW_SUM()**: Calculates the sum within a data window, e.g., `WINDOW_SUM(SUM([Sales]), -2, 0)` calculates the sum of the current row and the previous two rows.
+   - **RUNNING_SUM()**: Computes the running total, e.g., `RUNNING_SUM(SUM([Sales]))`.
+
+### 7. **Geographical Functions**
+   These functions are used for geographical data analysis:
+   - **DISTANCE()**: Calculates the geographic distance between two points.
+   - **MAKEPOINT()**: Creates a geographic point, e.g., `MAKEPOINT([Latitude], [Longitude])`.
+   - **MAKELINE()**: Creates a geographical line, e.g., `MAKELINE([Start Point], [End Point])`.
+
+### 8. **Type Conversion Functions**
+   - **INT()**: Converts a value to an integer, e.g., `INT([Sales])`.
+   - **FLOAT()**: Converts a value to a floating point number.
+   - **STR()**: Converts a value to a string, e.g., `STR([Sales])`.
+   - **DATE()**: Converts a value to a date, e.g., `DATE([Order Date])`.
+
+These functions can be combined to create complex Calculated Fields, enabling custom analysis and visualizations.

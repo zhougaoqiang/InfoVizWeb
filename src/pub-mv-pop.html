@@ -20,6 +20,7 @@
       mv_pop_width = 800 - mv_pop_margin.left - mv_pop_margin.right,
       mv_pop_height = 400 - mv_pop_margin.top - mv_pop_margin.bottom;
 
+    // 创建 SVG 元素，并设置大小和位置
     const mv_pop_svg = d3.select("#mv_population")
       .append("svg")
       .attr("width", mv_pop_width + mv_pop_margin.left + mv_pop_margin.right)
@@ -27,24 +28,23 @@
       .append("g")
       .attr("transform", `translate(${mv_pop_margin.left},${mv_pop_margin.top})`);
 
-
-
-    // 读取 CSV 数据
+    // 读取 CSV 数据文件
     d3.csv("data/public_motor_vehicle_population.csv").then(function (data) {
 
-      // 数据预处理：将年份转换为Date对象，并过滤掉1990年之前的数据
+      // 数据预处理：将年份转换为 Date 对象，并过滤掉 1990 年之前的数据
       data = data.filter(d => {
         d.year = d3.timeParse("%Y %b")(d.year);
-        return d.year >= new Date(1990, 0, 1); // 过滤1990年后的数据
+        return d.year >= new Date(1990, 0, 1); // 过滤掉 1990 年后的数据
       });
 
+      // 将数据转换为数值类型
       data.forEach(d => {
         d.Private_Hire_Cars = +d.Private_Hire_Cars;
         d.Taxis = +d.Taxis;
         d.Buses = +d.Buses;
       });
 
-      // 列名作为子组，调整顺序以确保 Buses 在最底层
+      // 定义子组，并确保 "Buses" 在最底层
       const mv_pop_keys = ["Buses", "Taxis", "Private_Hire_Cars"];
 
       // 颜色比例尺
@@ -57,7 +57,7 @@
         .keys(mv_pop_keys)
         (data);
 
-      // X轴：年份
+      // X 轴：年份
       const mv_pop_x = d3.scaleTime()
         .domain(d3.extent(data, function (d) { return d.year; }))
         .range([0, mv_pop_width]);
@@ -66,7 +66,7 @@
         .attr("transform", `translate(0, ${mv_pop_height})`)
         .call(d3.axisBottom(mv_pop_x).ticks(5));
 
-      // Y轴：车辆数量
+      // Y 轴：车辆数量
       const mv_pop_y = d3.scaleLinear()
         .domain([0, d3.max(data, d => d.Private_Hire_Cars + d.Taxis + d.Buses)])
         .range([mv_pop_height, 0]);
@@ -77,15 +77,13 @@
       // 定义面积生成器
       const mv_pop_area = d3.area()
         .x(function (d) { return mv_pop_x(d.data.year); })
-        .y0(function (d) { return mv_pop_y(d[0]); })
-        .y1(function (d) { return mv_pop_y(d[1]); });
-      //y0定义了面积图的底部边界。d[0]通常代表堆叠数据中的起始值，通过mv_pop_y缩放函数将其映射到Y轴的位置。
-      //y1定义了面积图的顶部边界。d[1]通常代表堆叠数据中的结束值，通过mv_pop_y缩放函数将其映射到Y轴的位置。
+        .y0(function (d) { return mv_pop_y(d[0]); })  // 定义面积图的底部边界
+        .y1(function (d) { return mv_pop_y(d[1]); }); // 定义面积图的顶部边界
 
-      // 设置SVG工具提示，包含背景矩形和文本
+      // 设置 SVG 工具提示，包含背景矩形和文本
       const tooltipGroup = mv_pop_svg.append("g")
         .style("display", "none") // 初始时隐藏
-        .style("pointer-events", "none")
+        .style("pointer-events", "none");
 
       const tooltipRect = tooltipGroup.append("rect")
         .attr("class", "tooltip-rect")
@@ -106,13 +104,10 @@
         .attr("fill", "black")
         .attr("font-family", "Arial");
 
-
       // 鼠标悬停事件处理程序
       const service_delay_mouseover = function (event, d) {
         tooltipGroup.style("display", null);  // 显示 tooltip
-
-        // 更新工具提示的位置并确保在最前面
-        tooltipGroup.raise();
+        tooltipGroup.raise(); // 确保工具提示显示在最前面
       };
 
       // 鼠标移动事件处理程序
@@ -142,18 +137,18 @@
 
       // 鼠标离开事件处理程序
       const service_delay_mouseleave = function () {
-        console.log("mouse leave");
         tooltipGroup.style("display", "none");  // 隐藏工具提示
       };
 
       // 显示堆叠区域
       mv_pop_svg.selectAll("mylayers")
-        .data(mv_pop_stackedData)
-        .enter()
-        .append("path")
-        .attr("class", function (d) { return "myArea " + d.key })
-        .style("fill", function (d) { return mv_pop_color(d.key); })
-        .attr("d", mv_pop_area);
+        .data(mv_pop_stackedData) // 绑定堆叠数据 mv_pop_stackedData，每个数据项代表一个堆叠的区域（如 "Buses"、"Taxis" 等）
+        .enter() // 进入数据集的 enter 阶段，以便为每个数据项创建新的路径元素
+        .append("path") // 为每个数据项添加一个 "path" 元素，用于表示堆叠区域图中的不同层
+        .attr("class", function (d) { return "myArea " + d.key }) // 为每个路径元素设置类名，动态添加数据项的键名（例如 "myArea Buses"）
+        .style("fill", function (d) { return mv_pop_color(d.key); }) // 使用颜色比例尺 mv_pop_color，根据数据项的键名（d.key）为每个区域设置填充颜色
+        .attr("d", mv_pop_area); // 使用面积生成器 mv_pop_area 定义每个区域的路径，使其符合堆叠区域的形状
+
 
       // 添加鼠标事件，用于显示SVG工具提示
       mv_pop_svg.selectAll("path")
@@ -176,31 +171,31 @@
         .text("Number of Vehicles")
         .attr("text-anchor", "start");
 
-      // 调整图例的位置，使其靠近图表左侧
+      // 添加图例，靠近图表左侧显示
       const mv_pop_size = 20;
       mv_pop_svg.selectAll("myrect")
-        .data(mv_pop_keys)
-        .enter()
-        .append("rect")
+        .data(mv_pop_keys) // 绑定数据 mv_pop_keys，每个数据项代表一个车辆类别（例如 "Buses"、"Taxis" 等）
+        .enter() // 进入数据集的 enter 阶段，以便为每个数据项创建新的元素
+        .append("rect") // 为每个数据项添加一个 "rect" 矩形元素，用于图例中的彩色方块
         .attr("x", 50)  // 调整 x 坐标，使图例靠左显示
-        .attr("y", function (d, i) { return 10 + i * (mv_pop_size + 5) })
-        .attr("width", mv_pop_size)
-        .attr("height", mv_pop_size)
-        .style("fill", function (d) { return mv_pop_color(d) });
+        .attr("y", function (d, i) { return 10 + i * (mv_pop_size + 5) }) // 设置 y 坐标，根据索引值 i 为每个矩形在 y 轴上分配位置
+        .attr("width", mv_pop_size) // 设置矩形的宽度，使用定义的大小 mv_pop_size
+        .attr("height", mv_pop_size) // 设置矩形的高度，使用定义的大小 mv_pop_size
+        .style("fill", function (d) { return mv_pop_color(d) }); // 使用颜色比例尺 mv_pop_color，根据数据项 d 为每个矩形设置颜色
 
       mv_pop_svg.selectAll("mylabels")
-        .data(mv_pop_keys)
-        .enter()
-        .append("text")
-        .attr("x", 50 + mv_pop_size * 1.2)  // 调整 x 坐标，使图例文字靠左显示
-        .attr("y", function (d, i) { return 10 + i * (mv_pop_size + 5) + (mv_pop_size / 2) })
-        .attr("class", "legend-text")  // 确保没有下划线
-        .style("fill", function (d) { return mv_pop_color(d) })
-        .text(function (d) { return d.replace(/_/g, ' ') })  // 移除下划线
-        .attr("text-anchor", "left")
-        .style("alignment-baseline", "middle");
-    });
+        .data(mv_pop_keys) // 绑定数据 mv_pop_keys，每个数据项对应一个图例标签
+        .enter() // 进入数据集的 enter 阶段，为每个数据项创建新的文本元素
+        .append("text") // 为每个数据项添加一个 "text" 元素，用作图例中的标签
+        .attr("x", 50 + mv_pop_size * 1.2)  // 设置 x 坐标，确保图例文字位于矩形右侧
+        .attr("y", function (d, i) { return 10 + i * (mv_pop_size + 5) + (mv_pop_size / 2) }) // 设置 y 坐标，确保文字与矩形对齐
+        .attr("class", "legend-text")  // 给文字添加 CSS 类 "legend-text"，确保没有下划线
+        .style("fill", function (d) { return mv_pop_color(d) }) // 使用颜色比例尺 mv_pop_color，根据数据项 d 为文字设置颜色
+        .text(function (d) { return d.replace(/_/g, ' ') })  // 将数据项中的下划线替换为空格，提升标签的可读性
+        .attr("text-anchor", "left") // 设置文字的锚点为左对齐
+        .style("alignment-baseline", "middle"); // 设置文字的垂直对齐为中间，以便与矩形对齐
 
+    });
   </script>
 </body>
 
