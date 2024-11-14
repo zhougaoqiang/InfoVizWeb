@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>D3: Force layout</title>
+	<script type="text/javascript" src="d3.js"></script> <!-- 引入D3.js库 -->
+	<style type="text/css">
+		/* No style rules here yet */
+	</style>
+</head>
+
+<body>
+	<script type="text/javascript">
+
+		// Width and height
+		var w = 1000; // SVG画布的宽度
+		var h = 600; // SVG画布的高度
+
+		// Original data
+		var dataset = {
+			nodes: [ // 节点数据，表示图中的各个点
+				{ name: "Adam" },
+				{ name: "Bob" },
+				{ name: "Carrie" },
+				{ name: "Donovan" },
+				{ name: "Edward" },
+				{ name: "Felicity" },
+				{ name: "George" },
+				{ name: "Hannah" },
+				{ name: "Iris" },
+				{ name: "Jerry" }
+			],
+			edges: [ // 边数据，表示连接各个节点的线
+				{ source: 0, target: 1 },
+				{ source: 0, target: 2 },
+				{ source: 0, target: 3 },
+				{ source: 0, target: 4 },
+				{ source: 1, target: 5 },
+				{ source: 2, target: 5 },
+				{ source: 2, target: 5 },
+				{ source: 3, target: 4 },
+				{ source: 5, target: 8 },
+				{ source: 5, target: 9 },
+				{ source: 6, target: 7 },
+				{ source: 7, target: 8 },
+				{ source: 8, target: 9 }
+			]
+		};
+
+		// Initialize a simple force layout, using the nodes and edges in dataset
+		var force = d3.forceSimulation(dataset.nodes) // 创建一个力模拟器，使用节点数据
+			.force("charge", d3.forceManyBody().strength(-100)) // 添加力（电荷），节点之间的排斥力
+			.force("link", d3.forceLink(dataset.edges).distance(30)) // 添加连线力，使节点通过边连接
+			.force("center", d3.forceCenter().x(w / 2).y(h / 2)); // 添加中心力，将图放在画布中心
+
+		force.alphaDecay(0.1); // 设置alpha衰减率，控制力模拟收敛速度
+		force.alphaTarget(1); // 设置目标alpha值，控制动画的活跃度
+
+		var colors = d3.scaleOrdinal(d3.schemeCategory10); // 定义一个颜色比例尺，用于给节点着色
+
+		// Create SVG element
+		var svg = d3.select("body")
+			.append("svg") // 在body中添加一个SVG元素
+			.attr("width", w) // 设置SVG宽度
+			.attr("height", h); // 设置SVG高度
+
+		// Create edges as lines
+		var edges = svg.selectAll("line") // 选择所有line元素（初始时不存在）
+			.data(dataset.edges) // 绑定边数据
+			.enter()
+			.append("line") // 为每条边添加一个line元素
+			.style("stroke", "#ccc") // 设置边的颜色
+			.style("stroke-width", 1); // 设置边的宽度
+
+		// Create nodes as circles
+		var nodes = svg.selectAll("circle") // 选择所有circle元素（初始时不存在）
+			.data(dataset.nodes) // 绑定节点数据
+			.enter()
+			.append("circle") // 为每个节点添加一个circle元素
+			.attr("r", 10) // 设置圆的半径
+			.style("fill", function (d, i) {
+				return colors(i); // 根据颜色比例尺为每个节点着色
+			})
+			.call(d3.drag()  // Define what to do on drag events
+				.on("start", dragStarted) // 拖动开始时调用dragStarted
+				.on("drag", dragging) // 拖动过程中调用dragging
+				.on("end", dragEnded)); // 拖动结束时调用dragEnded		
+
+		// Every time the simulation "ticks", this will be called
+		var tick = force.on("tick", function () { // 当力模拟刷新（tick）时执行
+
+			edges.attr("x1", function (d) { return d.source.x; }) // 更新边的起点x坐标
+				.attr("y1", function (d) { return d.source.y; }) // 更新边的起点y坐标
+				.attr("x2", function (d) { return d.target.x; }) // 更新边的终点x坐标
+				.attr("y2", function (d) { return d.target.y; }); // 更新边的终点y坐标
+
+			nodes.attr("cx", function (d) { return d.x; }) // 更新节点的x坐标
+				.attr("cy", function (d) { return d.y; }); // 更新节点的y坐标
+
+		});
+
+		// Define drag event functions
+		function dragStarted(event, d) { // 拖动开始时的回调函数
+			if (!event.active) force.alpha(0.3).restart(); // 如果力模拟未激活，重启模拟
+			event.fx = event.x; // 固定节点的x坐标
+			event.fy = event.y; // 固定节点的y坐标
+		}
+
+		function dragging(event, d) { // 拖动过程中的回调函数
+			d.fx = event.x; // 更新节点的固定x坐标
+			d.fy = event.y; // 更新节点的固定y坐标
+		}
+
+		function dragEnded(event, d) { // 拖动结束时的回调函数
+			if (!event.active) force.alphaTarget(0); // 如果力模拟未激活，将目标alpha值设为0
+			event.fx = null; // 取消节点的x坐标固定
+			event.fy = null; // 取消节点的y坐标固定
+		}
+
+	</script>
+</body>
+
+</html>

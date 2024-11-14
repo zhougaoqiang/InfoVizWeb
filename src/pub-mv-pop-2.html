@@ -39,17 +39,18 @@
       // 数据预处理：将年份转换为Date对象，并过滤掉1990年之前的数据
       data = data.filter(d => {
         d.year = d3.timeParse("%Y %b")(d.year);
-        return d.year >= new Date(1990, 0, 1); // 过滤1990年后的数据
+        return d.year >= new Date(1980, 0, 1); // 过滤1990年后的数据
       });
 
       data.forEach(d => {
         d.Private_Hire_Cars = +d.Private_Hire_Cars;
         d.Taxis = +d.Taxis;
         d.Buses = +d.Buses;
+        d.Total = d.Private_Hire_Cars + d.Taxis + d.Buses;
       });
 
       // 列名作为子组，调整顺序以确保 Buses 在最底层
-      const mv_keys = ["Buses", "Taxis", "Private_Hire_Cars"];
+      const mv_keys = ["Buses", "Taxis", "Private_Hire_Cars", "Total"];
 
       // 颜色比例尺
       const mv_color = d3.scaleOrdinal()
@@ -72,7 +73,7 @@
 
       // Y轴：车辆数量
       const mv_y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.Private_Hire_Cars + d.Taxis + d.Buses)])
+        .domain([0, d3.max(data, d => d.Private_Hire_Cars + d.Taxis + d.Buses + d.Total)])
         .range([mv_height, 0]);
 
       mv_svg.append("g")
