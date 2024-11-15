@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D3 Stacked Barchart - MRT & LRT Delays</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    .legend-text {
+      text-decoration: none; /* 移除下划线 */
+    }
+
+    #Service_Delay.bar {
+      opacity: 0.8; /* 设置初始透明度 */
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Service Delays (>30 mins) - MRT and LRT (2020-2023)</h2> <!-- 图表标题 -->
+
+  <!-- 下拉菜单，用于切换显示不同图表 -->
+  <div>
+    <label for="LrtMrtSelect">Select Chart to Display:</label>
+    <select id="LrtMrtSelect">
+      <option value="MRT">MRT Delays</option> <!-- MRT 延误选项 -->
+      <option value="LRT">LRT Delays</option> <!-- LRT 延误选项 -->
+    </select>
+  </div>
+
+  <div id="Service_Delay"></div> <!-- 图表的容器 -->
+
+  <script>
+    // 设置图表的宽度和高度
+    const service_delay_margin = { top: 20, right: 30, bottom: 40, left: 50 },
+      service_delay_width = 800 - service_delay_margin.left - service_delay_margin.right,
+      service_delay_height = 400 - service_delay_margin.top - service_delay_margin.bottom;
+
+    // 创建SVG区域
+    const service_delay_svg = d3.select("#Service_Delay")
+      .append("svg")
+      .attr("width", service_delay_width + service_delay_margin.left + service_delay_margin.right)
+      .attr("height", service_delay_height + service_delay_margin.top + service_delay_margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${service_delay_margin.left},${service_delay_margin.top})`);
+
+    // 读取 CSV 数据
+    d3.csv("data/No_of_Service_Delays.csv").then(function (data) {
+
+      // MRT 和 LRT 的子组（即不同线路）
+      const MRT_subgroups = ["NSL", "EWL", "NEL", "CCL", "DTL"];
+      const LRT_subgroups = ["BPLRT", "SPLRT"];
+
+      // X轴的年份组
+      const service_delay_groups = data.map(d => d.Year);
+
+      // 初始化 Y 轴（以前的X轴）作为分类轴
+      const service_delay_y = d3.scaleBand()
+        .domain(service_delay_groups)
+        .range([0, service_delay_height])
+        .padding([0.2]);
+
+      // 在 SVG 中添加 Y 轴
+      service_delay_svg.append("g")
+        .call(d3.axisLeft(service_delay_y).tickSizeOuter(0));
+
+      // 初始化 X 轴（以前的Y轴）作为数值轴
+      const service_delay_x = d3.scaleLinear()
+        .range([0, service_delay_width]);
+
+      // 添加 X 轴
+      const service_delay_xAxis = service_delay_svg.append("g")
+        .attr("transform", `translate(0, ${service_delay_height})`);
+
+      // 定义 MRT 的颜色比例尺
+      const colorMRT = d3.scaleOrdinal()
+        .domain(MRT_subgroups)
+        .range(['#d42e12', '#009645', '#9900aa', '#fa9e0d', '#005ec4']); // MRT颜色
+
+      // 定义 LRT 的颜色比例尺
+      const colorLRT = d3.scaleOrdinal()
+        .domain(LRT_subgroups)
+        .range(['#8c564b', '#e377c2']); // LRT颜色
+
+      // 更新图表函数
+      function updateChart(selectedChart) {
+        let subgroups, maxDelay;
+
+        // 判断是 MRT 还是 LRT 图表
+        if (selectedChart === "MRT") {
+          subgroups = MRT_subgroups; // 设置子组为 MRT 子组
+          maxDelay = d3.max(data, d => d.MRT_TOTAL); // MRT 延误的最大值
+          color = colorMRT; // 使用 MRT 颜色组
+        } else {
+          subgroups = LRT_subgroups; // 设置子组为 LRT 子组
+          maxDelay = d3.max(data, d => d.LRT_TOTAL); // LRT 延误的最大值
+          color = colorLRT; // 使用 LRT 颜色组
+        }
+
+        console.log("maxDelay ", maxDelay);
+        // 更新 X 轴范围
+        let test = Number(maxDelay) + 1;
+        console.log("test ", test)
+        service_delay_x.domain([0, test]);
+        service_delay_xAxis.transition().duration(1000)
+          .call(d3.axisBottom(service_delay_x).ticks(5).tickFormat(d3.format("d")));  // 使用整数刻度
+
+        // 堆叠数据
+        const service_delay_stackedData = d3.stack()
+          .keys(subgroups)
+          (data);
+
+        // 绘制堆叠条形图
+        const service_delay_bars = service_delay_svg.selectAll("g.layer")
+          .data(service_delay_stackedData, d => d.key);
+
+        // 进入新的数据并设置颜色
+        const service_delay_barsEnter = service_delay_bars.enter().append("g")
+          .attr("class", "layer")
+          .attr("fill", d => color(d.key));
+
+        // 为每个分组绘制矩形条形
+        service_delay_barsEnter.selectAll("rect")
+          .data(d => d)
+          .enter().append("rect")
+          .attr("y", d => service_delay_y(d.data.Year)) // 根据年份设置Y位置
+          .attr("x", d => service_delay_x(d[0]))  // 左边界
+          .attr("width", d => service_delay_x(d[1]) - service_delay_x(d[0]))  // 使用宽度表示值
+          .attr("height", service_delay_y.bandwidth())  // 条形高度
+          .attr("stroke", "grey") // 边框颜色
+          .attr("class", "bar"); // 为每个柱子添加 class
+
+        // 移除退出的数据条形
+        service_delay_bars.exit().remove();
+      }
+
+      // 初始化为 MRT 图表
+      updateChart("MRT");
+
+      // 监听下拉菜单变化，切换 MRT 和 LRT 图表
+      d3.select("#LrtMrtSelect").on("change", function () {
+        const selectedChart = d3.select(this).property("value"); // 获取下拉选项的值
+        updateChart(selectedChart); // 更新图表
+      });
+    });
+
+  </script>
+</body>
+
+</html>

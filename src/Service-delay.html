@@ -162,9 +162,10 @@
         }
 
         // 更新 Y 轴范围
-        service_delay_y.domain([0, maxDelay]);
+        console.log("maxDelay ", maxDelay);
+        service_delay_y.domain([0, 8]);
         service_delay_yAxis.transition().duration(1000)
-          .call(d3.axisLeft(service_delay_y).ticks(5).tickFormat(d3.format("d")));  // 使用整数刻度
+          .call(d3.axisLeft(service_delay_y).ticks(5).tickFormat(d3.format("d")));
 
 
         // 堆叠数据
@@ -193,7 +194,7 @@
           .on("mousemove", service_delay_mousemove)
           .on("mouseleave", service_delay_mouseleave);
 
-        //service_delay_barsEnter.merge(service_delay_bars).selectAll("rect")
+        // service_delay_barsEnter.merge(service_delay_bars).selectAll("rect")
         //  .transition()
         //  .duration(1000)
         //  .attr("x", d => service_delay_x(d.data.Year))
